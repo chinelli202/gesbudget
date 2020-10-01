@@ -1,5 +1,24 @@
 import request from '@/utils/request'
 
+  /* Login function */
+  export const login = (data: any) =>
+  request({
+    url: '/user-login', //'/api/user-login',
+    method: 'post',
+    data
+  })
+
+  /* Get user info */
+  export const getUserInfo = (data: any) =>
+  request({
+    url: '/user-detail',
+    method: 'get',
+    headers: {
+      'Authorization': `Bearer ${data.token}`
+    }
+  })
+
+// TO EDIT
 export const getUsers = (params: any) =>
   request({
     url: '/users',
@@ -7,12 +26,7 @@ export const getUsers = (params: any) =>
     params
   })
 
-export const getUserInfo = (data: any) =>
-  request({
-    url: '/users/info',
-    method: 'post',
-    data
-  })
+
 
 export const getUserByName = (username: string) =>
   request({
@@ -33,12 +47,6 @@ export const deleteUser = (username: string) =>
     method: 'delete'
   })
 
-export const login = (data: any) =>
-  request({
-    url: '/users/login',
-    method: 'post',
-    data
-  })
 
 export const logout = () =>
   request({

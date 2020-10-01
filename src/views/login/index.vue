@@ -15,15 +15,15 @@
         <lang-select class="set-language" />
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="email">
         <span class="svg-container">
           <svg-icon name="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          :placeholder="$t('login.username')"
-          name="username"
+          ref="email"
+          v-model="loginForm.email"
+          :placeholder="$t('login.email')"
+          name="email"
           type="text"
           tabindex="1"
           autocomplete="on"
@@ -73,11 +73,11 @@
 
       <div style="position:relative">
         <div class="tips">
-          <span>{{ $t('login.username') }} : admin </span>
+          <span>{{ $t('login.email') }} : admin </span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
         </div>
         <div class="tips">
-          <span>{{ $t('login.username') }} : editor </span>
+          <span>{{ $t('login.email') }} : editor </span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
         </div>
 
@@ -131,20 +131,21 @@ export default class extends Vue {
   }
 
   private validatePassword = (rule: any, value: string, callback: Function) => {
-    if (value.length < 6) {
-      callback(new Error('The password can not be less than 6 digits'))
-    } else {
-      callback()
-    }
+    // if (value.length < 6) {
+    //   callback(new Error('The password can not be less than 6 digits'))
+    // } else {
+    //   callback()
+    // }
+    callback()
   }
 
   private loginForm = {
-    username: 'admin',
-    password: '111111'
+    email: 'obeng.stephane@snh.cm',
+    password: '12345'
   }
 
   private loginRules = {
-    username: [{ validator: this.validateUsername, trigger: 'blur' }],
+    email: [{ validator: this.validateUsername, trigger: 'blur' }],
     password: [{ validator: this.validatePassword, trigger: 'blur' }]
   }
 
@@ -167,8 +168,8 @@ export default class extends Vue {
   }
 
   mounted() {
-    if (this.loginForm.username === '') {
-      (this.$refs.username as Input).focus()
+    if (this.loginForm.email === '') {
+      (this.$refs.email as Input).focus()
     } else if (this.loginForm.password === '') {
       (this.$refs.password as Input).focus()
     }
@@ -194,15 +195,25 @@ export default class extends Vue {
     (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
       if (valid) {
         this.loading = true
-        await UserModule.Login(this.loginForm)
-        this.$router.push({
-          path: this.redirect || '/',
-          query: this.otherQuery
-        })
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.loading = false
-        }, 0.5 * 1000)
+        UserModule.Login(this.loginForm)
+          .then( () => {
+
+            console.log("before router push", this.redirect)
+            this.loading = false
+            this.$router.push({
+              path: this.redirect || '/',
+              query: this.otherQuery
+            }).catch(error => {
+              console.info(error.message)
+            })
+
+            console.log("after router push", this.redirect)
+          })
+        // 
+        
+        
+        // 
+        
       } else {
         return false
       }

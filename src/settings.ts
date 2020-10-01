@@ -12,14 +12,14 @@ interface ISettings {
 
 // You can customize below settings :)
 const settings: ISettings = {
-  title: 'Vue Typescript Admin',
+  title: 'Gestion du Budget SNH',
   showSettings: true,
   showTagsView: true,
   fixedHeader: false,
   showSidebarLogo: false,
   errorLog: ['production'],
   sidebarTextTheme: true,
-  devServerPort: 9527,
+  devServerPort: 8000,
   mockServerPort: 9528
 }
 

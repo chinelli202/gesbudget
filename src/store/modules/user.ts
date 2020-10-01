@@ -8,25 +8,48 @@ import store from '@/store'
 
 export interface IUserState {
   token: string
+  first_name: string
+  last_name: string
   name: string
-  avatar: string
-  introduction: string
+  matricule: string
   roles: string[]
   email: string
+  division: string
+  fonction: string
+  saisisseur: string
+  valideur: string
+  statut_utilisateur: string
 }
 
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
   public token = getToken() || ''
+  public first_name = ''
+  public last_name = ''
   public name = ''
-  public avatar = ''
-  public introduction = ''
+  public matricule = ''
+  public division = ''
+  public fonction = ''
+  public saisisseur = ''
+  public valideur = ''
+  public statut_utilisateur = ''
   public roles: string[] = []
   public email = ''
+
 
   @Mutation
   private SET_TOKEN(token: string) {
     this.token = token
+  }
+
+  @Mutation
+  private SET_FIRST_NAME(first_name: string) {
+    this.first_name = first_name
+  }
+
+  @Mutation
+  private SET_LAST_NAME(last_name: string) {
+    this.last_name = last_name
   }
 
   @Mutation
@@ -35,14 +58,20 @@ class User extends VuexModule implements IUserState {
   }
 
   @Mutation
-  private SET_AVATAR(avatar: string) {
-    this.avatar = avatar
+  private SET_MATRICULE(matricule: string) {
+    this.matricule = matricule
   }
 
   @Mutation
-  private SET_INTRODUCTION(introduction: string) {
-    this.introduction = introduction
+  private SET_DIVISION(division: string) {
+    this.division = division
   }
+
+  @Mutation
+  private SET_FONCTION(fonction: string) {
+    this.fonction = fonction
+  }
+
 
   @Mutation
   private SET_ROLES(roles: string[]) {
@@ -54,13 +83,14 @@ class User extends VuexModule implements IUserState {
     this.email = email
   }
 
+  // Edit Login function
   @Action
-  public async Login(userInfo: { username: string, password: string}) {
-    let { username, password } = userInfo
-    username = username.trim()
-    const { data } = await login({ username, password })
-    setToken(data.accessToken)
-    this.SET_TOKEN(data.accessToken)
+  public async Login(userInfo: { email: string, password: string}) {
+    let { email, password } = userInfo
+    email = email.trim()
+    const { data } = await login({ email, password })
+    setToken(data.token)
+    this.SET_TOKEN(data.token)
   }
 
   @Action
@@ -75,20 +105,25 @@ class User extends VuexModule implements IUserState {
     if (this.token === '') {
       throw Error('GetUserInfo: token is undefined!')
     }
-    const { data } = await getUserInfo({ /* Your params here */ })
+    const { data } = await getUserInfo({ token : this.token })
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
-    const { roles, name, avatar, introduction, email } = data.user
+    const {first_name,last_name, name, email, matricule, division,fonction
+    ,saisisseur, valideur, statut_utilisateur, roles} = data
     // roles must be a non-empty array
     if (!roles || roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
     }
     this.SET_ROLES(roles)
     this.SET_NAME(name)
-    this.SET_AVATAR(avatar)
-    this.SET_INTRODUCTION(introduction)
+    this.SET_MATRICULE(matricule)
+    this.SET_DIVISION(division)
     this.SET_EMAIL(email)
+    this.SET_FIRST_NAME(first_name)
+    this.SET_FONCTION(fonction)
+    this.SET_LAST_NAME(last_name)
+    this.SET_ROLES(roles)
   }
 
   @Action
