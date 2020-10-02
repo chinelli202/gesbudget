@@ -140,9 +140,9 @@ class User extends VuexModule implements IUserState {
     this.SET_FONCTION(fonction)
     this.SET_LAST_NAME(lastName)
     this.SET_ROLES(roles)
-    this.SET_ROLES(saisisseur)
-    this.SET_ROLES(valideur)
-    this.SET_ROLES(statutUtilisateur)
+    this.SET_SAISISSEUR(saisisseur)
+    this.SET_VALIDEUR(valideur)
+    this.SET_STATUT_UTILISATEUR(statutUtilisateur)
   }
 
   @Action
@@ -166,7 +166,7 @@ class User extends VuexModule implements IUserState {
     if (this.token === '') {
       throw Error('LogOut: token is undefined!')
     }
-    await logout()
+    await logout({ token: this.token })
     removeToken()
     resetRouter()
 

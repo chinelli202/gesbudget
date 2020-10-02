@@ -197,13 +197,16 @@ export default class extends Vue {
         this.loading = true
         UserModule.Login(this.loginForm)
           .then(() => {
-            this.loading = false
             this.$router.push({
               path: this.redirect || '/',
               query: this.otherQuery
             }).catch(error => {
               console.info(error.message)
             })
+            this.loading = false
+          }).catch(error => {
+            console.info(error.message)
+            this.loading = false
           })
       } else {
         return false

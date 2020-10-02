@@ -8,6 +8,15 @@ export const login = (data: any) =>
     data
   })
 
+export const logout = (data: any) =>
+  request({
+    url: '/user-logout',
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${data.token}`
+    }
+  })
+
 // Get user info
 export const getUserInfo = (data: any) =>
   request({
@@ -43,12 +52,6 @@ export const deleteUser = (username: string) =>
   request({
     url: `/users/${username}`,
     method: 'delete'
-  })
-
-export const logout = () =>
-  request({
-    url: '/users/logout',
-    method: 'post'
   })
 
 export const register = (data: any) =>
