@@ -1,20 +1,20 @@
 import request from '@/utils/request'
 
-  /* Login function */
-  export const login = (data: any) =>
+// Login function
+export const login = (data: any) =>
   request({
-    url: '/user-login', //'/api/user-login',
+    url: '/user-login',
     method: 'post',
     data
   })
 
-  /* Get user info */
-  export const getUserInfo = (data: any) =>
+// Get user info
+export const getUserInfo = (data: any) =>
   request({
     url: '/user-detail',
     method: 'get',
     headers: {
-      'Authorization': `Bearer ${data.token}`
+      Authorization: `Bearer ${data.token}`
     }
   })
 
@@ -25,8 +25,6 @@ export const getUsers = (params: any) =>
     method: 'get',
     params
   })
-
-
 
 export const getUserByName = (username: string) =>
   request({
@@ -46,7 +44,6 @@ export const deleteUser = (username: string) =>
     url: `/users/${username}`,
     method: 'delete'
   })
-
 
 export const logout = () =>
   request({

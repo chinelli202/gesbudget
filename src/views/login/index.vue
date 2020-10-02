@@ -196,9 +196,7 @@ export default class extends Vue {
       if (valid) {
         this.loading = true
         UserModule.Login(this.loginForm)
-          .then( () => {
-
-            console.log("before router push", this.redirect)
+          .then(() => {
             this.loading = false
             this.$router.push({
               path: this.redirect || '/',
@@ -206,14 +204,7 @@ export default class extends Vue {
             }).catch(error => {
               console.info(error.message)
             })
-
-            console.log("after router push", this.redirect)
           })
-        // 
-        
-        
-        // 
-        
       } else {
         return false
       }

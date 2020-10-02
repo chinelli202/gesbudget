@@ -8,8 +8,8 @@ import store from '@/store'
 
 export interface IUserState {
   token: string
-  first_name: string
-  last_name: string
+  firstName: string
+  lastName: string
   name: string
   matricule: string
   roles: string[]
@@ -18,24 +18,24 @@ export interface IUserState {
   fonction: string
   saisisseur: string
   valideur: string
-  statut_utilisateur: string
+  statutUtilisateur: string
 }
 
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
   public token = getToken() || ''
-  public first_name = ''
-  public last_name = ''
+  public firstName = ''
+  public lastName = ''
   public name = ''
   public matricule = ''
   public division = ''
   public fonction = ''
   public saisisseur = ''
   public valideur = ''
-  public statut_utilisateur = ''
+  public statutUtilisateur = ''
   public roles: string[] = []
   public email = ''
-
+  public avatar = '/img/avatar-icon.png'
 
   @Mutation
   private SET_TOKEN(token: string) {
@@ -43,13 +43,13 @@ class User extends VuexModule implements IUserState {
   }
 
   @Mutation
-  private SET_FIRST_NAME(first_name: string) {
-    this.first_name = first_name
+  private SET_FIRST_NAME(firstName: string) {
+    this.firstName = firstName
   }
 
   @Mutation
-  private SET_LAST_NAME(last_name: string) {
-    this.last_name = last_name
+  private SET_LAST_NAME(lastName: string) {
+    this.lastName = lastName
   }
 
   @Mutation
@@ -72,7 +72,6 @@ class User extends VuexModule implements IUserState {
     this.fonction = fonction
   }
 
-
   @Mutation
   private SET_ROLES(roles: string[]) {
     this.roles = roles
@@ -81,6 +80,21 @@ class User extends VuexModule implements IUserState {
   @Mutation
   private SET_EMAIL(email: string) {
     this.email = email
+  }
+
+  @Mutation
+  private SET_SAISISSEUR(saisisseur: string) {
+    this.saisisseur = saisisseur
+  }
+
+  @Mutation
+  private SET_VALIDEUR(valideur: string) {
+    this.valideur = valideur
+  }
+
+  @Mutation
+  private SET_STATUT_UTILISATEUR(statutUtilisateur: string) {
+    this.statutUtilisateur = statutUtilisateur
   }
 
   // Edit Login function
@@ -105,12 +119,14 @@ class User extends VuexModule implements IUserState {
     if (this.token === '') {
       throw Error('GetUserInfo: token is undefined!')
     }
-    const { data } = await getUserInfo({ token : this.token })
+    const { data } = await getUserInfo({ token: this.token })
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
-    const {first_name,last_name, name, email, matricule, division,fonction
-    ,saisisseur, valideur, statut_utilisateur, roles} = data
+    const {
+      firstName, lastName, name, email, matricule, division, fonction,
+      saisisseur, valideur, statutUtilisateur, roles
+    } = data
     // roles must be a non-empty array
     if (!roles || roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
@@ -120,10 +136,13 @@ class User extends VuexModule implements IUserState {
     this.SET_MATRICULE(matricule)
     this.SET_DIVISION(division)
     this.SET_EMAIL(email)
-    this.SET_FIRST_NAME(first_name)
+    this.SET_FIRST_NAME(firstName)
     this.SET_FONCTION(fonction)
-    this.SET_LAST_NAME(last_name)
+    this.SET_LAST_NAME(lastName)
     this.SET_ROLES(roles)
+    this.SET_ROLES(saisisseur)
+    this.SET_ROLES(valideur)
+    this.SET_ROLES(statutUtilisateur)
   }
 
   @Action
