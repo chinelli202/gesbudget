@@ -28,23 +28,18 @@
           OOPS!
         </div>
         <div class="text-404__info">
-          All rights reserved
-          <a
-            style="color:#20a0ff"
-            href="https://wallstreetcn.com"
-            target="_blank"
-          >wallstreetcn</a>
+         Si vous avez un soucis, veuillez contacter la Division Informatique.
         </div>
         <div class="text-404__headline">
           {{ message }}
         </div>
         <div class="text-404__info">
-          Please check that the URL you entered is correct, or click the button below to return to the homepage.
+          Vérifiez que l'url à laquelle vous voulez vous rendre est correcte, ou cliquez sur le boutton ci-dessous pour retourner à la page d'accueil.
         </div>
         <a
           href=""
           class="text-404__return-home"
-        >Back to home</a>
+        >Accueil</a>
       </div>
     </div>
   </div>
