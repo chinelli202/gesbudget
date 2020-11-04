@@ -110,6 +110,7 @@ import { Route } from 'vue-router'
 import { Dictionary } from 'vue-router/types/router'
 import { Form as ElForm, Input } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
+import { AppModule } from '@/store/modules/app'
 import { isValidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect/index.vue'
 import SocialSign from './components/SocialSignin.vue'
@@ -197,6 +198,8 @@ export default class extends Vue {
         this.loading = true
         UserModule.Login(this.loginForm)
           .then(() => {
+            AppModule.fetchEngagementVariables();
+            
             this.$router.push({
               path: this.redirect || '/',
               query: this.otherQuery
