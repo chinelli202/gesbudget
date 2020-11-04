@@ -127,9 +127,39 @@
               </el-form-item>
               <el-form-item class="notes">
                   <el-row type="flex" class="row-bg" justify="end">
-                    <el-col :span="8">
-                      <el-button @click="onCancel">Annuler</el-button>
-                      <el-button type="primary" @click="onSubmit" :disabled="submitDisabled">Mettre à jour</el-button>
+                    <el-col :span="9">
+                      <el-button @click="onCancel">
+                        Annuler
+                      </el-button>
+                      <el-button 
+                        v-if="hasPermission(permissionCodes.engagement.SAISI)" 
+                        type="primary" 
+                        @click="updateSubmit" 
+                        :disabled="submitDisabled"
+                      >
+                        Mettre à jour
+                      </el-button>
+                      <el-button 
+                        v-else-if="hasPermission(permissionCodes.engagement.VALIDP)" 
+                        type="primary" 
+                        @click="validerpSubmit"
+                        :disabled="validerpDisabled"
+                      >
+                        Valider au 1er niveau
+                      </el-button>
+                      <!-- <el-button 
+                        v-else 
+                        type="primary" 
+                        @click="onCancel"
+                      >
+                        Ok
+                      </el-button> -->
+                      <el-button
+                        type="primary" 
+                        @click="validerpSubmit"
+                      >
+                        Valider second niveau
+                      </el-button>
                     </el-col>
                   </el-row>
               </el-form-item>
@@ -137,15 +167,21 @@
           </el-main>
         </el-container>
       </el-card>
+      {{ permissionCodes.engagement.SAISI }}<br>
+      hasPermission {{ hasPermission("profile-read") }}<br>
+      hasnotPermission {{ hasnotPermission("profile-read") }}<br>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { detailEngagement, updateEngagement } from '@/api/engagements'
+import { detailEngagement, updateEngagement, validerpPreEngagement } from '@/api/engagements'
 import { getVariables } from '@/api/variables'
 import { IEngagementData } from '@/api/types'
+import { AppModule } from '@/store/modules/app'
+import { UserModule } from '@/store/modules/user'
+import { PermissionModule } from '@/store/modules/permission'
 
 @Component({
   name: 'DetailEngagement',
@@ -164,8 +200,15 @@ export default class extends Vue {
   private deviseOptions = {}
   private typeOptions = {}
   private tva: number = 0
-  private fallbackUrl = {}
+  private fallbackUrl = { path: '/'}
+
   private submitDisabled = true;
+  private validerpDisabled = true;
+  private validersDisabled = true;
+  private validerfDisabled = true;
+
+  private permissions : any[] = []
+  private permissionCodes = {}
   private engagement = {
     montant_ht: 0,
     montant_ttc: 0
@@ -179,6 +222,8 @@ export default class extends Vue {
 
   created(){
     const id = this.$route.params && this.$route.params.id;
+    this.permissions = UserModule.permissions
+    this.permissionCodes = PermissionModule.permissionCodes
     this.fetchData(parseInt(id));
   }
 
@@ -186,15 +231,10 @@ export default class extends Vue {
     this.listLoading = true;
     let response = await detailEngagement({ id: engagementId });
     this.engagement = response.data;
-
-    response = await getVariables({ cle: 'DEVISE' });
-    this.deviseOptions = response.data;
-
-    response = await getVariables({ cle: 'TYPE_ENGAGEMENT' });
-    this.typeOptions = response.data;
-
-    response = await getVariables({ cle: 'CONSTANTE', code: 'TVA' });
-    this.tva = parseFloat(response.data[0].valeur);
+    
+    this.deviseOptions = AppModule.devises;
+    this.typeOptions = AppModule.typesEngagement;
+    this.tva = AppModule.tva;
 
     this.listLoading = false
   }
@@ -206,21 +246,35 @@ export default class extends Vue {
 
   private formAttributeChange(){
     this.submitDisabled = false;
+    this.validerpDisabled = false;
+    this.validersDisabled = false;
+    this.validerfDisabled = false;
   }
 
-  private async onSubmit(){
+  private async updateSubmit(){
     let response = await updateEngagement(this.engagement);
-    // this.$router.replace(this.fallbackUrl ? this.fallbackUrl : '/');
+    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/';
+  }
+
+  private async validerpSubmit(){
+    let response = await validerpPreEngagement(this.engagement);
     window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/';
   }
 
   private onCancel(){
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/');
   }
+
+  private hasPermission(permission: string){
+    return UserModule.permissions.filter(item => item.code == permission).length > 0;
+  }
+
+  private hasnotPermission(permission: string){
+    return UserModule.permissions.filter(item => item.code == permission).length == 0;
+  }
 }
-
-
 </script>
+
 <style lang="scss" scoped>
 .el-container{
   box-shadow: 2px;

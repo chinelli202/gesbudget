@@ -9,7 +9,7 @@ const hasPermission = (roles: string[], route: RouteConfig) => {
   } else {
     return true
   }
-}
+} //TODO : to remove
 
 export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[]) => {
   const res: RouteConfig[] = []
@@ -23,7 +23,7 @@ export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[]) => {
     }
   })
   return res
-}
+}//TODO : to remove
 
 export interface IPermissionState {
   routes: RouteConfig[]
@@ -32,9 +32,18 @@ export interface IPermissionState {
 
 @Module({ dynamic: true, store, name: 'permission' })
 class Permission extends VuexModule implements IPermissionState {
-  public routes: RouteConfig[] = []
-  public dynamicRoutes: RouteConfig[] = []
+  public routes: RouteConfig[] = []         //TODO : to remove
+  public dynamicRoutes: RouteConfig[] = []  //TODO : to remove
+  public permissionCodes = {
+    "engagement" : {
+      "SAISI" : "saisir-pre-engagement",
+      "VALIDP": "validerp-pre-engagement",
+      "VALIDS": "validers-pre-engagement",
+      "VALIDF": "validerf-pre-engagement",
+    }
+  }
 
+  //TODO : remove all below
   @Mutation
   private SET_ROUTES(routes: RouteConfig[]) {
     this.routes = constantRoutes.concat(routes)

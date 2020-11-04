@@ -55,6 +55,15 @@ export const updateEngagement = (data: any) =>
     data
   })
 
+  export const validerpPreEngagement = (data: any) => 
+  request({
+    url: `/validerp-pre-engagement/${data.id}`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
 
 export const createArticle = (data: any) =>
   request({
