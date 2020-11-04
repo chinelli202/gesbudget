@@ -3,7 +3,7 @@
     <div class="clearfix">
       <div class="introduction">
         <div class="display_name">
-          {{ name }}
+          {{ name }} | editor
         </div>
         <span
           v-for="item in roles"
@@ -11,12 +11,12 @@
           class="info-roles"
         >{{ item }}</span>
       </div>
+      <div class="app-container">
+        <PreEngagements />
+      </div>
     </div>
     <div>
-      <img
-        :src="emptyGif"
-        class="emptyGif"
-      >
+      
     </div>
   </div>
 </template>
@@ -24,15 +24,16 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
+import PreEngagements from './components/preengagements'
 
 @Component({
   name: 'DashboardEditor',
   components: {
+    PreEngagements
   }
 })
 export default class extends Vue {
-  private emptyGif = 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
-
+  
   get name() {
     return UserModule.name
   }
@@ -48,15 +49,9 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.emptyGif {
-  display: block;
-  width: 45%;
-  margin: 0 auto;
-}
-
 .dashboard-editor-container {
-  background-color: #e3e3e3;
-  min-height: 100vh;
+  background-color: #ffffff;
+  // min-height: 100vh;
   padding: 10px 30px 0px;
 
   .introduction {

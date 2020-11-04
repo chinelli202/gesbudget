@@ -1,6 +1,7 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
 import { login, logout, getUserInfo } from '@/api/users'
 import { getToken, setToken, removeToken } from '@/utils/cookies'
+import { removeAllEngagementVariables, setPermissions, setRoles, getRoles, getPermissions } from '@/utils/localdb'
 import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
 import { TagsViewModule } from './tags-view'
@@ -13,6 +14,7 @@ export interface IUserState {
   name: string
   matricule: string
   roles: string[]
+  permissions: string[]
   email: string
   division: string
   fonction: string
@@ -33,7 +35,8 @@ class User extends VuexModule implements IUserState {
   public saisisseur = ''
   public valideur = ''
   public statutUtilisateur = ''
-  public roles: string[] = []
+  public roles: any[] = getRoles()
+  public permissions: any[] = getPermissions()
   public email = ''
   public avatar = '/img/avatar-icon.png'
 
@@ -75,6 +78,13 @@ class User extends VuexModule implements IUserState {
   @Mutation
   private SET_ROLES(roles: string[]) {
     this.roles = roles
+    setRoles(roles)
+  }
+
+  @Mutation
+  private SET_PERMISSIONS(permissions: string[]) {
+    this.permissions = permissions
+    setPermissions(permissions)
   }
 
   @Mutation
@@ -125,13 +135,14 @@ class User extends VuexModule implements IUserState {
     }
     const {
       firstName, lastName, name, email, matricule, division, fonction,
-      saisisseur, valideur, statutUtilisateur, roles
+      saisisseur, valideur, statutUtilisateur, roles, permissions
     } = data
     // roles must be a non-empty array
     if (!roles || roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
     }
     this.SET_ROLES(roles)
+    this.SET_PERMISSIONS(permissions)
     this.SET_NAME(name)
     this.SET_MATRICULE(matricule)
     this.SET_DIVISION(division)
@@ -169,6 +180,7 @@ class User extends VuexModule implements IUserState {
     await logout({ token: this.token })
     removeToken()
     resetRouter()
+    removeAllEngagementVariables()
 
     // Reset visited views and cached views
     TagsViewModule.delAllViews()

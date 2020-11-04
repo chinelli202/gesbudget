@@ -3,6 +3,8 @@ export default {
     dashboard: 'Dashboard',
     documentation: 'Documentation',
     guide: 'Guide',
+    engagement: 'Engagement',
+    detailEngagement: 'Detail Engagement',
     permission: 'Permission',
     pagePermission: 'Page Permission',
     rolePermission: 'Role Permission',
