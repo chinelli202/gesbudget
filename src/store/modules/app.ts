@@ -43,27 +43,27 @@ class App extends VuexModule implements IAppState {
   public size = getSize() || 'medium'
   public tva = parseFloat(getTva());
   public devises : string[] = getDevises()
-  public typesEngagement : string[] = getTypesEngagement()
-  public naturesEngagement : string[] = getNaturesEngagement()
-  public etatsEngagement : string[] = getEtatsEngagement()
-  public statutsEngagement : string[] = getStatutsEngagement()
+  public typesEngagement = getTypesEngagement()
+  public naturesEngagement = getNaturesEngagement()
+  public etatsEngagement = getEtatsEngagement()
+  public statutsEngagement = getStatutsEngagement()
 
   @Action
   public async fetchEngagementVariables(){
     let response = await getVariables({ cle: 'DEVISE' });
-    this.SET_DEVISES(response.data);
+    this.SET_DEVISES(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
 
     response = await getVariables({ cle: 'TYPE_ENGAGEMENT' });
-    this.SET_TYPES_ENGAGEMENT(response.data);
+    this.SET_TYPES_ENGAGEMENT(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
 
     response = await getVariables({ cle: 'NATURE_ENGAGEMENT' });
-    this.SET_NATURES_ENGAGEMENT(response.data);
+    this.SET_NATURES_ENGAGEMENT(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
 
     response = await getVariables({ cle: 'ETAT_ENGAGEMENT' });
-    this.SET_ETATS_ENGAGEMENT(response.data);
+    this.SET_ETATS_ENGAGEMENT(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
 
     response = await getVariables({ cle: 'STATUT_ENGAGEMENT' });
-    this.SET_STATUTS_ENGAGEMENT(response.data);
+    this.SET_STATUTS_ENGAGEMENT(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
 
     response = await getVariables({ cle: 'CONSTANTE', code: 'TVA' });
     this.SET_TVA(parseFloat(response.data[0].valeur));
