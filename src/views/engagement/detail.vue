@@ -122,7 +122,7 @@
                 </el-row>
                 <el-row :gutter="10">
                   <el-col :span="3" :offset="3">Saisi par </el-col>
-                  <el-col :span="15">{{engagement.saisisseur_name}}</el-col>
+                  <el-col :span="15">{{ (isCurrentUserSaisisseur) ? "Vous même" : engagement.saisisseur_name }}</el-col>
                 </el-row>
               </el-form-item>
               <el-form-item class="notes">
@@ -170,6 +170,7 @@
       {{ permissionCodes.engagement.SAISI }}<br>
       hasPermission {{ hasPermission("profile-read") }}<br>
       hasnotPermission {{ hasnotPermission("profile-read") }}<br>
+      {{saisisseur_label}}
     </div>
   </div>
 </template>
@@ -201,6 +202,7 @@ export default class extends Vue {
   private typeOptions = {}
   private tva: number = 0
   private fallbackUrl = { path: '/'}
+  private isCurrentUserSaisisseur = false
 
   private submitDisabled = true;
   private validerpDisabled = true;
@@ -211,7 +213,9 @@ export default class extends Vue {
   private permissionCodes = {}
   private engagement = {
     montant_ht: 0,
-    montant_ttc: 0
+    montant_ttc: 0,
+    saisisseur: '',
+    saisisseur_name: ''
   }
   private rules = {
           montant_ttc: [
@@ -235,6 +239,8 @@ export default class extends Vue {
     this.deviseOptions = AppModule.devises;
     this.typeOptions = AppModule.typesEngagement;
     this.tva = AppModule.tva;
+    this.isCurrentUserSaisisseur = UserModule.matricule == this.engagement.saisisseur
+    // this.saisisseur_label = UserModule.matricule;
 
     this.listLoading = false
   }
