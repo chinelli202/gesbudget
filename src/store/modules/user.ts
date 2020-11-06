@@ -1,13 +1,15 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
 import { login, logout, getUserInfo } from '@/api/users'
 import { getToken, setToken, removeToken } from '@/utils/cookies'
-import { removeAllEngagementVariables, setPermissions
-        , setRoles, getRoles, getPermissions, getFirstNameUtilisateur, getLastNameUtilisateur
-        , getNameUtilisateur, getMatriculeUtilisateur , getDivisionUtilisateur, getFonctionUtilisateur
-        , getSaisisseurUtilisateur, getValideurUtilisateur, getStatutUtilisateur
-        , getEmailUtilisateur, setFirstNameUtilisateur, setLastNameUtilisateur, setNameUtilisateur
-        , setMatriculeUtilisateur, setDivisionUtilisateur, setFonctionUtilisateur, setSaisisseurUtilisateur
-        , setValideurUtilisateur, setStatutUtilisateur, setEmailUtilisateur, setStatutsEngagement } from '@/utils/localdb'
+import {
+  removeAllEngagementVariables, setPermissions
+  , setRoles, getRoles, getPermissions, getFirstNameUtilisateur, getLastNameUtilisateur
+  , getNameUtilisateur, getMatriculeUtilisateur, getDivisionUtilisateur, getFonctionUtilisateur
+  , getSaisisseurUtilisateur, getValideurUtilisateur, getStatutUtilisateur
+  , setFirstNameUtilisateur, setLastNameUtilisateur, setNameUtilisateur
+  , setMatriculeUtilisateur, setDivisionUtilisateur, setFonctionUtilisateur, setSaisisseurUtilisateur
+  , setValideurUtilisateur, setStatutUtilisateur, setEmailUtilisateur
+} from '@/utils/localdb'
 import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
 import { TagsViewModule } from './tags-view'

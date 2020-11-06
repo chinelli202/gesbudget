@@ -89,22 +89,22 @@ export const setStatutsEngagement = (statutsEngagement: string[]) => localStorag
 export const removeStatutsEngagement = () => localStorage.removeItem(statutsEngagementKey)
 
 export const removeAllEngagementVariables = () => {
-    removeFirstNameUtilisateur();
-    removeLastNameUtilisateur();
-    removeNameUtilisateur();
-    removeMatriculeUtilisateur();
-    removeDivisionUtilisateur();
-    removeFonctionUtilisateur();
-    removeSaisisseurUtilisateur();
-    removeValideurUtilisateur();
-    removeStatutUtilisateur();
-    removeEmailUtilisateur();
-    removeRoles();
-    removePermissions();
-    removeTva();
-    removeDevises();
-    removeTypesEngagement();
-    removeNaturesEngagement();
-    removeEtatsEngagement();
-    removeStatutsEngagement();
+  removeFirstNameUtilisateur()
+  removeLastNameUtilisateur()
+  removeNameUtilisateur()
+  removeMatriculeUtilisateur()
+  removeDivisionUtilisateur()
+  removeFonctionUtilisateur()
+  removeSaisisseurUtilisateur()
+  removeValideurUtilisateur()
+  removeStatutUtilisateur()
+  removeEmailUtilisateur()
+  removeRoles()
+  removePermissions()
+  removeTva()
+  removeDevises()
+  removeTypesEngagement()
+  removeNaturesEngagement()
+  removeEtatsEngagement()
+  removeStatutsEngagement()
 }

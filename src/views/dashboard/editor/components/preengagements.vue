@@ -1,107 +1,111 @@
 <template>
-<div>
-  <h1> <el-link href="engagement">Initiations</el-link> </h1>
-   <el-table
-    :data="initiatedEngagements"
-    height="700"
-    v-loading="listLoading"
-    style="width: 100%"
-  >
-    <el-table-column
-      fixed
-      prop="id"
-      label="ID"
-      width="50"
-    >    
-    </el-table-column>
-    <el-table-column
-      fixed
-      prop="created_at"
-      :formatter="dateFormatter"
-      label="Date"
-      width="130"
+  <div>
+    <h1>
+      <el-link href="engagement">
+        Initiations
+      </el-link>
+    </h1>
+    <el-table
+      v-loading="listLoading"
+      :data="initiatedEngagements"
+      height="700"
+      style="width: 100%"
     >
-    </el-table-column>
-    <el-table-column
-      fixed
-      prop="code"
-      label="Code"
-      width="170"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="libelle"
-      label="Libellé"
-      width="250"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="statut"
-      label="Statut"
-      width="75"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="montant_ht" 
-      :formatter="numFormatter"
-      label="Montant HT"
-      width="150"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="montant_ttc"
-      :formatter="numFormatter"
-      label="Montant TTC"
-      width="150"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="devise"
-      label="Devise"
-      width="75"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="nature"
-      label="Nature"
-      width="75"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="type"
-      label="Type"
-      width="75"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="etat"
-      label="Etat"
-      width="75"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="saisisseur"
-      label="Saisi par"
-      width="100"
-    >
-    </el-table-column>
-    <el-table-column
-      fixed="right"
-      label="Opérations"
-      width="120"
-    >
-      <template slot-scope="scope">
-        <el-button 
-          @click="detail(scope.$index, scope.row)"
-          icon="el-icon-edit-outline"
-          size="small"
-        >
-          Detail
-        </el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-</div>
+      <el-table-column
+        fixed
+        prop="id"
+        label="ID"
+        width="50"
+      >
+      </el-table-column>
+      <el-table-column
+        fixed
+        prop="created_at"
+        :formatter="dateFormatter"
+        label="Date"
+        width="130"
+      >
+      </el-table-column>
+      <el-table-column
+        fixed
+        prop="code"
+        label="Code"
+        width="170"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="libelle"
+        label="Libellé"
+        width="250"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="statut"
+        label="Statut"
+        width="75"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="montant_ht"
+        :formatter="numFormatter"
+        label="Montant HT"
+        width="150"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="montant_ttc"
+        :formatter="numFormatter"
+        label="Montant TTC"
+        width="150"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="devise"
+        label="Devise"
+        width="75"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="nature"
+        label="Nature"
+        width="75"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="type"
+        label="Type"
+        width="75"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="etat"
+        label="Etat"
+        width="75"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="saisisseur"
+        label="Saisi par"
+        width="100"
+      >
+      </el-table-column>
+      <el-table-column
+        fixed="right"
+        label="Opérations"
+        width="120"
+      >
+        <template slot-scope="scope">
+          <el-button
+            @click="detail(scope.$index, scope.row)"
+            icon="el-icon-edit-outline"
+            size="small"
+          >
+            Detail
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
 <script lang="ts">
@@ -112,42 +116,42 @@ import { IEngagementData } from '@/api/types'
 @Component({
   name: 'PreEngagements',
   components: {
-  },
+  }
 })
 
-export default class PreEngagements extends Vue{
+export default class PreEngagements extends Vue {
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
 
-  created(){
-    this.getInitiatedEngagements();
+  created() {
+    this.getInitiatedEngagements()
   }
 
-  detail(value, engagement) {
-    //console.log('click', value, engagement.id);
-    this.$router.push({name: 'DetailEngagement', params: {id : engagement.id}});
+  detail(value: any, engagement: any) {
+    this.$router.push({ name: 'DetailEngagement', params: { id: engagement.id } })
   }
 
-  deleteRow(index, rows) {
-    rows.splice(index, 1);
+  deleteRow(index: any, rows: any) {
+    rows.splice(index, 1)
   }
-  
-  numFormatter(value, row, column){
+
+  numFormatter(value: any, row: any, column: any) {
     return column.toLocaleString()
   }
 
-  dateFormatter(value, row, column){
-    let current_datetime = new Date(column)
-    let formatted_date = current_datetime.getDate()
-      + "/" + (current_datetime.getMonth() + 1) 
-      + "/" + current_datetime.getFullYear()
-      + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes()
-    return formatted_date;
+  dateFormatter(value: any, row: any, column: any) {
+    const currentDatetime = new Date(column)
+    const formattedDate = currentDatetime.getDate() +
+      '/' + (currentDatetime.getMonth() + 1) +
+      '/' + currentDatetime.getFullYear() +
+      ' ' + currentDatetime.getHours() + ':' + currentDatetime.getMinutes()
+    return formattedDate
   }
-  private async getInitiatedEngagements(){
-    this.listLoading = true;
-    const { data } = await getEngagements({ etat: 'INIT' });
-    this.initiatedEngagements = data;
+
+  private async getInitiatedEngagements() {
+    this.listLoading = true
+    const { data } = await getEngagements({ etat: 'INIT' })
+    this.initiatedEngagements = data
     this.listLoading = false
   }
 
@@ -209,4 +213,5 @@ export default class PreEngagements extends Vue{
   //   }
   // }
 }
+
 </script>

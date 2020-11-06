@@ -1,14 +1,17 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
-import { getSidebarStatus, getSize
-      , setSidebarStatus, setLanguage, setSize } from '@/utils/cookies'
-import { setDevises, setEtatsEngagement, setNaturesEngagement
-      , setStatutsEngagement, setTva, setTypesEngagement, getTva
-      , getDevises, getTypesEngagement, getNaturesEngagement
-      , getEtatsEngagement, getStatutsEngagement } from '@/utils/localdb'
+import {
+  getSidebarStatus, getSize
+  , setSidebarStatus, setLanguage, setSize
+} from '@/utils/cookies'
+import {
+  setDevises, setEtatsEngagement, setNaturesEngagement
+  , setStatutsEngagement, setTva, setTypesEngagement, getTva
+  , getDevises, getTypesEngagement, getNaturesEngagement
+  , getEtatsEngagement, getStatutsEngagement
+} from '@/utils/localdb'
 import { getVariables } from '@/api/variables'
 import { getLocale } from '@/lang'
 import store from '@/store'
-import { mapGetters } from 'vuex'
 
 export enum DeviceType {
   Mobile,
@@ -49,24 +52,39 @@ class App extends VuexModule implements IAppState {
   public statutsEngagement = getStatutsEngagement()
 
   @Action
-  public async fetchEngagementVariables(){
-    let response = await getVariables({ cle: 'DEVISE' });
-    this.SET_DEVISES(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
+  public async fetchEngagementVariables() {
+    let response = await getVariables({ cle: 'DEVISE' })
+    this.SET_DEVISES(response.data.reduce(function(all: any, obj: any) {
+      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      return all
+    }, {}))
 
-    response = await getVariables({ cle: 'TYPE_ENGAGEMENT' });
-    this.SET_TYPES_ENGAGEMENT(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
+    response = await getVariables({ cle: 'TYPE_ENGAGEMENT' })
+    this.SET_TYPES_ENGAGEMENT(response.data.reduce(function(all: any, obj: any) {
+      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      return all
+    }, {}))
 
-    response = await getVariables({ cle: 'NATURE_ENGAGEMENT' });
-    this.SET_NATURES_ENGAGEMENT(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
+    response = await getVariables({ cle: 'NATURE_ENGAGEMENT' })
+    this.SET_NATURES_ENGAGEMENT(response.data.reduce(function(all: any, obj: any) {
+      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      return all
+    }, {}))
 
-    response = await getVariables({ cle: 'ETAT_ENGAGEMENT' });
-    this.SET_ETATS_ENGAGEMENT(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
+    response = await getVariables({ cle: 'ETAT_ENGAGEMENT' })
+    this.SET_ETATS_ENGAGEMENT(response.data.reduce(function(all: any, obj: any) {
+      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      return all
+    }, {}))
 
-    response = await getVariables({ cle: 'STATUT_ENGAGEMENT' });
-    this.SET_STATUTS_ENGAGEMENT(response.data.reduce(function(all, obj){ all[obj.code] = obj.libelle; return all }, {}));
+    response = await getVariables({ cle: 'STATUT_ENGAGEMENT' })
+    this.SET_STATUTS_ENGAGEMENT(response.data.reduce(function(all: any, obj: any) {
+      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      return all
+    }, {}))
 
-    response = await getVariables({ cle: 'CONSTANTE', code: 'TVA' });
-    this.SET_TVA(parseFloat(response.data[0].valeur));
+    response = await getVariables({ cle: 'CONSTANTE', code: 'TVA' })
+    this.SET_TVA(parseFloat(response.data[0].valeur))
   }
 
   @Mutation
@@ -104,11 +122,10 @@ class App extends VuexModule implements IAppState {
     setSize(this.size)
   }
 
-
   @Mutation
   private SET_TVA(tva: number) {
     this.tva = tva
-    setTva(''+this.tva);
+    setTva('' + this.tva)
   }
 
   @Mutation
