@@ -202,6 +202,17 @@
                   </el-col>
                 </el-row>
               </el-form-item>
+              <el-form-item
+                v-if="isResendUpdate"
+                label="Ajouter un commentaire"
+              >
+                <el-input
+                  v-model="engagement.commentaire"
+                  type="textarea"
+                  prop="commentaire"
+                  :rows="3"
+                />
+              </el-form-item>
               <el-form-item class="notes">
                 <el-row
                   type="flex"
@@ -217,6 +228,14 @@
                       type="primary"
                       :disabled="submitUpdateDisabled"
                       @click="updateSubmit"
+                    >
+                      Mettre à jour
+                    </el-button>
+                    <el-button
+                      v-if="isResendUpdate"
+                      type="primary"
+                      :disabled="resendUpdateDisabled"
+                      @click="resendUpdate"
                     >
                       Mettre à jour
                     </el-button>
@@ -260,6 +279,21 @@
                     </el-button>
                   </el-col>
                 </el-row>
+              </el-form-item>
+            </el-form>
+            <el-form
+              v-if="isResendUpdate"
+              ref="sectionUpdateForm"
+              :model="sectionUpdateForm"
+              :rules="rulesSectionUpdateForm"
+            >
+              <el-form-item label="Ajouter un commentaire">
+                <el-input
+                  v-model="sectionUpdateForm.commentaire"
+                  type="textarea"
+                  prop="commentaire"
+                  :rows="3"
+                />
               </el-form-item>
             </el-form>
           </el-main>
@@ -386,7 +420,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { detailEngagement, updateEngagement, validerpPreEngagement } from '@/api/engagements'
+import { detailEngagement, updateEngagement, validerpPreEngagement, resendUpdateEngagement } from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
@@ -415,11 +449,14 @@ export default class extends Vue {
   private isCurrentUserValideurf = false
 
   private submitUpdateDisabled = true;
+  private resendUpdateDisabled = true;
   private validerpDisabled = true;
   private validersDisabled = true;
   private validerfDisabled = true;
 
   private isbtnUpdate = false; // Display 'Mettre à jour' button, when the current user is the owner of the engagement. In other for him to update.
+  private isResendUpdate = false; /* Display 'Mettre à jour' section, when the current user is the owner of the engagement.
+    and his/her superior has sent back the engagement (with comments) for update. In other for him to update. */
   private isbtnValiderp = false; // Display 'ValiderP' button, for the first level of validation
   private isbtnValiders = false; // Display 'ValiderS' button, for the second level of validation
   private isbtnValiderf = false; // Display 'ValiderF' button, for the final level of validation
@@ -428,7 +465,7 @@ export default class extends Vue {
   private isbtnRestaurer = false; // Display 'Restaurer le pré-engagement' button to restore closed pre-engagement
   private isbtnRenvoyer = false; // Display 'Renvoyer' button, for the n+1th user to send back the engagement to the nth user with some comment
   private isbtnOptionsAnnuler = false; /** Display a 'Je veux annuler ma validation' button associated with a dialog box : when the nth user want to
-   cancel the validation he/she has done but the n+1th user has already proceed to a n+1's validation. */
+    cancel the validation he/she has done but the n+1th user has already proceed to a n+1's validation. */
   private isbtnAnnulerValider = false; // Display 'Annuler Validation' button to cancel a validation.
   private isbtnPlusDactions = false; // Display a 'Plus d'actions...' button for the user to have some actions like writing only a comment and others.
   private isbtnImputer = false; // Display 'Imputer' button for engagement imputation
@@ -454,10 +491,12 @@ export default class extends Vue {
     saisisseur: '',
     saisisseur_name: '',
     statut: '',
+    next_statut: '',
     etat: '',
     valideur_first: '',
     valideur_second: '',
-    valideur_final: ''
+    valideur_final: '',
+    commentaire: ''
   }
 
   private rules = {
@@ -561,27 +600,42 @@ export default class extends Vue {
         } else {
           // The current user is the one who initiated the engagement
 
-          if (this.engagement.valideur_first === '' && this.engagement.valideur_second === '' && this.engagement.valideur_final === '') {
-            /** The engagement has not yet been validated by one of current user superiors.
-            * So, he/she :
-            * 1- can still edit the engagement. With the 'Mettre à jour' button
-            * 2- can also close the engagement. Withe the 'Cloturer' button
-            * 3- the 'Plus d'actions...' button if he/she wants to add a comment
-            */
-
-            this.isbtnUpdate = true
+          if (this.engagement.next_statut === 'INIT') {
+            /** The engagement has been sent back by the current user superior.
+             * He/She needs to correct the engagement and re-submit it for the superior to validate.
+             * So he/she will needs :
+             * 1- to edit and resend the engagement to his superior. With the 'Mettre à jour' secion
+             * 2- also to close the engagement. Withe the 'Cloturer' button
+             * 3- the 'Plus d'actions...' button if he/she wants to add a comment
+             */
+            this.isResendUpdate = true
             this.isbtnClose = true
             this.isbtnPlusDactions = true
           } else {
-            /* The engagement has already been validated by one of current user superiors. So, he/she can no more edit the engagement.
-            So we'll give him/her :
-             1- the 'Ok' button
-             2- the 'Je veux annuler ma validation' button, which will display a message on how to proceed for annulation in this particular scenario.
-              It'll be handled off system.
-             3- the 'Plus d'actions...' button if he/she wants to add a comment */
+            // The engagement has not been sent back by the current user superior.
 
-            this.isbtnOk = true
-            this.isbtnPlusDactions = true
+            if (this.engagement.valideur_first === '' && this.engagement.valideur_second === '' && this.engagement.valideur_final === '') {
+              /** The engagement has not yet been validated by one of current user superiors
+              * So, he/she :
+              * 1- can still edit the engagement. With the 'Mettre à jour' button
+              * 2- can also close the engagement. Withe the 'Cloturer' button
+              * 3- the 'Plus d'actions...' button if he/she wants to add a comment
+              */
+
+              this.isbtnUpdate = true
+              this.isbtnClose = true
+              this.isbtnPlusDactions = true
+            } else {
+              /* The engagement has already been validated by one of current user superiors. So, he/she can no more edit the engagement.
+              So we'll give him/her :
+               1- the 'Ok' button
+               2- the 'Je veux annuler ma validation' button, which will display a message on how to proceed for annulation in this particular scenario.
+                It'll be handled off system.
+               3- the 'Plus d'actions...' button if he/she wants to add a comment */
+
+              this.isbtnOk = true
+              this.isbtnPlusDactions = true
+            }
           }
         }
       } else if (this.engagement.statut === AppModule.statutsEngagement.VALIDP.code) {
@@ -730,6 +784,7 @@ export default class extends Vue {
 
   private formAttributeChange() {
     this.submitUpdateDisabled = false
+    this.resendUpdateDisabled = false
     this.validerpDisabled = false
     this.validersDisabled = false
     this.validerfDisabled = false
@@ -737,6 +792,11 @@ export default class extends Vue {
 
   private async updateSubmit() {
     const response = await updateEngagement(this.engagement)
+    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+  }
+
+  private async resendUpdate() {
+    const response = await resendUpdateEngagement(this.engagement)
     window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
   }
 
