@@ -21,8 +21,7 @@
                 <el-input
                   v-model="engagement.code"
                   :disabled="true"
-                >
-                </el-input>
+                />
               </el-form-item>
 
               <el-form-item label="Libellé">
@@ -31,8 +30,7 @@
                   type="textarea"
                   :rows="2"
                   @change="formAttributeChange"
-                >
-                </el-input>
+                />
               </el-form-item>
               <el-form-item label="Montant HT">
                 <el-row :gutter="10">
@@ -55,8 +53,7 @@
                     <el-input
                       v-model="engagement.montant_ht"
                       @change="changeMontantHT"
-                    >
-                    </el-input>
+                    />
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -70,8 +67,7 @@
                     <el-input
                       v-model="engagement.montant_ttc"
                       :disabled="true"
-                    >
-                    </el-input>
+                    />
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -135,8 +131,7 @@
                     <el-input
                       v-model="engagement.nature_libelle"
                       :disabled="true"
-                    >
-                    </el-input>
+                    />
                   </el-col>
                   <el-col
                     :span="10"
@@ -145,8 +140,7 @@
                     <el-input
                       v-model="engagement.etat_libelle"
                       :disabled="true"
-                    >
-                    </el-input>
+                    />
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -330,23 +324,23 @@
       </el-card>
 
       <el-dialog
+        v-loading="true"
         title="Actions supplémentaires"
         :visible.sync="plusDactionsDialogVisible"
         width="30%"
-        v-loading="true"
       >
-        <el-form ref="plusDactionsForm"
+        <el-form
+          ref="plusDactionsForm"
           :model="plusDactionsForm"
           :rules="rulesPlusDactionsForm"
         >
           <el-form-item label="Ajouter un commentaire">
-            <el-input 
+            <el-input
               v-model="plusDactionsForm.commentaire"
               type="textarea"
               prop="commentaire"
               :rows="3"
-            >
-            </el-input>
+            />
           </el-form-item>
           <el-form-item>
             <el-button
@@ -373,7 +367,7 @@
       {{ permissionCodes.engagement.enregistrer.SAISI }}<br>
       hasPermission {{ hasPermission("profile-read") }}<br>
       hasnotPermission {{ hasnotPermission("profile-read") }}<br><br>
-      isbtnUpdate : {{ isbtnUpdate }}<br />
+      isbtnUpdate : {{ isbtnUpdate }}<br>
       isbtnValiderp : {{ isbtnValiderp }}<br>
       isbtnValiders : {{ isbtnValiders }}<br>
       isbtnValiderf : {{ isbtnValiderf }}<br>
@@ -441,11 +435,12 @@ export default class extends Vue {
 
   private plusDactionsDialogVisible = false
   private plusDactionsForm = {
-    commentaire : '',
+    commentaire: '',
     used: false
   }
+
   private rulesPlusDactionsForm = {
-    commentaire : [
+    commentaire: [
       { required: true, message: 'Veuillez saisir un commentaire.', trigger: 'blur' }
     ]
   }
@@ -496,40 +491,41 @@ export default class extends Vue {
     this.listLoading = false
   }
 
-  private renvoyerSubmit(){
+  private renvoyerSubmit() {
     console.log("Renvoyer l'engagement code:", this.engagement.code)
     this.plusDactionsDialogVisible = false
   }
 
-  private sendComment(){
-    this.$refs['plusDactionsForm'].validate((valid: any) => {
+  private sendComment() {
+    this.$refs.plusDactionsForm.validate((valid: any) => {
       if (valid) {
-        console.log("valid ", valid)
+        console.log('valid ', valid)
         console.log(
-          "Envoyer le commentaire " + this.plusDactionsForm.commentaire +
-          " pour l'engagement code : " + this.engagement.code +
-          " par le user " + UserModule.matricule
+          'Envoyer le commentaire ' + this.plusDactionsForm.commentaire +
+          ' pour l\'engagement code : ' + this.engagement.code +
+          ' par le user ' + UserModule.matricule
         )
         this.plusDactionsForm.commentaire = ''
         this.plusDactionsForm.used = true
       } else {
-        console.log('error submit!!');
-        return false;
+        console.log('error submit!!')
+        return false
       }
-    });
+    })
   }
 
-  private commentaireSubmit(){
+  private commentaireSubmit() {
     if (!this.plusDactionsForm.used) {
-      this.sendComment();
+      this.sendComment()
     } else {
       this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter celui-ci ce nouveau commentaire ?')
         .then(_ => {
-          this.sendComment();
+          this.sendComment()
         })
-        .catch(_ => {});
+        .catch(error => {
+          console.log('Error comment submit confirmation', error)
+        })
     }
-    
     this.plusDactionsDialogVisible = false
   }
 

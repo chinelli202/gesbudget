@@ -15,9 +15,7 @@
         <PreEngagements />
       </div>
     </div>
-    <div>
-      
-    </div>
+    <div />
   </div>
 </template>
 
@@ -33,7 +31,6 @@ import PreEngagements from './components/preengagements'
   }
 })
 export default class extends Vue {
-  
   get name() {
     return UserModule.name
   }

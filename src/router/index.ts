@@ -132,7 +132,7 @@ export const constantRoutes: RouteConfig[] = [
       },
       {
         path: 'list',
-        component: Layout, //() => import(/* webpackChunkName: "example-list" */ '@/views/example/list.vue'),
+        component: Layout, // () => import(/* webpackChunkName: "example-list" */ '@/views/example/list.vue'),
         name: 'EngagementList',
         redirect: '/dashboard',
         meta: {

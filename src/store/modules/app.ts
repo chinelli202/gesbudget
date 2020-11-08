@@ -55,31 +55,31 @@ class App extends VuexModule implements IAppState {
   public async fetchEngagementVariables() {
     let response = await getVariables({ cle: 'DEVISE' })
     this.SET_DEVISES(response.data.reduce(function(all: any, obj: any) {
-      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
     }, {}))
 
     response = await getVariables({ cle: 'TYPE_ENGAGEMENT' })
     this.SET_TYPES_ENGAGEMENT(response.data.reduce(function(all: any, obj: any) {
-      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
     }, {}))
 
     response = await getVariables({ cle: 'NATURE_ENGAGEMENT' })
     this.SET_NATURES_ENGAGEMENT(response.data.reduce(function(all: any, obj: any) {
-      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
     }, {}))
 
     response = await getVariables({ cle: 'ETAT_ENGAGEMENT' })
     this.SET_ETATS_ENGAGEMENT(response.data.reduce(function(all: any, obj: any) {
-      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
     }, {}))
 
     response = await getVariables({ cle: 'STATUT_ENGAGEMENT' })
     this.SET_STATUTS_ENGAGEMENT(response.data.reduce(function(all: any, obj: any) {
-      all[obj.code] = { code : obj.code, libelle: obj.libelle }
+      all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
     }, {}))
 

@@ -198,8 +198,7 @@ export default class extends Vue {
         this.loading = true
         UserModule.Login(this.loginForm)
           .then(() => {
-            AppModule.fetchEngagementVariables();
-            
+            AppModule.fetchEngagementVariables()
             this.$router.push({
               path: this.redirect || '/',
               query: this.otherQuery

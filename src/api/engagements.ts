@@ -15,18 +15,18 @@ export const defaultArticleData: IEngagementData = {
   type: '',
   etat: '',
   statut: '',
-  nb_imputations: 0, 
+  nb_imputations: 0,
   cumul_imputations: 0,
   nb_apurements: 0,
   cumul_apurements: 0,
   saisisseur: '',
-  valideur_first: '', 
+  valideur_first: '',
   valideur_second: '',
   valideur_final: '',
   source: ''
 }
 
-export const getEngagements = (params: any) => 
+export const getEngagements = (params: any) =>
   request({
     url: '/getengagements',
     method: 'get',
@@ -55,7 +55,7 @@ export const updateEngagement = (data: any) =>
     data
   })
 
-  export const validerpPreEngagement = (data: any) => 
+export const validerpPreEngagement = (data: any) =>
   request({
     url: `/validerp-pre-engagement/${data.id}`,
     method: 'post',
@@ -84,4 +84,3 @@ export const deleteArticle = (id: number) =>
     url: `/articles/${id}`,
     method: 'delete'
   })
-
