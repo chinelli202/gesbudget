@@ -145,7 +145,7 @@
                 </el-row>
               </el-form-item>
 
-              <el-form-item class="notes">
+              <el-form-item class="notes" style="line-height: 25px;">
                 <el-row :gutter="10">
                   <el-col
                     :span="6"
@@ -281,8 +281,6 @@
                 </el-row>
               </el-form-item>
             </el-form>
-          </el-main>
-          <el-footer>
             <el-row :gutter="10">
               <el-col
                 :span="6"
@@ -320,7 +318,6 @@
               <el-col
                 :span="6"
                 :offset="16"
-                style="text-align: right"
               >
                 <el-button
                   v-if="isbtnPlusDactions"
@@ -331,7 +328,7 @@
                 </el-button>
               </el-col>
             </el-row>
-          </el-footer>
+          </el-main>
         </el-container>
       </el-card>
 
@@ -339,7 +336,7 @@
         v-loading="true"
         title="Actions supplémentaires"
         :visible.sync="plusDactionsDialogVisible"
-        width="30%"
+        width="50%"
       >
         <el-form
           ref="plusDactionsForm"
@@ -349,6 +346,7 @@
           <el-form-item label="Ajouter un commentaire">
             <el-input
               v-model="plusDactionsForm.commentaire"
+              @input="commentFieldChange"
               type="textarea"
               prop="commentaire"
               :rows="3"
@@ -363,6 +361,7 @@
             <el-button
               type="info"
               @click="commentaireSubmit"
+              :disabled="sendCommentDisabled"
             >
               Envoyer un commentaire
             </el-button>
@@ -435,6 +434,7 @@ export default class extends Vue {
   private validerpDisabled = true;
   private validersDisabled = true;
   private validerfDisabled = true;
+  private sendCommentDisabled = true;
 
   private isbtnUpdate = false; // Display 'Mettre à jour' button, when the current user is the owner of the engagement. In other for him to update.
   private isbtnValiderp = false; // Display 'ValiderP' button, for the first level of validation
@@ -467,6 +467,7 @@ export default class extends Vue {
   private permissions : any[] = []
   private permissionCodes = {}
   private engagement = {
+    id: null,
     code: '',
     montant_ht: 0,
     montant_ttc: 0,
@@ -528,36 +529,31 @@ export default class extends Vue {
     this.plusDactionsDialogVisible = false
   }
 
-  private sendComment() {
-    this.$refs.plusDactionsForm.validate((valid: any) => {
-      if (valid) {
-        console.log(
-          'Envoyer le commentaire ' + this.plusDactionsForm.commentaire +
-          ' pour l\'engagement code : ' + this.engagement.code +
-          ' par le user ' + UserModule.matricule
-        )
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-      } else {
-        console.log('error submit!!')
-        return false
-      }
-    })
+  private async sendComment() {
+    if (!this.plusDactionsForm.commentaire || this.plusDactionsForm.commentaire === '') {
+      return false
+    }
+    const response = await addComment({id: this.engagement.id, comment: this.plusDactionsForm.commentaire})
+    this.plusDactionsForm.commentaire = ''
+    this.plusDactionsForm.used = true
   }
 
   private commentaireSubmit() {
     if (!this.plusDactionsForm.used) {
-      this.sendComment()
+      this.sendComment().then(() => {
+        this.plusDactionsDialogVisible = false
+      })
     } else {
-      this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter celui-ci ce nouveau commentaire ?')
+      this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter ce nouveau commentaire ?')
         .then(_ => {
-          this.sendComment()
+          this.sendComment().then(() => {
+            this.plusDactionsDialogVisible = false
+          })
         })
         .catch(error => {
           console.log('Error comment submit confirmation', error)
         })
     }
-    this.plusDactionsDialogVisible = false
   }
 
   private initializeButtons() {
@@ -780,6 +776,14 @@ export default class extends Vue {
     this.validerpDisabled = false
     this.validersDisabled = false
     this.validerfDisabled = false
+  }
+
+  private commentFieldChange() {
+    if(this.plusDactionsForm.commentaire && this.plusDactionsForm.commentaire !== '') {
+      this.sendCommentDisabled = false
+    } else {
+      this.sendCommentDisabled = true
+    }
   }
 
   private async updateSubmit() {

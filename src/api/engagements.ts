@@ -65,7 +65,8 @@ export const resendUpdateEngagement = (data: any) =>
     data
   })
 
-export const addComment = (data: any) =>
+export const addComment = (data: any) => {
+  console.log("data = ", data)
   request({
     url: `/engagement/addcomment/${data.id}`,
     method: 'post',
@@ -73,7 +74,7 @@ export const addComment = (data: any) =>
       Authorization: `Bearer ${getToken()}`
     },
     data
-  })
+  })}
 
 export const validerpPreEngagement = (data: any) =>
   request({
