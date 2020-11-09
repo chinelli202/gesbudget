@@ -342,6 +342,7 @@
                 :span="6"
                 :offset="1"
               >
+                >
                 <el-button
                   v-if="isbtnAnnulerValider"
                   type="text"
@@ -619,7 +620,15 @@ export default class extends Vue {
   }
 
   private closePreeng(){
-
+    this.$confirm('Voulez-vous vraiment clôturer cet engagement ?')
+      .then(_ => {
+        this.sendComment().then(() => {
+          this.plusDactionsDialogVisible = false
+        })
+      })
+      .catch(error => {
+        console.log('Error comment submit confirmation', error)
+      })
   }
 
   private initializeButtons() {
