@@ -281,21 +281,6 @@
                 </el-row>
               </el-form-item>
             </el-form>
-            <el-form
-              v-if="isResendUpdate"
-              ref="sectionUpdateForm"
-              :model="sectionUpdateForm"
-              :rules="rulesSectionUpdateForm"
-            >
-              <el-form-item label="Ajouter un commentaire">
-                <el-input
-                  v-model="sectionUpdateForm.commentaire"
-                  type="textarea"
-                  prop="commentaire"
-                  :rows="3"
-                />
-              </el-form-item>
-            </el-form>
           </el-main>
           <el-footer>
             <el-row :gutter="10">
@@ -344,13 +329,6 @@
                 >
                   Plus d'actions...
                 </el-button>
-                <el-button
-                  v-if="isbtnRenvoyer"
-                  type="text"
-                  @click="validerpSubmit"
-                >
-                  Renvoyer
-                </el-button>
               </el-col>
             </el-row>
           </el-footer>
@@ -391,7 +369,7 @@
             <el-button
               v-if="isbtnRenvoyer"
               type="primary"
-              @click="renvoyerSubmit"
+              @click="sendBackSubmit"
             >
               Renvoyer l'engagement
             </el-button>
@@ -420,7 +398,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { detailEngagement, updateEngagement, validerpPreEngagement, resendUpdateEngagement } from '@/api/engagements'
+import {
+  detailEngagement
+  , updateEngagement, validerpPreEngagement, resendUpdateEngagement
+  , addComment
+} from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
@@ -455,8 +437,6 @@ export default class extends Vue {
   private validerfDisabled = true;
 
   private isbtnUpdate = false; // Display 'Mettre à jour' button, when the current user is the owner of the engagement. In other for him to update.
-  private isResendUpdate = false; /* Display 'Mettre à jour' section, when the current user is the owner of the engagement.
-    and his/her superior has sent back the engagement (with comments) for update. In other for him to update. */
   private isbtnValiderp = false; // Display 'ValiderP' button, for the first level of validation
   private isbtnValiders = false; // Display 'ValiderS' button, for the second level of validation
   private isbtnValiderf = false; // Display 'ValiderF' button, for the final level of validation
@@ -464,6 +444,8 @@ export default class extends Vue {
   private isbtnClose = false; // Display 'Clôturer le pré-engagement' button to close the pre-engagement
   private isbtnRestaurer = false; // Display 'Restaurer le pré-engagement' button to restore closed pre-engagement
   private isbtnRenvoyer = false; // Display 'Renvoyer' button, for the n+1th user to send back the engagement to the nth user with some comment
+  private isResendUpdate = false; /* Display 'Mettre à jour' section, when the current user is the owner of the engagement.
+    and his/her superior has sent back the engagement (with comments) for update. In other for him to update. */
   private isbtnOptionsAnnuler = false; /** Display a 'Je veux annuler ma validation' button associated with a dialog box : when the nth user want to
     cancel the validation he/she has done but the n+1th user has already proceed to a n+1's validation. */
   private isbtnAnnulerValider = false; // Display 'Annuler Validation' button to cancel a validation.
@@ -530,15 +512,25 @@ export default class extends Vue {
     this.listLoading = false
   }
 
-  private renvoyerSubmit() {
+  private sendBackSubmit() {
     console.log("Renvoyer l'engagement code:", this.engagement.code)
+
+    this.$refs.plusDactionsForm.validate((valid: any) => {
+      if (valid) {
+        this.engagement.commentaire = this.plusDactionsForm.commentaire
+        this.plusDactionsForm.commentaire = ''
+        this.plusDactionsForm.used = true
+      } else {
+        console.log('error submit!!')
+        return false
+      }
+    })
     this.plusDactionsDialogVisible = false
   }
 
   private sendComment() {
     this.$refs.plusDactionsForm.validate((valid: any) => {
       if (valid) {
-        console.log('valid ', valid)
         console.log(
           'Envoyer le commentaire ' + this.plusDactionsForm.commentaire +
           ' pour l\'engagement code : ' + this.engagement.code +
