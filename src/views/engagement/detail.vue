@@ -30,6 +30,7 @@
                   type="textarea"
                   :rows="2"
                   @change="formAttributeChange"
+                  :disabled="!isbtnUpdate && !isResendUpdate"
                 />
               </el-form-item>
               <el-form-item label="Montant HT">
@@ -39,6 +40,7 @@
                       <el-select
                         v-model="engagement.devise"
                         placeholder="Devise"
+                        :disabled="!isbtnUpdate && !isResendUpdate"
                       >
                         <el-option
                           v-for="(obj) in deviseOptions"
@@ -52,7 +54,8 @@
                   <el-col :span="20">
                     <el-input
                       v-model="engagement.montant_ht"
-                      @change="changeMontantHT"
+                      @input="changeMontantHT"
+                      :disabled="!isbtnUpdate && !isResendUpdate"
                     />
                   </el-col>
                 </el-row>
@@ -80,13 +83,20 @@
                     <span class="span-label">Type
                     </span>
                   </el-col>
+                  <el-col
+                    :span="10"
+                    :offset="1"
+                  >
+                    <span class="span-label">Statut
+                    </span>
+                  </el-col>
                 </el-row>
                 <el-row :gutter="10">
                   <el-col
                     :span="10"
                     :offset="3"
                   >
-                    <el-select
+                    <el-select v-if="isbtnUpdate || isResendUpdate"
                       v-model="engagement.type"
                       placeholder="Type"
                       class="type-select"
@@ -102,6 +112,19 @@
                         <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
                       </el-option>
                     </el-select>
+                    <el-input v-else
+                      v-model="engagement.type_libelle"
+                      :disabled="true"
+                    />
+                  </el-col>
+                  <el-col
+                    :span="10"
+                    :offset="1"
+                  >
+                    <el-input
+                      v-model="engagement.statut_libelle"
+                      :disabled="true"
+                    />
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -128,7 +151,27 @@
                     :span="10"
                     :offset="3"
                   >
-                    <el-input
+                    <!-- <el-input
+                      v-model="engagement.nature_libelle"
+                      :disabled="true"
+                    /> -->
+                    <el-select v-if="isbtnUpdate || isResendUpdate"
+                      v-model="engagement.nature"
+                      placeholder="Nature"
+                      class="type-select"
+                      @change="formAttributeChange"
+                    >
+                      <el-option
+                        v-for="(obj) in natureOptions"
+                        :key="obj.code"
+                        :label="obj.libelle"
+                        :value="obj.code"
+                      >
+                        <span style="float: left">{{ obj.libelle }}</span>
+                        <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
+                      </el-option>
+                    </el-select>
+                    <el-input v-else
                       v-model="engagement.nature_libelle"
                       :disabled="true"
                     />
@@ -137,6 +180,10 @@
                     :span="10"
                     :offset="1"
                   >
+                    <!-- <el-input
+                      v-model="engagement.etat_libelle"
+                      :disabled="true"
+                    /> -->
                     <el-input
                       v-model="engagement.etat_libelle"
                       :disabled="true"
@@ -168,7 +215,10 @@
                     {{ (isCurrentUserSaisisseur) ? "Vous même" : engagement.saisisseur_name }}
                   </el-col>
                 </el-row>
-                <el-row :gutter="10">
+                <el-row
+                  v-if="engagement.valideur_first && engagement.valideur_first !== ''"
+                  :gutter="10"
+                >
                   <el-col
                     :span="6"
                     :offset="3"
@@ -176,10 +226,13 @@
                     Validation 1ère par
                   </el-col>
                   <el-col :span="15">
-                    {{ "TODO" }}
+                    {{ engagement.valideurp_name }}
                   </el-col>
                 </el-row>
-                <el-row :gutter="10">
+                <el-row
+                  v-if="engagement.valideur_second && engagement.valideur_second !== ''"
+                  :gutter="10"
+                >
                   <el-col
                     :span="6"
                     :offset="3"
@@ -187,10 +240,13 @@
                     Validation 2nde par
                   </el-col>
                   <el-col :span="15">
-                    {{ "TODO" }}
+                    {{ engagement.valideurs_name }}
                   </el-col>
                 </el-row>
-                <el-row :gutter="10">
+                <el-row
+                  v-if="engagement.valideur_final && engagement.valideur_final !== ''"
+                  :gutter="10"
+                >
                   <el-col
                     :span="6"
                     :offset="3"
@@ -198,7 +254,7 @@
                     Validation finale par
                   </el-col>
                   <el-col :span="15">
-                    {{ "TODO" }}
+                    {{ engagement.valideurf_name }}
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -303,7 +359,7 @@
                 <el-button
                   v-if="isbtnClose"
                   type="text"
-                  @click="cloturerPreg"
+                  @click="closePreeng"
                 >
                   Clôturer le pré-engagement
                 </el-button>
@@ -317,7 +373,7 @@
               </el-col>
               <el-col
                 :span="6"
-                :offset="16"
+                :offset="9"
               >
                 <el-button
                   v-if="isbtnPlusDactions"
@@ -421,6 +477,9 @@ export default class extends Vue {
   private listLoading = true
   private deviseOptions = {}
   private typeOptions = {}
+  private natureOptions = {}
+  private etatOptions = {}
+  private statutOptions = {}
   private tva = 0
   private fallbackUrl = { path: '/' }
 
@@ -502,6 +561,9 @@ export default class extends Vue {
     this.engagement = response.data
     this.deviseOptions = AppModule.devises
     this.typeOptions = AppModule.typesEngagement
+    this.natureOptions = AppModule.naturesEngagement
+    this.etatOptions = AppModule.etatsEngagement
+    this.statutOptions = AppModule.statutsEngagement
     this.tva = AppModule.tva
 
     this.isCurrentUserSaisisseur = UserModule.matricule === this.engagement.saisisseur
@@ -556,6 +618,10 @@ export default class extends Vue {
     }
   }
 
+  private closePreeng(){
+
+  }
+
   private initializeButtons() {
     if (this.engagement.etat === AppModule.etatsEngagement.INIT.code) {
       // The engagement is at the state of an initiated pré-engagement
@@ -582,6 +648,7 @@ export default class extends Vue {
              1- the 'Ok' button
              2- the 'Plus d'actions...' button if he/she wants to add a comment */
 
+            console.log("The current user doesn't have the permission to validate at the first level")
             this.isbtnOk = true
             this.isbtnPlusDactions = true
           }
@@ -602,7 +669,7 @@ export default class extends Vue {
           } else {
             // The engagement has not been sent back by the current user superior.
 
-            if (this.engagement.valideur_first === '' && this.engagement.valideur_second === '' && this.engagement.valideur_final === '') {
+            if (this.engagement.valideur_first === null && this.engagement.valideur_second === null && this.engagement.valideur_final === null) {
               /** The engagement has not yet been validated by one of current user superiors
               * So, he/she :
               * 1- can still edit the engagement. With the 'Mettre à jour' button
@@ -610,6 +677,7 @@ export default class extends Vue {
               * 3- the 'Plus d'actions...' button if he/she wants to add a comment
               */
 
+              console.log("The engagement has not yet been validated by one of current user superiors, '"+ this.engagement.valideur_first + "'")
               this.isbtnUpdate = true
               this.isbtnClose = true
               this.isbtnPlusDactions = true
@@ -621,6 +689,7 @@ export default class extends Vue {
                 It'll be handled off system.
                3- the 'Plus d'actions...' button if he/she wants to add a comment */
 
+              console.log("The engagement has been validated by one of current user superiors, '"+ this.engagement.valideur_first + "'")
               this.isbtnOk = true
               this.isbtnPlusDactions = true
             }
@@ -661,13 +730,14 @@ export default class extends Vue {
              * 2- the 'Plus d'actions...' button for comments
              */
 
+            console.log("The user has no permission to validate neither at the second or the final level")
             this.isbtnOk = true
             this.isbtnPlusDactions = true
           }
         } else {
           // The current user is the one who validated the engagement at the first level
 
-          if (this.engagement.valideur_second === '' && this.engagement.valideur_final === '') {
+          if (this.engagement.valideur_second === null && this.engagement.valideur_final === null) {
             /* The engagement has not yet been validated by one of current user superiors.
             So, he/she :
             * 1- can still cancel his validation. With the 'Annuler Validation' button
@@ -683,6 +753,7 @@ export default class extends Vue {
             * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
             * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
 
+            console.log("The engagement has not been validated by one of current user superiors")
             this.isbtnOk = true
             this.isbtnOptionsAnnuler = true
             this.isbtnPlusDactions = true
@@ -708,13 +779,14 @@ export default class extends Vue {
              * 2- the 'Plus d'actions..' button for adding a comment
              */
 
+            console.log("The user doesn't have the permission to validate at the final level. ")
             this.isbtnOk = true
             this.isbtnPlusDactions = true
           }
         } else {
           // The current user is the one who validated the engagement at the second level
 
-          if (this.engagement.valideur_final === '') {
+          if (this.engagement.valideur_final === null) {
             /* The engagement has not yet been validated by one of current user superiors.
             So, he/she :
             * 1- can still cancel his validation. With the 'Annuler Validation' button
@@ -730,6 +802,7 @@ export default class extends Vue {
             * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
             * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
 
+            console.log("The engagement has been validated by one of current user superiors.")
             this.isbtnOk = true
             this.isbtnOptionsAnnuler = true
             this.isbtnPlusDactions = true
@@ -745,6 +818,8 @@ export default class extends Vue {
          *        This could be handled with a 'nb_imputations_en_suspens' & 'cumul_imputations_en_suspens' attributes on the engagement.
          *        These 2 attributes will aggregate the count and cumul of imputation that have been initiated for the engagement.
          */
+        
+        console.log("The final level validation cannot be canceled.")
         this.isbtnOk = true
         this.isbtnOptionsAnnuler = true
       }
@@ -754,6 +829,8 @@ export default class extends Vue {
        * 1- either restore it via the 'Restaurer' button
        * 2- Just notice with the 'Ok' button
        */
+
+      console.log("The engagement is closed")
       this.isbtnRestaurer = true
       this.isbtnOk = true
     } else if (this.engagement.etat === AppModule.etatsEngagement.PEG.code) {
