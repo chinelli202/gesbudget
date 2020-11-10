@@ -360,7 +360,7 @@
                 <el-button
                   v-if="isbtnClose"
                   type="text"
-                  @click="closePreeng"
+                  @click="plusDactionsDialogVisible = true"
                 >
                   Clôturer le pré-engagement
                 </el-button>
@@ -423,6 +423,13 @@
               Envoyer un commentaire
             </el-button>
             <el-button
+              v-if="isbtnClose"
+              type="primary"
+              @click="closePreeng"
+            >
+              Clôturer le pré-engagement
+            </el-button>
+            <el-button
               v-if="isbtnRenvoyer"
               type="primary"
               @click="sendBackSubmit"
@@ -457,7 +464,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import {
   detailEngagement
   , updateEngagement, validerpPreEngagement, resendUpdateEngagement
-  , addComment
+  , addComment, closePreeng
 } from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
@@ -631,7 +638,56 @@ export default class extends Vue {
       })
   }
 
-  private initializeButtons() {
+  private changeMontantHT(value: number) {
+    this.engagement.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
+    this.formAttributeChange()
+  }
+
+  private formAttributeChange() {
+    this.submitUpdateDisabled = false
+    this.resendUpdateDisabled = false
+    this.validerpDisabled = false
+    this.validersDisabled = false
+    this.validerfDisabled = false
+  }
+
+  private commentFieldChange() {
+    if(this.plusDactionsForm.commentaire && this.plusDactionsForm.commentaire !== '') {
+      this.sendCommentDisabled = false
+    } else {
+      this.sendCommentDisabled = true
+    }
+  }
+
+  private async updateSubmit() {
+    const response = await updateEngagement(this.engagement)
+    console.log(response)
+    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+  }
+
+  private async resendUpdate() {
+    const response = await resendUpdateEngagement(this.engagement)
+    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+  }
+
+  private async validerpSubmit() {
+    const response = await validerpPreEngagement(this.engagement)
+    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+  }
+
+  private onCancel() {
+    this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+  }
+
+  private hasPermission(permission: string) {
+    return UserModule.permissions.filter(item => item.code === permission).length > 0
+  }
+
+  private hasnotPermission(permission: string) {
+    return UserModule.permissions.filter(item => item.code === permission).length === 0
+  }
+
+    private initializeButtons() {
     if (this.engagement.etat === AppModule.etatsEngagement.INIT.code) {
       // The engagement is at the state of an initiated pré-engagement
 
@@ -849,54 +905,6 @@ export default class extends Vue {
     } else if (this.engagement.etat === AppModule.etatsEngagement.REA.code) {
       // TODO
     }
-  }
-
-  private changeMontantHT(value: number) {
-    this.engagement.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.formAttributeChange()
-  }
-
-  private formAttributeChange() {
-    this.submitUpdateDisabled = false
-    this.resendUpdateDisabled = false
-    this.validerpDisabled = false
-    this.validersDisabled = false
-    this.validerfDisabled = false
-  }
-
-  private commentFieldChange() {
-    if(this.plusDactionsForm.commentaire && this.plusDactionsForm.commentaire !== '') {
-      this.sendCommentDisabled = false
-    } else {
-      this.sendCommentDisabled = true
-    }
-  }
-
-  private async updateSubmit() {
-    const response = await updateEngagement(this.engagement)
-    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
-  }
-
-  private async resendUpdate() {
-    const response = await resendUpdateEngagement(this.engagement)
-    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
-  }
-
-  private async validerpSubmit() {
-    const response = await validerpPreEngagement(this.engagement)
-    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
-  }
-
-  private onCancel() {
-    this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
-  }
-
-  private hasPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length > 0
-  }
-
-  private hasnotPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length === 0
   }
 }
 
