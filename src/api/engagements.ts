@@ -77,7 +77,7 @@ export const addComment = (data: any) =>
 
 export const closePreeng = (data: any) => 
   request({
-    url: `/engagement/addcomment/${data.id}`,
+    url: `/engagement/close/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`

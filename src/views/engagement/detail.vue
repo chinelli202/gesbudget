@@ -426,6 +426,7 @@
               v-if="isbtnClose"
               type="primary"
               @click="closePreeng"
+              :disabled="sendCommentDisabled"
             >
               Clôturer le pré-engagement
             </el-button>
@@ -433,6 +434,7 @@
               v-if="isbtnRenvoyer"
               type="primary"
               @click="sendBackSubmit"
+              :disabled="sendCommentDisabled"
             >
               Renvoyer l'engagement
             </el-button>
@@ -629,7 +631,8 @@ export default class extends Vue {
   private closePreeng(){
     this.$confirm('Voulez-vous vraiment clôturer cet engagement ?')
       .then(_ => {
-        this.sendComment().then(() => {
+        console.log("close engagement")
+        closePreeng({id: this.engagement.id, comment: this.plusDactionsForm.commentaire}).then(() => {
           this.plusDactionsDialogVisible = false
         })
       })
