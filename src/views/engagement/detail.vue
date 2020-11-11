@@ -8,6 +8,25 @@
               Detail Engagement - {{ engagement.id }}
             </h1>
           </el-header>
+          <el-alert
+            v-if="engagementIsClosed"
+            title="Ce pré-engagement a été clôturé."
+            type="info"
+            :closable="false"
+            effect="dark"
+            center
+            show-icon
+          />
+          <el-alert
+            v-else-if="engagement.next_statut !== null"
+            title="Ce pré-engagement a été renvoyée pour modification."
+            type="info"
+            :closable="false"
+            style="max-width: 400vw"
+            center
+            show-icon
+          />
+
           <el-main
             v-loading="cardLoading"
           >
@@ -233,7 +252,7 @@
                     Validation 1ère par
                   </el-col>
                   <el-col :span="15">
-                    {{ engagement.valideurp_name }}
+                    {{ (isCurrentUserValideurp) ? "Vous même" : engagement.valideurp_name }}
                   </el-col>
                 </el-row>
                 <el-row
@@ -247,7 +266,7 @@
                     Validation 2nde par
                   </el-col>
                   <el-col :span="15">
-                    {{ engagement.valideurs_name }}
+                    {{ (isCurrentUserValideurs) ? "Vous même" : engagement.valideurs_name }}
                   </el-col>
                 </el-row>
                 <el-row
@@ -261,7 +280,7 @@
                     Validation finale par
                   </el-col>
                   <el-col :span="15">
-                    {{ engagement.valideurf_name }}
+                    {{ (isCurrentUserValideurf) ? "Vous même" : engagement.valideurf_name }}
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -282,7 +301,7 @@
                   class="row-bg"
                   justify="end"
                 >
-                  <el-col :span="9">
+                  <el-col :span="10">
                     <el-button @click="onCancel">
                       Retour
                     </el-button>
@@ -445,7 +464,7 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-      {{ permissionCodes.engagement.enregistrer.SAISI }}<br>
+      next_statut : {{ engagement.next_statut }}<br>
       hasPermission {{ hasPermission("profile-read") }}<br>
       hasnotPermission {{ hasnotPermission("profile-read") }}<br><br>
       isbtnUpdate : {{ isbtnUpdate }}<br>
@@ -496,6 +515,8 @@ export default class extends Vue {
   private statutOptions = {}
   private tva = 0
   private fallbackUrl = { path: '/' }
+
+  private engagementIsClosed = false
 
   private isCurrentUserSaisisseur = false
   private isCurrentUserValideurp = false
@@ -686,31 +707,28 @@ export default class extends Vue {
   }
 
   private sendBackSubmit() {
-    this.cardLoading = true
-    sendBack({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
-      this.plusDactionsDialogVisible = false
-      this.plusDactionsForm.commentaire = ''
-      this.plusDactionsForm.used = true
-      this.sendCommentDisabled = true
-      this.engagement = response.data
-      this.initializeButtons()
-      this.cardLoading = false
-    })
-    
-    this.cardLoading = true
-    console.log("Renvoyer l'engagement code:", this.engagement.code)
-
-    this.$refs.plusDactionsForm.validate((valid: any) => {
-      if (valid) {
-        this.engagement.commentaire = this.plusDactionsForm.commentaire
+    this.$confirm('Voulez-vous vraiment renvoyer cet engagement ?'
+      , 'Renvoi de l\'engagement'
+      , {
+        confirmButtonText: 'Oui, renvoyer cet engagement',
+        cancelButtonText: 'Annuler',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.cardLoading = true
+      sendBack({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
+        this.plusDactionsDialogVisible = false
         this.plusDactionsForm.commentaire = ''
         this.plusDactionsForm.used = true
-      } else {
-        console.log('error submit!!')
-        return false
-      }
+        this.sendCommentDisabled = true
+        this.engagement = response.data
+        this.initializeButtons()
+        this.cardLoading = false
+      })
     })
-    this.plusDactionsDialogVisible = false
+      .catch(error => {
+        console.log('Error when sending back engagement', error)
+      })
   }
 
   private async validerpSubmit() {
@@ -777,6 +795,9 @@ export default class extends Vue {
     // We reset first all buttons
     this.resetButtons()
 
+    // The engagement is closed
+    this.engagementIsClosed = this.engagement.etat === AppModule.etatsEngagement.CLOT.code
+
     if (this.engagement.etat === AppModule.etatsEngagement.INIT.code) {
       // The engagement is at the state of an initiated pré-engagement
       console.log('The engagement is at the state of an initiated pré-engagement')
@@ -793,13 +814,17 @@ export default class extends Vue {
             /* The current user has the permission to validate at the first level
              So we'll give him/her :
              1- the 'Valider P' button to validate the engagement
-             2- the 'Renvoyer' button to send back the engagement to  the n-1th user
-             3- the 'Plus d'actions...' button if he/she just wants to add a comment */
+             2- the 'Plus d'actions...' button if he/she just wants to add a comment
+             3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
+             This button is to display only if the engagement hasn't been sent back yet.
+            */
 
             console.log('he current user has the permission to validate at the first level')
             this.isbtnValiderp = true
-            this.isbtnRenvoyer = true
             this.isbtnPlusDactions = true
+            if (this.engagement.next_statut === null) {
+              this.isbtnRenvoyer = true
+            }
           } else {
             /* The current user doesn't have the permission to validate at the first level
              So we'll give him/her :
@@ -870,25 +895,33 @@ export default class extends Vue {
             /* The user has the permission to validate at the second level but not at the final level
             So we'll give him/her:
             1- The 'Validate S' button, to validate at the second level
-            2- the 'Renvoyer' button to send back the engagement to  the n-1th user
-            3- the 'Plus d'actions...' button if he/she just wants to add a comment */
+            2- the 'Plus d'actions...' button if he/she just wants to add a comment
+             3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
+             This button is to display only if the engagement hasn't been sent back yet.
+            */
             console.log('The user has the permission to validate at the second level but not at the final level')
 
             this.isbtnValiders = true
-            this.isbtnRenvoyer = true
             this.isbtnPlusDactions = true
+            if (this.engagement.next_statut === null) {
+              this.isbtnRenvoyer = true
+            }
           } else if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
             /** The user has the permission to validate at the final level
             * So we'll give him/her:
             * 1- The 'Validate F' button, to validate at the final level. If the user validate at final level,
             * there'll be no more need of validation at second level
-            * 2- the 'Renvoyer' button to send back the engagement to  the n-1th user
-            * 3- the 'Plus d'actions...' button if he/she just wants to add a comment */
+            * 2- the 'Plus d'actions...' button if he/she just wants to add a comment
+            * 3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
+            * This button is to display only if the engagement hasn't been sent back yet.
+            */
             console.log('The user has the permission to validate at the final level')
 
             this.isbtnValiderf = true
-            this.isbtnRenvoyer = true
             this.isbtnPlusDactions = true
+            if (this.engagement.next_statut === null) {
+              this.isbtnRenvoyer = true
+            }
           } else {
             /** The user has no permission to validate neither at the second or the final level
              * We'll just give him/her :
@@ -938,13 +971,16 @@ export default class extends Vue {
             /** The user has the permission to validate at the final level.
              * we'll give him/her :
              * 1- The 'Validate F' button for final validation
-             * 2- the 'Renvoyer' button to send back the engagement to the n-1th user
-             * 3- the 'Plus d'action button' if he/she wants to add a comment
-             */
+             * 2- the 'Plus d'actions...' button if he/she just wants to add a comment
+             * 3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
+             * This button is to display only if the engagement hasn't been sent back yet.
+            */
             console.log('The user has the permission to validate at the final level.')
             this.isbtnValiderf = true
-            this.isbtnRenvoyer = true
             this.isbtnPlusDactions = true
+            if (this.engagement.next_statut === null) {
+              this.isbtnRenvoyer = true
+            }
           } else {
             /** The user doesn't have the permission to validate at the final level.
              * we'll give him/her :
@@ -1001,12 +1037,14 @@ export default class extends Vue {
     } else if (this.engagement.etat === AppModule.etatsEngagement.CLOT.code) {
       /** The engagement is closed
        * The user could :
-       * 1- either restore it via the 'Restaurer' button
+       * 1- either restore it via the 'Restaurer' button. If the user is the one who created it.
        * 2- Just notice with the 'Ok' button
        */
 
       console.log('The engagement is closed')
-      this.isbtnRestaurer = true
+      if (this.isCurrentUserSaisisseur) {
+        this.isbtnRestaurer = true
+      }
       this.isbtnOk = true
     } else if (this.engagement.etat === AppModule.etatsEngagement.PEG.code) {
       // TODO

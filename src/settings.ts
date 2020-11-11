@@ -14,7 +14,7 @@ interface ISettings {
 const settings: ISettings = {
   title: 'Gestion du Budget SNH',
   showSettings: true,
-  showTagsView: true,
+  showTagsView: false,
   fixedHeader: false,
   showSidebarLogo: false,
   errorLog: ['production'],
