@@ -9,7 +9,7 @@
             </h1>
           </el-header>
           <el-main
-            v-loading="listLoading"
+            v-loading="cardLoading"
           >
             <el-form
               ref="form"
@@ -284,7 +284,7 @@
                 >
                   <el-col :span="9">
                     <el-button @click="onCancel">
-                      Annuler
+                      Retour
                     </el-button>
                     <el-button
                       v-if="isbtnUpdate"
@@ -305,7 +305,6 @@
                     <el-button
                       v-if="isbtnValiderp"
                       type="primary"
-                      :disabled="validerpDisabled"
                       @click="validerpSubmit"
                     >
                       Valider au 1er niveau
@@ -313,7 +312,6 @@
                     <el-button
                       v-if="isbtnValiders"
                       type="primary"
-                      :disabled="validersDisabled"
                       @click="validersSubmit"
                     >
                       Valider au second niveau
@@ -321,7 +319,6 @@
                     <el-button
                       v-if="isbtnValiderf"
                       type="primary"
-                      :disabled="validerfDisabled"
                       @click="validerfSubmit"
                     >
                       Valider au niveau final
@@ -360,7 +357,7 @@
                 <el-button
                   v-if="isbtnRestaurer"
                   type="text"
-                  @click="restaurer"
+                  @click="restorePreeng"
                 >
                   Restaurer
                 </el-button>
@@ -473,7 +470,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import {
   detailEngagement
   , updateEngagement, validerpPreEngagement, resendUpdateEngagement
-  , addComment, closePreeng
+  , addComment, closePreeng, restorePreeng, sendBack
 } from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
@@ -491,7 +488,7 @@ import { PermissionModule } from '@/store/modules/permission'
 })
 
 export default class extends Vue {
-  private listLoading = true
+  private cardLoading = true
   private deviseOptions = {}
   private typeOptions = {}
   private natureOptions = {}
@@ -507,9 +504,6 @@ export default class extends Vue {
 
   private submitUpdateDisabled = true;
   private resendUpdateDisabled = true;
-  private validerpDisabled = true;
-  private validersDisabled = true;
-  private validerfDisabled = true;
   private sendCommentDisabled = true;
 
   private isbtnUpdate = false; // Display 'Mettre à jour' button, when the current user is the owner of the engagement. In other for him to update.
@@ -573,7 +567,7 @@ export default class extends Vue {
   }
 
   private async fetchData(engagementId: number) {
-    this.listLoading = true
+    this.cardLoading = true
     const response = await detailEngagement({ id: engagementId })
     this.engagement = response.data
     this.deviseOptions = AppModule.devises
@@ -589,10 +583,121 @@ export default class extends Vue {
     this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
 
     this.initializeButtons()
-    this.listLoading = false
+    this.cardLoading = false
+  }
+
+  private async sendComment() {
+    if (!this.plusDactionsForm.commentaire || this.plusDactionsForm.commentaire === '') {
+      return false
+    }
+    const response = await addComment({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire })
+    this.plusDactionsDialogVisible = false
+    this.plusDactionsForm.commentaire = ''
+    this.sendCommentDisabled = true
+    this.plusDactionsForm.used = true
+    this.engagement = response.data
+    this.initializeButtons()
+  }
+
+  private async commentaireSubmit() {
+    if (!this.plusDactionsForm.used) {
+      this.sendComment()
+    } else {
+      this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter ce nouveau commentaire ?'
+        , 'Commentaire existant'
+        , {
+          confirmButtonText: 'Oui, ajouter ce commentaire',
+          cancelButtonText: 'Annuler',
+          type: 'warning'
+        }
+      ).then(_ => {
+        this.sendComment()
+      })
+        .catch(error => {
+          console.log('Error comment submit confirmation', error)
+        })
+    }
+  }
+
+  private closePreeng() {
+    this.$confirm('Voulez-vous vraiment clôturer cet engagement ?'
+      , 'Clôture de l\'engagement'
+      , {
+        confirmButtonText: 'Oui, clôturer cet engagement',
+        cancelButtonText: 'Annuler',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.cardLoading = true
+      closePreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
+        this.plusDactionsDialogVisible = false
+        this.plusDactionsForm.commentaire = ''
+        this.plusDactionsForm.used = true
+        this.sendCommentDisabled = true
+        this.engagement = response.data
+        this.initializeButtons()
+        this.cardLoading = false
+      })
+    })
+      .catch(error => {
+        console.log('Error when closing engagement', error)
+      })
+  }
+
+  private restorePreeng() {
+    this.$confirm('Voulez-vous vraiment restaurer cet engagement ?'
+      , 'Restauration de l\'engagement'
+      , {
+        confirmButtonText: 'Oui, restaurer cet engagement',
+        cancelButtonText: 'Annuler',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.cardLoading = true
+      restorePreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
+        this.plusDactionsDialogVisible = false
+        this.plusDactionsForm.commentaire = ''
+        this.plusDactionsForm.used = true
+        this.sendCommentDisabled = true
+        this.engagement = response.data
+        this.initializeButtons()
+        this.cardLoading = false
+      })
+    })
+      .catch(error => {
+        console.log('Error when restoring engagement', error)
+      })
+  }
+
+  private async updateSubmit() {
+    this.cardLoading = true
+    const response = await updateEngagement(this.engagement)
+    this.initializeButtons()
+    this.cardLoading = false
+    // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+  }
+
+  private async resendUpdate() {
+    this.cardLoading = true
+    const response = await resendUpdateEngagement(this.engagement)
+    this.engagement = response.data
+    this.initializeButtons()
+    this.cardLoading = false
   }
 
   private sendBackSubmit() {
+    this.cardLoading = true
+    sendBack({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
+      this.plusDactionsDialogVisible = false
+      this.plusDactionsForm.commentaire = ''
+      this.plusDactionsForm.used = true
+      this.sendCommentDisabled = true
+      this.engagement = response.data
+      this.initializeButtons()
+      this.cardLoading = false
+    })
+    
+    this.cardLoading = true
     console.log("Renvoyer l'engagement code:", this.engagement.code)
 
     this.$refs.plusDactionsForm.validate((valid: any) => {
@@ -608,53 +713,16 @@ export default class extends Vue {
     this.plusDactionsDialogVisible = false
   }
 
-  private async sendComment() {
-    if (!this.plusDactionsForm.commentaire || this.plusDactionsForm.commentaire === '') {
-      return false
-    }
-    const response = await addComment({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire })
+  private async validerpSubmit() {
+    this.cardLoading = true
+    const response = await validerpPreEngagement(this.engagement)
+    this.engagement = response.data
+    this.initializeButtons()
+    this.cardLoading = false
   }
 
-  private commentaireSubmit() {
-    if (!this.plusDactionsForm.used) {
-      this.sendComment().then(() => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.sendCommentDisabled = true
-        this.plusDactionsForm.used = true
-        this.$forceUpdate()
-      })
-    } else {
-      this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter ce nouveau commentaire ?')
-        .then(_ => {
-          this.sendComment().then(() => {
-            this.plusDactionsDialogVisible = false
-            this.plusDactionsForm.commentaire = ''
-            this.sendCommentDisabled = true
-            this.plusDactionsForm.used = true
-            this.$forceUpdate()
-          })
-        })
-        .catch(error => {
-          console.log('Error comment submit confirmation', error)
-        })
-    }
-  }
-
-  private closePreeng() {
-    this.$confirm('Voulez-vous vraiment clôturer cet engagement ?')
-      .then(_ => {
-        closePreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then(() => {
-          this.plusDactionsDialogVisible = false
-          this.plusDactionsForm.commentaire = ''
-          this.plusDactionsForm.used = true
-          this.sendCommentDisabled = true
-          this.$forceUpdate()
-        })
-      })
-      .catch(error => {
-        console.log('Error comment submit confirmation', error)
-      })
+  private onCancel() {
+    this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
   }
 
   private changeMontantHT(value: number) {
@@ -665,9 +733,6 @@ export default class extends Vue {
   private formAttributeChange() {
     this.submitUpdateDisabled = false
     this.resendUpdateDisabled = false
-    this.validerpDisabled = false
-    this.validersDisabled = false
-    this.validerfDisabled = false
   }
 
   private commentFieldChange() {
@@ -678,26 +743,6 @@ export default class extends Vue {
     }
   }
 
-  private async updateSubmit() {
-    const response = await updateEngagement(this.engagement)
-    console.log(response)
-    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
-  }
-
-  private async resendUpdate() {
-    const response = await resendUpdateEngagement(this.engagement)
-    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
-  }
-
-  private async validerpSubmit() {
-    const response = await validerpPreEngagement(this.engagement)
-    window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
-  }
-
-  private onCancel() {
-    this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
-  }
-
   private hasPermission(permission: string) {
     return UserModule.permissions.filter(item => item.code === permission).length > 0
   }
@@ -706,7 +751,32 @@ export default class extends Vue {
     return UserModule.permissions.filter(item => item.code === permission).length === 0
   }
 
+  private resetButtons() {
+    this.submitUpdateDisabled = true
+    this.resendUpdateDisabled = true
+    this.sendCommentDisabled = true
+
+    this.isbtnUpdate = false
+    this.isbtnValiderp = false
+    this.isbtnValiders = false
+    this.isbtnValiderf = false
+    this.isbtnOk = false
+    this.isbtnClose = false
+    this.isbtnRestaurer = false
+    this.isbtnRenvoyer = false
+    this.isResendUpdate = false
+    this.isbtnOptionsAnnuler = false
+    this.isbtnAnnulerValider = false
+    this.isbtnPlusDactions = false
+    this.isbtnImputer = false
+
+    this.plusDactionsDialogVisible = false
+  }
+
   private initializeButtons() {
+    // We reset first all buttons
+    this.resetButtons()
+
     if (this.engagement.etat === AppModule.etatsEngagement.INIT.code) {
       // The engagement is at the state of an initiated pré-engagement
       console.log('The engagement is at the state of an initiated pré-engagement')

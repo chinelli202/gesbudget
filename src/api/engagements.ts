@@ -85,6 +85,26 @@ export const closePreeng = (data: any) =>
     data
   })
 
+export const restorePreeng = (data: any) =>
+  request({
+    url: `/engagement/restore/${data.id}`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
+
+export const sendBack = (data: any) =>
+  request({
+    url: `/engagement/sendback/${data.id}`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
+
 export const validerpPreEngagement = (data: any) =>
   request({
     url: `/validerp-pre-engagement/${data.id}`,

@@ -199,13 +199,15 @@ export default class extends Vue {
         UserModule.Login(this.loginForm)
           .then(() => {
             AppModule.fetchEngagementVariables()
-            this.$router.push({
-              path: this.redirect || '/',
-              query: this.otherQuery
-            }).catch(error => {
-              console.info(error.message)
-            })
-            this.loading = false
+              .then(() => {
+                this.$router.push({
+                  path: this.redirect || '/',
+                  query: this.otherQuery
+                }).catch(error => {
+                  console.info(error.message)
+                })
+                this.loading = false
+              })
           }).catch(error => {
             console.info(error.message)
             this.loading = false

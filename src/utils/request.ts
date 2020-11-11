@@ -56,6 +56,13 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
+      if (res.message) {
+        Message({
+          message: res.message || 'Success',
+          type: 'success',
+          duration: 6 * 1000
+        })
+      }
       return response.data
     }
   },

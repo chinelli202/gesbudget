@@ -49,11 +49,17 @@ class Permission extends VuexModule implements IPermissionState {
         VALIDF: 'validerf-cloture-preg'
       },
       imputer: {
-        IMP: 'imputer',
-        REG: 'regulariser',
+        IMP: 'saisir-imputation',
+        REG: 'regulariser-imputation',
         VALIDP: 'validerp-imputation',
         VALIDS: 'validers-imputation',
         VALIDF: 'validerf-imputation'
+      },
+      apurer: {
+        APUR: 'saisir-apurement',
+        VALIDP: 'validerp-apurement',
+        VALIDS: 'validers-apurement',
+        VALIDF: 'validerf-apurement'
       }
     }
   }
