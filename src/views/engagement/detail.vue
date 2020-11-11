@@ -29,8 +29,8 @@
                   v-model="engagement.libelle"
                   type="textarea"
                   :rows="2"
-                  @change="formAttributeChange"
                   :disabled="!isbtnUpdate && !isResendUpdate"
+                  @change="formAttributeChange"
                 />
               </el-form-item>
               <el-form-item label="Montant HT">
@@ -54,8 +54,8 @@
                   <el-col :span="20">
                     <el-input
                       v-model="engagement.montant_ht"
-                      @input="changeMontantHT"
                       :disabled="!isbtnUpdate && !isResendUpdate"
+                      @input="changeMontantHT"
                     />
                   </el-col>
                 </el-row>
@@ -96,7 +96,8 @@
                     :span="10"
                     :offset="3"
                   >
-                    <el-select v-if="isbtnUpdate || isResendUpdate"
+                    <el-select
+                      v-if="isbtnUpdate || isResendUpdate"
                       v-model="engagement.type"
                       placeholder="Type"
                       class="type-select"
@@ -112,7 +113,8 @@
                         <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
                       </el-option>
                     </el-select>
-                    <el-input v-else
+                    <el-input
+                      v-else
                       v-model="engagement.type_libelle"
                       :disabled="true"
                     />
@@ -155,7 +157,8 @@
                       v-model="engagement.nature_libelle"
                       :disabled="true"
                     /> -->
-                    <el-select v-if="isbtnUpdate || isResendUpdate"
+                    <el-select
+                      v-if="isbtnUpdate || isResendUpdate"
                       v-model="engagement.nature"
                       placeholder="Nature"
                       class="type-select"
@@ -171,7 +174,8 @@
                         <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
                       </el-option>
                     </el-select>
-                    <el-input v-else
+                    <el-input
+                      v-else
                       v-model="engagement.nature_libelle"
                       :disabled="true"
                     />
@@ -192,7 +196,10 @@
                 </el-row>
               </el-form-item>
 
-              <el-form-item class="notes" style="line-height: 25px;">
+              <el-form-item
+                class="notes"
+                style="line-height: 25px;"
+              >
                 <el-row :gutter="10">
                   <el-col
                     :span="6"
@@ -339,7 +346,7 @@
             </el-form>
             <el-row :gutter="10">
               <el-col
-                :span="6"
+                :span="7"
                 :offset="1"
               >
                 >
@@ -374,7 +381,7 @@
               </el-col>
               <el-col
                 :span="6"
-                :offset="9"
+                :offset="8"
               >
                 <el-button
                   v-if="isbtnPlusDactions"
@@ -403,10 +410,10 @@
           <el-form-item label="Ajouter un commentaire">
             <el-input
               v-model="plusDactionsForm.commentaire"
-              @input="commentFieldChange"
               type="textarea"
               prop="commentaire"
               :rows="3"
+              @input="commentFieldChange"
             />
           </el-form-item>
           <el-form-item>
@@ -417,24 +424,24 @@
             </el-button>
             <el-button
               type="info"
-              @click="commentaireSubmit"
               :disabled="sendCommentDisabled"
+              @click="commentaireSubmit"
             >
               Envoyer un commentaire
             </el-button>
             <el-button
               v-if="isbtnClose"
               type="primary"
-              @click="closePreeng"
               :disabled="sendCommentDisabled"
+              @click="closePreeng"
             >
               Clôturer le pré-engagement
             </el-button>
             <el-button
               v-if="isbtnRenvoyer"
               type="primary"
-              @click="sendBackSubmit"
               :disabled="sendCommentDisabled"
+              @click="sendBackSubmit"
             >
               Renvoyer l'engagement
             </el-button>
@@ -605,21 +612,27 @@ export default class extends Vue {
     if (!this.plusDactionsForm.commentaire || this.plusDactionsForm.commentaire === '') {
       return false
     }
-    const response = await addComment({id: this.engagement.id, comment: this.plusDactionsForm.commentaire})
-    this.plusDactionsForm.commentaire = ''
-    this.plusDactionsForm.used = true
+    const response = await addComment({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire })
   }
 
   private commentaireSubmit() {
     if (!this.plusDactionsForm.used) {
       this.sendComment().then(() => {
         this.plusDactionsDialogVisible = false
+        this.plusDactionsForm.commentaire = ''
+        this.sendCommentDisabled = true
+        this.plusDactionsForm.used = true
+        this.$forceUpdate()
       })
     } else {
       this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter ce nouveau commentaire ?')
         .then(_ => {
           this.sendComment().then(() => {
             this.plusDactionsDialogVisible = false
+            this.plusDactionsForm.commentaire = ''
+            this.sendCommentDisabled = true
+            this.plusDactionsForm.used = true
+            this.$forceUpdate()
           })
         })
         .catch(error => {
@@ -628,12 +641,15 @@ export default class extends Vue {
     }
   }
 
-  private closePreeng(){
+  private closePreeng() {
     this.$confirm('Voulez-vous vraiment clôturer cet engagement ?')
       .then(_ => {
-        console.log("close engagement")
-        closePreeng({id: this.engagement.id, comment: this.plusDactionsForm.commentaire}).then(() => {
+        closePreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then(() => {
           this.plusDactionsDialogVisible = false
+          this.plusDactionsForm.commentaire = ''
+          this.plusDactionsForm.used = true
+          this.sendCommentDisabled = true
+          this.$forceUpdate()
         })
       })
       .catch(error => {
@@ -655,7 +671,7 @@ export default class extends Vue {
   }
 
   private commentFieldChange() {
-    if(this.plusDactionsForm.commentaire && this.plusDactionsForm.commentaire !== '') {
+    if (this.plusDactionsForm.commentaire && this.plusDactionsForm.commentaire !== '') {
       this.sendCommentDisabled = false
     } else {
       this.sendCommentDisabled = true
@@ -690,15 +706,18 @@ export default class extends Vue {
     return UserModule.permissions.filter(item => item.code === permission).length === 0
   }
 
-    private initializeButtons() {
+  private initializeButtons() {
     if (this.engagement.etat === AppModule.etatsEngagement.INIT.code) {
       // The engagement is at the state of an initiated pré-engagement
+      console.log('The engagement is at the state of an initiated pré-engagement')
 
       if (this.engagement.statut === AppModule.statutsEngagement.SAISI.code) {
         // The engagement have just been initiated
+        console.log('The engagement have just been initiated')
 
         if (!this.isCurrentUserSaisisseur) {
           // The current user is not the one who initiated the engagement
+          console.log('The current user is not the one who initiated the engagement')
 
           if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDP)) {
             /* The current user has the permission to validate at the first level
@@ -707,6 +726,7 @@ export default class extends Vue {
              2- the 'Renvoyer' button to send back the engagement to  the n-1th user
              3- the 'Plus d'actions...' button if he/she just wants to add a comment */
 
+            console.log('he current user has the permission to validate at the first level')
             this.isbtnValiderp = true
             this.isbtnRenvoyer = true
             this.isbtnPlusDactions = true
@@ -722,6 +742,7 @@ export default class extends Vue {
           }
         } else {
           // The current user is the one who initiated the engagement
+          console.log('The current user is the one who initiated the engagement')
 
           if (this.engagement.next_statut === 'INIT') {
             /** The engagement has been sent back by the current user superior.
@@ -731,11 +752,14 @@ export default class extends Vue {
              * 2- also to close the engagement. Withe the 'Cloturer' button
              * 3- the 'Plus d'actions...' button if he/she wants to add a comment
              */
+
+            console.log('The engagement has been sent back by the current user superior.')
             this.isResendUpdate = true
             this.isbtnClose = true
             this.isbtnPlusDactions = true
           } else {
             // The engagement has not been sent back by the current user superior.
+            console.log('The engagement has not been sent back by the current user superior.')
 
             if (this.engagement.valideur_first === null && this.engagement.valideur_second === null && this.engagement.valideur_final === null) {
               /** The engagement has not yet been validated by one of current user superiors
@@ -745,7 +769,7 @@ export default class extends Vue {
               * 3- the 'Plus d'actions...' button if he/she wants to add a comment
               */
 
-              console.log("The engagement has not yet been validated by one of current user superiors, '"+ this.engagement.valideur_first + "'")
+              console.log('The engagement has not yet been validated by one of current user superiors, \'' + this.engagement.valideur_first + "'")
               this.isbtnUpdate = true
               this.isbtnClose = true
               this.isbtnPlusDactions = true
@@ -757,7 +781,7 @@ export default class extends Vue {
                 It'll be handled off system.
                3- the 'Plus d'actions...' button if he/she wants to add a comment */
 
-              console.log("The engagement has been validated by one of current user superiors, '"+ this.engagement.valideur_first + "'")
+              console.log("The engagement has been validated by one of current user superiors, '" + this.engagement.valideur_first + "'")
               this.isbtnOk = true
               this.isbtnPlusDactions = true
             }
@@ -765,9 +789,11 @@ export default class extends Vue {
         }
       } else if (this.engagement.statut === AppModule.statutsEngagement.VALIDP.code) {
         // The engagement has been validated at the first level
+        console.log('The engagement has been validated at the first level')
 
         if (!this.isCurrentUserValideurp) {
           // The current user is not the one who validated the engagement at the first level
+          console.log('The current user is not the one who validated the engagement at the first level')
 
           if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDS) &&
             !this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
@@ -776,6 +802,7 @@ export default class extends Vue {
             1- The 'Validate S' button, to validate at the second level
             2- the 'Renvoyer' button to send back the engagement to  the n-1th user
             3- the 'Plus d'actions...' button if he/she just wants to add a comment */
+            console.log('The user has the permission to validate at the second level but not at the final level')
 
             this.isbtnValiders = true
             this.isbtnRenvoyer = true
@@ -787,6 +814,7 @@ export default class extends Vue {
             * there'll be no more need of validation at second level
             * 2- the 'Renvoyer' button to send back the engagement to  the n-1th user
             * 3- the 'Plus d'actions...' button if he/she just wants to add a comment */
+            console.log('The user has the permission to validate at the final level')
 
             this.isbtnValiderf = true
             this.isbtnRenvoyer = true
@@ -798,12 +826,13 @@ export default class extends Vue {
              * 2- the 'Plus d'actions...' button for comments
              */
 
-            console.log("The user has no permission to validate neither at the second or the final level")
+            console.log('The user has no permission to validate neither at the second or the final level')
             this.isbtnOk = true
             this.isbtnPlusDactions = true
           }
         } else {
           // The current user is the one who validated the engagement at the first level
+          console.log('The current user is the one who validated the engagement at the first level')
 
           if (this.engagement.valideur_second === null && this.engagement.valideur_final === null) {
             /* The engagement has not yet been validated by one of current user superiors.
@@ -811,6 +840,7 @@ export default class extends Vue {
             * 1- can still cancel his validation. With the 'Annuler Validation' button
             * 2- the 'Plus d'actions...' button if he/she wants to add a comment
             */
+            console.log('The engagement has not yet been validated by one of current user superiors.')
 
             this.isbtnAnnulerValider = true
             this.isbtnPlusDactions = true
@@ -821,15 +851,19 @@ export default class extends Vue {
             * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
             * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
 
-            console.log("The engagement has not been validated by one of current user superiors")
+            console.log('The engagement has not been validated by one of current user superiors')
             this.isbtnOk = true
             this.isbtnOptionsAnnuler = true
             this.isbtnPlusDactions = true
           }
         }
       } else if (this.engagement.statut === AppModule.statutsEngagement.VALIDS.code) {
+        // The engagement's statut is VALIDS
+        console.log('The engagement\'s statut is VALIDS')
+
         if (!this.isCurrentUserValideurs) {
           // The current user is not the one who validated the engagement at the second level
+          console.log('The current user is not the one who validated the engagement at the second level')
           if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
             /** The user has the permission to validate at the final level.
              * we'll give him/her :
@@ -837,6 +871,7 @@ export default class extends Vue {
              * 2- the 'Renvoyer' button to send back the engagement to the n-1th user
              * 3- the 'Plus d'action button' if he/she wants to add a comment
              */
+            console.log('The user has the permission to validate at the final level.')
             this.isbtnValiderf = true
             this.isbtnRenvoyer = true
             this.isbtnPlusDactions = true
@@ -853,6 +888,7 @@ export default class extends Vue {
           }
         } else {
           // The current user is the one who validated the engagement at the second level
+          console.log('The current user is the one who validated the engagement at the second level')
 
           if (this.engagement.valideur_final === null) {
             /* The engagement has not yet been validated by one of current user superiors.
@@ -861,6 +897,7 @@ export default class extends Vue {
             * 2- the 'Plus d'actions...' button if he/she wants to add a comment
             */
 
+            console.log('The engagement has not yet been validated by one of current user superiors.')
             this.isbtnAnnulerValider = true
             this.isbtnPlusDactions = true
           } else {
@@ -870,7 +907,7 @@ export default class extends Vue {
             * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
             * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
 
-            console.log("The engagement has been validated by one of current user superiors.")
+            console.log('The engagement has been validated by one of current user superiors.')
             this.isbtnOk = true
             this.isbtnOptionsAnnuler = true
             this.isbtnPlusDactions = true
@@ -886,8 +923,8 @@ export default class extends Vue {
          *        This could be handled with a 'nb_imputations_en_suspens' & 'cumul_imputations_en_suspens' attributes on the engagement.
          *        These 2 attributes will aggregate the count and cumul of imputation that have been initiated for the engagement.
          */
-        
-        console.log("The final level validation cannot be canceled.")
+
+        console.log('The final level validation cannot be canceled.')
         this.isbtnOk = true
         this.isbtnOptionsAnnuler = true
       }
@@ -898,15 +935,20 @@ export default class extends Vue {
        * 2- Just notice with the 'Ok' button
        */
 
-      console.log("The engagement is closed")
+      console.log('The engagement is closed')
       this.isbtnRestaurer = true
       this.isbtnOk = true
     } else if (this.engagement.etat === AppModule.etatsEngagement.PEG.code) {
       // TODO
+      console.log('The engagement is etat PEG')
     } else if (this.engagement.etat === AppModule.etatsEngagement.IMP.code) {
       // TODO
+      console.log('The engagement is etat IMP')
     } else if (this.engagement.etat === AppModule.etatsEngagement.REA.code) {
       // TODO
+      console.log('The engagement is etat REA')
+    } else {
+      console.log('we dont know this ', this.engagement.etat)
     }
   }
 }
@@ -938,7 +980,7 @@ export default class extends Vue {
   }
 
 .max-w-600{
-  max-width: 100vh;
+  max-width: 70vw;
 }
 .center{
   margin: auto;

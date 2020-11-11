@@ -65,7 +65,7 @@ export const resendUpdateEngagement = (data: any) =>
     data
   })
 
-export const addComment = (data: any) => 
+export const addComment = (data: any) =>
   request({
     url: `/engagement/addcomment/${data.id}`,
     method: 'post',
@@ -75,7 +75,7 @@ export const addComment = (data: any) =>
     data
   })
 
-export const closePreeng = (data: any) => 
+export const closePreeng = (data: any) =>
   request({
     url: `/engagement/close/${data.id}`,
     method: 'post',
