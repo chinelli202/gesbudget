@@ -19,7 +19,7 @@
           />
           <el-alert
             v-else-if="engagement.next_statut !== null"
-            title="Ce pré-engagement a été renvoyée pour modification."
+            title="Ce pré-engagement a été renvoyé pour modification."
             type="info"
             :closable="false"
             style="max-width: 400vw"
