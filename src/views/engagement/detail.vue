@@ -284,17 +284,6 @@
                   </el-col>
                 </el-row>
               </el-form-item>
-              <el-form-item
-                v-if="isResendUpdate"
-                label="Ajouter un commentaire"
-              >
-                <el-input
-                  v-model="engagement.commentaire"
-                  type="textarea"
-                  prop="commentaire"
-                  :rows="3"
-                />
-              </el-form-item>
               <el-form-item class="notes">
                 <el-row
                   type="flex"
@@ -320,6 +309,13 @@
                       @click="resendUpdate"
                     >
                       Mettre à jour
+                    </el-button>
+                    <el-button
+                      v-if="isbtnAnnulerValider"
+                      type="primary"
+                      @click="plusDactionsDialogVisible = true"
+                    >
+                      Annuler ma validation
                     </el-button>
                     <el-button
                       v-if="isbtnValiderp"
@@ -367,13 +363,6 @@
               >
                 >
                 <el-button
-                  v-if="isbtnAnnulerValider"
-                  type="text"
-                  @click="annulerValider"
-                >
-                  Annuler ma validation
-                </el-button>
-                <el-button
                   v-if="isbtnRestaurer"
                   type="text"
                   @click="restorePreeng"
@@ -390,7 +379,7 @@
                 <el-button
                   v-if="isbtnOptionsAnnuler"
                   type="text"
-                  @click="validerpSubmit"
+                  @click="optionsAnnulerValider"
                 >
                   Je veux annuler ma validation
                 </el-button>
@@ -461,6 +450,14 @@
             >
               Renvoyer l'engagement
             </el-button>
+            <el-button
+              v-if="isbtnAnnulerValider"
+              type="primary"
+              :disabled="sendCommentDisabled"
+              @click="annulerValider"
+            >
+              Annuler ma validation
+            </el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -488,7 +485,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import {
   detailEngagement
-  , updateEngagement, validerpPreEngagement, resendUpdateEngagement
+  , updateEngagement, validationpPreeng, cancelValidationpPreeng, resendUpdateEngagement
   , addComment, closePreeng, restorePreeng, sendBack
 } from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
@@ -569,8 +566,7 @@ export default class extends Vue {
     etat: '',
     valideur_first: '',
     valideur_second: '',
-    valideur_final: '',
-    commentaire: ''
+    valideur_final: ''
   }
 
   private rules = {
@@ -733,10 +729,39 @@ export default class extends Vue {
 
   private async validerpSubmit() {
     this.cardLoading = true
-    const response = await validerpPreEngagement(this.engagement)
+    const response = await validationpPreeng(this.engagement)
     this.engagement = response.data
     this.initializeButtons()
     this.cardLoading = false
+  }
+
+  private annulerValider() {
+    this.$confirm('Voulez-vous vraiment annuler votre validation au 1er niveau ?'
+      , 'Annulation de validation au 1er niveau'
+      , {
+        confirmButtonText: 'Oui, annuler ma validation',
+        cancelButtonText: 'Retour',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.cardLoading = true
+      cancelValidationpPreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
+        this.plusDactionsDialogVisible = false
+        this.plusDactionsForm.commentaire = ''
+        this.plusDactionsForm.used = true
+        this.sendCommentDisabled = true
+        this.engagement = response.data
+        this.initializeButtons()
+        this.cardLoading = false
+      })
+    })
+      .catch(error => {
+        console.log('Error when canceling validationp on Pre-engagement', error)
+      })
+  }
+
+  private validersSubmit() {
+    console.log("validersSubmit")
   }
 
   private onCancel() {
