@@ -115,9 +115,19 @@ export const validationpPreeng = (data: any) =>
     data
   })
 
-  export const cancelValidationpPreeng = (data: any) =>
+export const cancelValidationpPreeng = (data: any) =>
   request({
     url: `/engagement/cancelvaliderp/peg/${data.id}`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
+
+export const validationsPreeng = (data: any) =>
+  request({
+    url: `/engagement/validers/peg/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`

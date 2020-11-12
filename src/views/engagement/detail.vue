@@ -654,6 +654,8 @@ export default class extends Vue {
         this.engagement = response.data
         this.initializeButtons()
         this.cardLoading = false
+      }).catch(error => {
+        this.cardLoading = false
       })
     })
       .catch(error => {
@@ -679,6 +681,8 @@ export default class extends Vue {
         this.engagement = response.data
         this.initializeButtons()
         this.cardLoading = false
+      }).catch(error => {
+        this.cardLoading = false
       })
     })
       .catch(error => {
@@ -688,18 +692,26 @@ export default class extends Vue {
 
   private async updateSubmit() {
     this.cardLoading = true
-    const response = await updateEngagement(this.engagement)
-    this.initializeButtons()
-    this.cardLoading = false
+    updateEngagement(this.engagement).then((response) => {
+      this.initializeButtons()
+      this.cardLoading = false
+    })
+    .catch(error => {
+      this.cardLoading = false
+    })
     // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
   }
 
   private async resendUpdate() {
     this.cardLoading = true
-    const response = await resendUpdateEngagement(this.engagement)
-    this.engagement = response.data
-    this.initializeButtons()
-    this.cardLoading = false
+    resendUpdateEngagement(this.engagement).then((response) => {
+      this.engagement = response.data
+      this.initializeButtons()
+      this.cardLoading = false
+    })
+    .catch(error => {
+      this.cardLoading = false
+    })
   }
 
   private sendBackSubmit() {
@@ -720,6 +732,8 @@ export default class extends Vue {
         this.engagement = response.data
         this.initializeButtons()
         this.cardLoading = false
+      }).catch(error => {
+        this.cardLoading = false
       })
     })
       .catch(error => {
@@ -729,10 +743,14 @@ export default class extends Vue {
 
   private async validerpSubmit() {
     this.cardLoading = true
-    const response = await validationpPreeng(this.engagement)
-    this.engagement = response.data
-    this.initializeButtons()
-    this.cardLoading = false
+    validationpPreeng(this.engagement).then((response) => {
+      this.engagement = response.data
+      this.initializeButtons()
+      this.cardLoading = false
+    })
+    .catch(error => {
+      this.cardLoading = false
+    })
   }
 
   private annulerValider() {
@@ -752,6 +770,9 @@ export default class extends Vue {
         this.sendCommentDisabled = true
         this.engagement = response.data
         this.initializeButtons()
+        this.cardLoading = false
+      })
+      .catch(error => {
         this.cardLoading = false
       })
     })
@@ -973,13 +994,13 @@ export default class extends Vue {
             this.isbtnAnnulerValider = true
             this.isbtnPlusDactions = true
           } else {
-            /** The engagement has not been validated by one of current user superiors.
+            /** The engagement has been validated by one of current user superiors.
             * So, he/she :
             * 1- will have the 'Ok' button
             * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
             * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
 
-            console.log('The engagement has not been validated by one of current user superiors')
+            console.log('The engagement has been validated by one of current user superiors')
             this.isbtnOk = true
             this.isbtnOptionsAnnuler = true
             this.isbtnPlusDactions = true
