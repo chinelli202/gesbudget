@@ -135,6 +135,26 @@ export const validationsPreeng = (data: any) =>
     data
   })
 
+export const validationPreeng = (data: any) =>
+  request({
+    url: `/engagement/valider/peg/${data.id}`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
+
+  export const cancelValidationPreeng = (data: any) =>
+  request({
+    url: `/engagement/cancelValider/peg/${data.id}`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
+
 export const createArticle = (data: any) =>
   request({
     url: '/articles',

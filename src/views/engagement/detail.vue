@@ -308,7 +308,7 @@
                       :disabled="resendUpdateDisabled"
                       @click="resendUpdate"
                     >
-                      Mettre à jour
+                      Renvoyer la mise à jour
                     </el-button>
                     <el-button
                       v-if="isbtnAnnulerValider"
@@ -454,7 +454,7 @@
               v-if="isbtnAnnulerValider"
               type="primary"
               :disabled="sendCommentDisabled"
-              @click="annulerValider"
+              @click="cancelValiderpSubmit"
             >
               Annuler ma validation
             </el-button>
@@ -485,8 +485,8 @@
 import { Component, Vue } from 'vue-property-decorator'
 import {
   detailEngagement
-  , updateEngagement, validationpPreeng, cancelValidationpPreeng, resendUpdateEngagement
-  , addComment, closePreeng, restorePreeng, sendBack
+  , updateEngagement, validationpPreeng, validationPreeng, cancelValidationPreeng, cancelValidationpPreeng, validationsPreeng
+  , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
 } from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
@@ -594,11 +594,6 @@ export default class extends Vue {
     this.statutOptions = AppModule.statutsEngagement
     this.tva = AppModule.tva
 
-    this.isCurrentUserSaisisseur = UserModule.matricule === this.engagement.saisisseur
-    this.isCurrentUserValideurp = UserModule.matricule === this.engagement.valideur_first
-    this.isCurrentUserValideurs = UserModule.matricule === this.engagement.valideur_second
-    this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
-
     this.initializeButtons()
     this.cardLoading = false
   }
@@ -656,6 +651,7 @@ export default class extends Vue {
         this.cardLoading = false
       }).catch(error => {
         this.cardLoading = false
+        console.log('Error close', error)
       })
     })
       .catch(error => {
@@ -683,6 +679,7 @@ export default class extends Vue {
         this.cardLoading = false
       }).catch(error => {
         this.cardLoading = false
+        console.log('Error restore', error)
       })
     })
       .catch(error => {
@@ -695,9 +692,9 @@ export default class extends Vue {
     updateEngagement(this.engagement).then((response) => {
       this.initializeButtons()
       this.cardLoading = false
-    })
-    .catch(error => {
+    }).catch(error => {
       this.cardLoading = false
+      console.log('Error update', error)
     })
     // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
   }
@@ -708,9 +705,9 @@ export default class extends Vue {
       this.engagement = response.data
       this.initializeButtons()
       this.cardLoading = false
-    })
-    .catch(error => {
+    }).catch(error => {
       this.cardLoading = false
+      console.log('Error resendUpdate', error)
     })
   }
 
@@ -734,6 +731,7 @@ export default class extends Vue {
         this.cardLoading = false
       }).catch(error => {
         this.cardLoading = false
+        console.log('Error sendBack', error)
       })
     })
       .catch(error => {
@@ -743,17 +741,17 @@ export default class extends Vue {
 
   private async validerpSubmit() {
     this.cardLoading = true
-    validationpPreeng(this.engagement).then((response) => {
+    validationPreeng({ id: this.engagement.id, statut: "VALIDP" }).then((response) => {
       this.engagement = response.data
       this.initializeButtons()
       this.cardLoading = false
-    })
-    .catch(error => {
+    }).catch(error => {
       this.cardLoading = false
+      console.log('Error validationpPreeng', error)
     })
   }
 
-  private annulerValider() {
+  private cancelValiderpSubmit() {
     this.$confirm('Voulez-vous vraiment annuler votre validation au 1er niveau ?'
       , 'Annulation de validation au 1er niveau'
       , {
@@ -763,7 +761,7 @@ export default class extends Vue {
       }
     ).then(_ => {
       this.cardLoading = true
-      cancelValidationpPreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
+      cancelValidationPreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire, statut: this.engagement.statut }).then((response) => {
         this.plusDactionsDialogVisible = false
         this.plusDactionsForm.commentaire = ''
         this.plusDactionsForm.used = true
@@ -771,9 +769,9 @@ export default class extends Vue {
         this.engagement = response.data
         this.initializeButtons()
         this.cardLoading = false
-      })
-      .catch(error => {
+      }).catch(error => {
         this.cardLoading = false
+        console.log('Error cancelValidationpPreeng', error)
       })
     })
       .catch(error => {
@@ -782,7 +780,15 @@ export default class extends Vue {
   }
 
   private validersSubmit() {
-    console.log("validersSubmit")
+    this.cardLoading = true
+    validationPreeng({ id: this.engagement.id, statut: "VALIDS" }).then((response) => {
+      this.engagement = response.data
+      this.initializeButtons()
+      this.cardLoading = false
+    }).catch(error => {
+      this.cardLoading = false
+      console.log('Error validationsPreeng', error)
+    })
   }
 
   private onCancel() {
@@ -837,9 +843,19 @@ export default class extends Vue {
     this.plusDactionsDialogVisible = false
   }
 
+  private evaluateVariables() {
+    this.isCurrentUserSaisisseur = UserModule.matricule === this.engagement.saisisseur
+    this.isCurrentUserValideurp = UserModule.matricule === this.engagement.valideur_first
+    this.isCurrentUserValideurs = UserModule.matricule === this.engagement.valideur_second
+    this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
+  }
+
   private initializeButtons() {
     // We reset first all buttons
     this.resetButtons()
+
+    // We re-evaluate the isCurrentUser... variables
+    this.evaluateVariables()
 
     // The engagement is closed
     this.engagementIsClosed = this.engagement.etat === AppModule.etatsEngagement.CLOT.code
@@ -865,11 +881,21 @@ export default class extends Vue {
              This button is to display only if the engagement hasn't been sent back yet.
             */
 
-            console.log('he current user has the permission to validate at the first level')
-            this.isbtnValiderp = true
+            console.log('The current user has the permission to validate at the first level')
             this.isbtnPlusDactions = true
-            if (this.engagement.next_statut === null) {
+            if (this.engagement.next_statut !== null) {
+              /** The current engagement has been sent back to SAISI for updating
+               * So the current user can't do no validation
+               */
+              this.isbtnOk = true
+            } else {
+              /** The current engagement has not been sent back to SAISI for updating
+               * So the current user can 
+               * 1- Validate at the first level with the 'Valider P' button
+               * 2- Send back with the 'Renvoyer' button
+               */
               this.isbtnRenvoyer = true
+              this.isbtnValiderp = true
             }
           } else {
             /* The current user doesn't have the permission to validate at the first level
@@ -885,7 +911,7 @@ export default class extends Vue {
           // The current user is the one who initiated the engagement
           console.log('The current user is the one who initiated the engagement')
 
-          if (this.engagement.next_statut === 'INIT') {
+          if (this.engagement.next_statut === 'SAISI') {
             /** The engagement has been sent back by the current user superior.
              * He/She needs to correct the engagement and re-submit it for the superior to validate.
              * So he/she will needs :
@@ -969,15 +995,32 @@ export default class extends Vue {
               this.isbtnRenvoyer = true
             }
           } else {
-            /** The user has no permission to validate neither at the second or the final level
-             * We'll just give him/her :
-             * 1- the 'Ok' button
-             * 2- the 'Plus d'actions...' button for comments
-             */
+            /** The user has no permission to validate neither at the second or the final level */
 
             console.log('The user has no permission to validate neither at the second or the final level')
-            this.isbtnOk = true
-            this.isbtnPlusDactions = true
+            if (!this.isCurrentUserSaisisseur) {
+              /** The user is not the one who initiated the engagement
+               * We'll just give him/her :
+               * 1- the 'Ok' button
+               * 2- the 'Plus d'actions...' button for comments
+              */
+
+              console.log('The user is not the one who initiated the engagement')
+              this.isbtnOk = true
+              this.isbtnPlusDactions = true
+            } else {
+              /** The user is the one who initiated the engagement
+               * We'll just give him/her :
+               * 1- the 'Ok' button
+               * 2- the 'Plus d'actions...' button for comments
+               * 3- the 'Clôturer l'engagement' button
+              */
+
+              console.log('The user is the one who initiated the engagement')
+              this.isbtnOk = true
+              this.isbtnPlusDactions = true
+              this.isbtnClose = true
+            }
           }
         } else {
           // The current user is the one who validated the engagement at the first level
