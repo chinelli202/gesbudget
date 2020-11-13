@@ -145,7 +145,7 @@ export const validationPreeng = (data: any) =>
     data
   })
 
-  export const cancelValidationPreeng = (data: any) =>
+export const cancelValidationPreeng = (data: any) =>
   request({
     url: `/engagement/cancelValider/peg/${data.id}`,
     method: 'post',

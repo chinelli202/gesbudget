@@ -454,7 +454,7 @@
               v-if="isbtnAnnulerValider"
               type="primary"
               :disabled="sendCommentDisabled"
-              @click="cancelValiderpSubmit"
+              @click="cancelValiderSubmit"
             >
               Annuler ma validation
             </el-button>
@@ -739,19 +739,31 @@ export default class extends Vue {
       })
   }
 
-  private async validerpSubmit() {
+  private validerpSubmit() {
+    this.validerSubmit('VALIDP')
+  }
+
+  private validersSubmit() {
+    this.validerSubmit('VALIDS')
+  }
+
+  private validerfSubmit() {
+    this.validerSubmit('VALIDF')
+  }
+
+  private validerSubmit(statut: string) {
     this.cardLoading = true
-    validationPreeng({ id: this.engagement.id, statut: "VALIDP" }).then((response) => {
+    validationPreeng({ id: this.engagement.id, statut: statut }).then((response) => {
       this.engagement = response.data
       this.initializeButtons()
       this.cardLoading = false
     }).catch(error => {
       this.cardLoading = false
-      console.log('Error validationpPreeng', error)
+      console.log('Error validationsPreeng', error)
     })
   }
 
-  private cancelValiderpSubmit() {
+  private cancelValiderSubmit() {
     this.$confirm('Voulez-vous vraiment annuler votre validation au 1er niveau ?'
       , 'Annulation de validation au 1er niveau'
       , {
@@ -777,18 +789,6 @@ export default class extends Vue {
       .catch(error => {
         console.log('Error when canceling validationp on Pre-engagement', error)
       })
-  }
-
-  private validersSubmit() {
-    this.cardLoading = true
-    validationPreeng({ id: this.engagement.id, statut: "VALIDS" }).then((response) => {
-      this.engagement = response.data
-      this.initializeButtons()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error validationsPreeng', error)
-    })
   }
 
   private onCancel() {
@@ -890,7 +890,7 @@ export default class extends Vue {
               this.isbtnOk = true
             } else {
               /** The current engagement has not been sent back to SAISI for updating
-               * So the current user can 
+               * So the current user can
                * 1- Validate at the first level with the 'Valider P' button
                * 2- Send back with the 'Renvoyer' button
                */
