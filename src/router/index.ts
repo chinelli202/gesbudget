@@ -241,7 +241,17 @@ export const asyncRoutes: RouteConfig[] = [
           title: 'articleList',
           icon: 'list'
         }
-      }
+      },
+      {
+        path: 'etatsbudget',
+        component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboardbudget/index.vue'),
+        name: 'EtatsBudget',
+        meta: {
+          title: 'etatbudget',
+          icon: 'dashboard',
+          affix: true
+        }
+      },
     ]
   },
   {
@@ -254,6 +264,35 @@ export const asyncRoutes: RouteConfig[] = [
         name: 'Tab',
         meta: {
           title: 'tab',
+          icon: 'tab'
+        }
+      },
+      {
+        path: 'custom',
+        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        name: 'Custom',
+        children: [
+          {
+            path: 'grouperubrique/:groupename',
+            component: () => import('@/views/table/groupe-rubrique/index.vue'),
+            name: 'depenses.grouperubrique',
+            meta: {
+              title: 'simpletable',
+              hidden: true
+            }
+          },
+          {
+            path: 'generaux',
+            component: () => import('@/views/table/etats-generaux.vue'),
+            name: 'Etats Generaux',
+            meta: {
+              title: 'etatsGeneraux',
+              hidden: true
+            }
+          }
+        ],
+        meta: {
+          title: 'custom',
           icon: 'tab'
         }
       }

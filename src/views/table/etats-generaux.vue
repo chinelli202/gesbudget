@@ -1,0 +1,244 @@
+<template>
+  <div class="app-container">
+    <p>will be displaying data for {{ group.libelle }}</p>
+    <h4>Récapitulatif Fonctionnement</h4>
+    <el-table
+      :data="fonctionnementData.collection"
+
+      border
+      style="width: 100%"
+    >
+      <el-table-column
+        prop="sumrow.label"
+        label="LIBELLES"
+        width="180"
+      />
+      <el-table-column
+        prop="sumrow.prevision"
+        label="Prévisions 2020"
+      />
+      <el-table-column
+        prop="amount1"
+
+        label="Réalisations du Mois en cours"
+      />
+      <el-table-column
+        prop="sumrow.realisationsMois"
+
+        label="Réalisations précédentes"
+      />
+      <el-table-column
+        prop="sumrow.realisationsMoisPrecedents"
+
+        label="Réalisations cumulées à ce jour"
+      />
+      <el-table-column
+        prop="sumrow.realisations"
+
+        label="Exécution à ce jour"
+      />
+      <el-table-column
+        prop="sumrow.solde"
+
+        label="Solde"
+      />
+      <el-table-column
+
+        label="Taux d'exécution"
+      >
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | articleStatusFilter">
+            {{ row.status }}
+          </el-tag>
+          <el-progress :percentage="row.tauxExecution" />
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <h4>Récapitulatif Investissements</h4>
+    <el-table
+      :data="tableData"
+
+      border
+      style="width: 100%"
+    >
+      <el-table-column
+        prop="id"
+        label="LIBELLES"
+        width="180"
+      />
+      <el-table-column
+        prop="name"
+        label="Prévisions 2020"
+      />
+      <el-table-column
+        prop="amount1"
+
+        label="Réalisations du en cours"
+      />
+      <el-table-column
+        prop="amount2"
+
+        label="Réalisations précédentes"
+      />
+      <el-table-column
+        prop="amount3"
+
+        label="Réalisations cumulées à ce jour"
+      />
+      <el-table-column
+        prop="amount3"
+
+        label="Exécution à ce jour"
+      />
+      <el-table-column
+        prop="amount3"
+
+        label="Solde"
+      />
+      <el-table-column
+        prop="amount3"
+
+        label="Taux d'exécution"
+      >
+        <el-progress :percentage="45" />
+      </el-table-column>
+    </el-table>
+    <h4>Récapitulatif Recettes</h4>
+    <el-table
+      :data="tableData"
+
+      border
+      style="width: 100%"
+    >
+      <el-table-column
+        prop="id"
+        label="LIBELLES"
+        width="180"
+      />
+      <el-table-column
+        prop="name"
+        label="Prévisions 2020"
+      />
+      <el-table-column
+        prop="amount1"
+
+        label="Réalisations du en cours"
+      />
+      <el-table-column
+        prop="amount2"
+
+        label="Réalisations précédentes"
+      />
+      <el-table-column
+        prop="amount3"
+
+        label="Réalisations cumulées à ce jour"
+      />
+      <el-table-column
+        prop="amount3"
+
+        label="Exécution à ce jour"
+      />
+      <el-table-column
+        prop="amount3"
+
+        label="Solde"
+      />
+      <el-table-column
+        prop="amount3"
+
+        label="Taux d'exécution"
+      >
+        <el-progress :percentage="45" />
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+
+<script lang="ts">
+
+import { Component, Vue } from 'vue-property-decorator'
+import { getRecapSousSectionFonctionnement } from '@/api/sousSectionFonctionnement'
+import { ISousSectionFonctionnement } from '@/api/types'
+
+@Component({
+  name: 'EtatsGeneraux'
+})
+
+export default class extends Vue {
+private group = {}
+private listQuery = {
+  page: 1,
+  limit: 10
+}
+
+private listLoading = true
+private fonctionnementData = {}
+private investissementData = {}
+private recetteData = {}
+
+created() {
+  this.getFonctionnementData()
+  this.getInvestissementData()
+  this.getRecetteData()
+}
+
+private async getFonctionnementData() {
+  // const id = this.$route.params && this.$route.params.id
+  // simulate database query
+  this.listLoading = true
+  const groupename = this.$route.params && this.$route.params.groupename
+  const { data } = await getRecapSousSectionFonctionnement()
+  this.fonctionnementData = data
+  setTimeout(() => {
+    this.listLoading = false
+  }, 0.5 * 3000)
+}
+
+private async getInvestissementData() {
+  // TODO
+}
+
+private async getRecetteData() {
+  // TODO
+}
+
+data() {
+  return {
+    tableData: [{
+      id: '12987122',
+      name: 'Tom',
+      amount1: '234',
+      amount2: '3.2',
+      amount3: 10
+    }, {
+      id: '12987123',
+      name: 'Tom',
+      amount1: '165',
+      amount2: '4.43',
+      amount3: 12
+    }, {
+      id: '12987124',
+      name: 'Tom',
+      amount1: '324',
+      amount2: '1.9',
+      amount3: 9
+    }, {
+      id: '12987125',
+      name: 'Tom',
+      amount1: '621',
+      amount2: '2.2',
+      amount3: 17
+    }, {
+      id: '12987126',
+      name: 'Tom',
+      amount1: '539',
+      amount2: '4.1',
+      amount3: 15
+    }]
+  }
+}
+}
+
+</script>
