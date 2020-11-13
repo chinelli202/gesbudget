@@ -9,7 +9,7 @@
       style="width: 100%"
     >
       <el-table-column
-        prop="sumrow.label"
+        prop="sumrow.libelle"
         label="LIBELLES"
         width="180"
       />
@@ -18,39 +18,35 @@
         label="Prévisions 2020"
       />
       <el-table-column
-        prop="amount1"
+        prop="sumrow.realisationsMois"
 
         label="Réalisations du Mois en cours"
       />
       <el-table-column
-        prop="sumrow.realisationsMois"
+        prop="sumrow.realisationsMoisPrecedents"
 
         label="Réalisations précédentes"
       />
       <el-table-column
-        prop="sumrow.realisationsMoisPrecedents"
+        prop="sumrow.realisations"
 
         label="Réalisations cumulées à ce jour"
       />
       <el-table-column
-        prop="sumrow.realisations"
+        prop="sumrow.execution"
 
         label="Exécution à ce jour"
       />
       <el-table-column
-        prop="sumrow.solde"
+        prop="sumrow.tauxExecution"
 
         label="Solde"
       />
       <el-table-column
-
         label="Taux d'exécution"
       >
         <template slot-scope="{row}">
-          <el-tag :type="row.status | articleStatusFilter">
-            {{ row.status }}
-          </el-tag>
-          <el-progress :percentage="row.tauxExecution" />
+          <el-progress :percentage="row.sumrow.tauxExecution" />
         </template>
       </el-table-column>
     </el-table>
