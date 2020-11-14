@@ -28,6 +28,35 @@ export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[]) => {
 export interface IPermissionState {
   routes: RouteConfig[]
   dynamicRoutes: RouteConfig[]
+  public permissionCodes = {
+    engagement: {
+      enregistrer: {
+        SAISI: 'saisir-pre-engagement',
+        VALIDP: 'validerp-pre-engagement',
+        VALIDS: 'validers-pre-engagement',
+        VALIDF: 'validerf-pre-engagement'
+      },
+      cloture: {
+        CLOT: 'cloturer-pre-engagement',
+        VALIDP: 'validerp-cloture-preg',
+        VALIDS: 'validers-cloture-preg',
+        VALIDF: 'validerf-cloture-preg'
+      },
+      imputer: {
+        IMP: 'saisir-imputation',
+        REG: 'regulariser-imputation',
+        VALIDP: 'validerp-imputation',
+        VALIDS: 'validers-imputation',
+        VALIDF: 'validerf-imputation'
+      },
+      apurer: {
+        APUR: 'saisir-apurement',
+        VALIDP: 'validerp-apurement',
+        VALIDS: 'validers-apurement',
+        VALIDF: 'validerf-apurement'
+      }
+    }
+  }
 }
 
 @Module({ dynamic: true, store, name: 'permission' })
