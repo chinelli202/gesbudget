@@ -1,6 +1,7 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import { RouteConfig } from 'vue-router'
 import { asyncRoutes, constantRoutes } from '@/router'
+import { setRoutes, getRoutes, setDynamicRoutes, getDynamicRoutes} from '@/utils/localdb'
 import store from '@/store'
 
 const hasPermission = (roles: string[], route: RouteConfig) => {
@@ -32,8 +33,8 @@ export interface IPermissionState {
 
 @Module({ dynamic: true, store, name: 'permission' })
 class Permission extends VuexModule implements IPermissionState {
-  public routes: RouteConfig[] = [] // TODO : to remove
-  public dynamicRoutes: RouteConfig[] = [] // TODO : to remove
+  public routes: RouteConfig[] = getRoutes() // TODO : change this function to getRoutes from backend
+  public dynamicRoutes: RouteConfig[] = getDynamicRoutes() // TODO : change this function to getRoutes from backend
   public permissionCodes = {
     engagement: {
       enregistrer: {
@@ -68,7 +69,9 @@ class Permission extends VuexModule implements IPermissionState {
   @Mutation
   private SET_ROUTES(routes: RouteConfig[]) {
     this.routes = constantRoutes.concat(routes)
+    setRoutes(this.routes)
     this.dynamicRoutes = routes
+    setDynamicRoutes(this.dynamicRoutes)
   }
 
   @Action
