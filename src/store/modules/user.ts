@@ -3,7 +3,7 @@ import { login, logout, getUserInfo } from '@/api/users'
 import { getToken, setToken, removeToken } from '@/utils/cookies'
 import {
   removeAllEngagementVariables, setPermissions
-  , setRoles, getRoles, getPermissions, getFirstNameUtilisateur, getLastNameUtilisateur
+  , getRoles, getPermissions, getFirstNameUtilisateur, getLastNameUtilisateur
   , getNameUtilisateur, getMatriculeUtilisateur, getDivisionUtilisateur, getFonctionUtilisateur
   , getSaisisseurUtilisateur, getValideurUtilisateur, getStatutUtilisateur
   , setFirstNameUtilisateur, setLastNameUtilisateur, setNameUtilisateur
@@ -43,7 +43,7 @@ class User extends VuexModule implements IUserState {
   public saisisseur = getSaisisseurUtilisateur()
   public valideur = getValideurUtilisateur()
   public statutUtilisateur = getStatutUtilisateur()
-  public roles: any[] = getRoles()
+  public roles: any[] = []
   public permissions: any[] = getPermissions()
   public email = ''
   public avatar = '/img/avatar-icon.png'
@@ -93,7 +93,6 @@ class User extends VuexModule implements IUserState {
   @Mutation
   private SET_ROLES(roles: string[]) {
     this.roles = roles
-    setRoles(roles)
   }
 
   @Mutation

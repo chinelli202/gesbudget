@@ -1,15 +1,3 @@
-import { RouteConfig } from 'vue-router'
-
-const routesKey = 'routes'
-export const getRoutes = () => JSON.parse(localStorage.getItem(routesKey) || '[]')
-export const setRoutes = (routes: RouteConfig[]) => localStorage.setItem(routesKey, JSON.stringify(routes))
-export const removeRoutes = () => localStorage.removeItem(routesKey)
-
-const dynamicRoutesKey = 'dynamicRoutes'
-export const getDynamicRoutes = () => JSON.parse(localStorage.getItem(dynamicRoutesKey) || '[]')
-export const setDynamicRoutes = (dynamicRoutes: RouteConfig[]) => localStorage.setItem(dynamicRoutesKey, JSON.stringify(dynamicRoutes))
-export const removeDynamicRoutes = () => localStorage.removeItem(dynamicRoutesKey)
-
 const firstNameUtilisateurKey = 'firstNameUtilisateur'
 export const getFirstNameUtilisateur = () => localStorage.getItem(firstNameUtilisateurKey) || ''
 export const setFirstNameUtilisateur = (firstName: string) => localStorage.setItem(firstNameUtilisateurKey, firstName)

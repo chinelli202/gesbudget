@@ -1,7 +1,6 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import { RouteConfig } from 'vue-router'
 import { asyncRoutes, constantRoutes } from '@/router'
-import { setRoutes, getRoutes, setDynamicRoutes, getDynamicRoutes} from '@/utils/localdb'
 import store from '@/store'
 
 const hasPermission = (roles: string[], route: RouteConfig) => {
@@ -10,7 +9,7 @@ const hasPermission = (roles: string[], route: RouteConfig) => {
   } else {
     return true
   }
-} // TODO : to remove
+}
 
 export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[]) => {
   const res: RouteConfig[] = []
@@ -24,7 +23,7 @@ export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[]) => {
     }
   })
   return res
-}// TODO : to remove
+}
 
 export interface IPermissionState {
   routes: RouteConfig[]
@@ -33,45 +32,13 @@ export interface IPermissionState {
 
 @Module({ dynamic: true, store, name: 'permission' })
 class Permission extends VuexModule implements IPermissionState {
-  public routes: RouteConfig[] = getRoutes() // TODO : change this function to getRoutes from backend
-  public dynamicRoutes: RouteConfig[] = getDynamicRoutes() // TODO : change this function to getRoutes from backend
-  public permissionCodes = {
-    engagement: {
-      enregistrer: {
-        SAISI: 'saisir-pre-engagement',
-        VALIDP: 'validerp-pre-engagement',
-        VALIDS: 'validers-pre-engagement',
-        VALIDF: 'validerf-pre-engagement'
-      },
-      cloture: {
-        CLOT: 'cloturer-pre-engagement',
-        VALIDP: 'validerp-cloture-preg',
-        VALIDS: 'validers-cloture-preg',
-        VALIDF: 'validerf-cloture-preg'
-      },
-      imputer: {
-        IMP: 'saisir-imputation',
-        REG: 'regulariser-imputation',
-        VALIDP: 'validerp-imputation',
-        VALIDS: 'validers-imputation',
-        VALIDF: 'validerf-imputation'
-      },
-      apurer: {
-        APUR: 'saisir-apurement',
-        VALIDP: 'validerp-apurement',
-        VALIDS: 'validers-apurement',
-        VALIDF: 'validerf-apurement'
-      }
-    }
-  }
+  public routes: RouteConfig[] = []
+  public dynamicRoutes: RouteConfig[] = []
 
-  // TODO : remove all below
   @Mutation
   private SET_ROUTES(routes: RouteConfig[]) {
     this.routes = constantRoutes.concat(routes)
-    setRoutes(this.routes)
     this.dynamicRoutes = routes
-    setDynamicRoutes(this.dynamicRoutes)
   }
 
   @Action
