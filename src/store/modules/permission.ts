@@ -28,6 +28,12 @@ export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[]) => {
 export interface IPermissionState {
   routes: RouteConfig[]
   dynamicRoutes: RouteConfig[]
+}
+
+@Module({ dynamic: true, store, name: 'permission' })
+class Permission extends VuexModule implements IPermissionState {
+  public routes: RouteConfig[] = []
+  public dynamicRoutes: RouteConfig[] = []
   public permissionCodes = {
     engagement: {
       enregistrer: {
@@ -57,13 +63,7 @@ export interface IPermissionState {
       }
     }
   }
-}
-
-@Module({ dynamic: true, store, name: 'permission' })
-class Permission extends VuexModule implements IPermissionState {
-  public routes: RouteConfig[] = []
-  public dynamicRoutes: RouteConfig[] = []
-
+  
   @Mutation
   private SET_ROUTES(routes: RouteConfig[]) {
     this.routes = constantRoutes.concat(routes)
