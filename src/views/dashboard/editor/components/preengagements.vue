@@ -1,10 +1,23 @@
 <template>
   <div>
-    <h1>
-      <el-link href="engagement">
-        Initiations
-      </el-link>
-    </h1>
+    <el-row>
+      <el-col :span="10">
+        <h1>Pré engagements initiés</h1>
+      </el-col>
+      <el-col
+        :span="4"
+        :offset="9"
+      >
+        <div>
+          <el-button
+            type="primary"
+            @click="launchDialogForm"
+          >
+            Créer un engagement
+          </el-button>
+        </div>
+      </el-col>
+    </el-row>
     <el-table
       v-loading="listLoading"
       :data="initiatedEngagements"
@@ -16,79 +29,67 @@
         prop="id"
         label="ID"
         width="50"
-      >
-      </el-table-column>
+      />
       <el-table-column
         fixed
         prop="created_at"
         :formatter="dateFormatter"
         label="Date"
         width="130"
-      >
-      </el-table-column>
+      />
       <el-table-column
         fixed
         prop="code"
         label="Code"
         width="170"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="libelle"
         label="Libellé"
         width="250"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="statut"
         label="Statut"
         width="75"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="montant_ht"
         :formatter="numFormatter"
         label="Montant HT"
         width="150"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="montant_ttc"
         :formatter="numFormatter"
         label="Montant TTC"
         width="150"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="devise"
         label="Devise"
         width="75"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="nature"
         label="Nature"
         width="75"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="type"
         label="Type"
         width="75"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="etat"
         label="Etat"
         width="75"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="saisisseur"
         label="Saisi par"
         width="100"
-      >
-      </el-table-column>
+      />
       <el-table-column
         fixed="right"
         label="Opérations"
@@ -96,22 +97,189 @@
       >
         <template slot-scope="scope">
           <el-button
-            @click="detail(scope.$index, scope.row)"
             icon="el-icon-edit-outline"
             size="small"
+            @click="detail(scope.$index, scope.row)"
           >
             Detail
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      v-loading="dialogFormLoading"
+      :visible.sync="dialogFormVisible"
+    >
+      <el-form :model="engagement">
+        <el-row>
+          <el-col :offset="2">
+            <h1>Créer un engagement</h1>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10">
+          <el-col
+            :span="20"
+            :offset="2"
+          >
+            <el-form-item label="Libellé">
+              <el-input
+                v-model="engagement.libelle"
+                type="textarea"
+                :rows="3"
+                @input="formAttributeChange"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item>
+          <el-row :gutter="10">
+            <el-col
+              :span="4"
+              :offset="2"
+            >
+              <strong>Montant HT</strong>
+            </el-col>
+            <el-col :span="4">
+              <el-select
+                v-model="engagement.devise"
+                placeholder="Devise"
+                @input="formAttributeChange"
+              >
+                <el-option
+                  v-for="(obj) in deviseOptions"
+                  :key="obj.code"
+                  :label="obj.code"
+                  :value="obj.code"
+                />
+              </el-select>
+            </el-col>
+            <el-col :span="12">
+              <el-input
+                v-model="engagement.montant_ht"
+                @input="changeMontantHT"
+              />
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item>
+          <el-row :gutter="10">
+            <el-col
+              :span="4"
+              :offset="2"
+            >
+              <strong>Montant TTC</strong>
+            </el-col>
+            <el-col
+              :span="4"
+            >
+              <span class="span-label">
+                <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
+              </span>
+            </el-col>
+            <el-col :span="12">
+              <el-input
+                v-model="engagement.montant_ttc"
+                :disabled="true"
+              />
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item>
+          <el-row :gutter="10">
+            <el-col
+              :span="10"
+              :offset="2"
+            >
+              <span class="span-label">
+                <strong>Nature</strong>
+              </span>
+            </el-col>
+            <el-col
+              :span="9"
+              :offset="2"
+            >
+              <span class="span-label">
+                <strong>Type</strong>
+              </span>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col
+              :span="10"
+              :offset="2"
+            >
+              <el-select
+                v-model="engagement.nature"
+                placeholder="Nature"
+                class="type-select"
+                @input="formAttributeChange"
+              >
+                <el-option
+                  v-for="(obj) in natureOptions"
+                  :key="obj.code"
+                  :label="obj.libelle"
+                  :value="obj.code"
+                >
+                  <span style="float: left">{{ obj.libelle }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col
+              :span="9"
+              :offset="2"
+            >
+              <el-select
+                v-model="engagement.type"
+                placeholder="Type"
+                class="type-select"
+                @input="formAttributeChange"
+              >
+                <el-option
+                  v-for="(obj) in typeOptions"
+                  :key="obj.code"
+                  :label="obj.libelle"
+                  :value="obj.code"
+                >
+                  <span style="float: left">{{ obj.libelle }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
+                </el-option>
+              </el-select>
+            </el-col>
+          </el-row>
+        </el-form-item>
+      </el-form>
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-row
+          justify="end"
+        >
+          <el-col
+            :span="20"
+            :offset="2"
+          >
+            <el-button @click="dialogFormVisible = false">Annuler</el-button>
+            <el-button
+              type="primary"
+              :disabled="submitDisabled"
+              @click="createEngagement"
+            >
+              Créer l'engagement
+            </el-button>
+          </el-col>
+        </el-row>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { getEngagements } from '@/api/engagements'
+import { getEngagements, createEngagement } from '@/api/engagements'
 import { IEngagementData } from '@/api/types'
+import { AppModule } from '@/store/modules/app'
 
 @Component({
   name: 'PreEngagements',
@@ -122,6 +290,24 @@ import { IEngagementData } from '@/api/types'
 export default class PreEngagements extends Vue {
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
+
+  /** Dialog Form Variables */
+  private formLabelWidth = '120px'
+  private dialogFormVisible = false
+  private dialogFormLoading = false
+  private deviseOptions = {}
+  private typeOptions = {}
+  private natureOptions = {}
+  private etatOptions = {}
+  private statutOptions = {}
+  private tva = 0
+  private submitDisabled = true
+  private engagement = {
+    montant_ht: 0,
+    montant_ttc: 0,
+    nature: '',
+    type: ''
+  }
 
   created() {
     this.getInitiatedEngagements()
@@ -153,6 +339,39 @@ export default class PreEngagements extends Vue {
     const { data } = await getEngagements({ etat: 'INIT' })
     this.initiatedEngagements = data
     this.listLoading = false
+  }
+
+  private launchDialogForm() {
+    this.deviseOptions = AppModule.devises
+    this.typeOptions = AppModule.typesEngagement
+    this.natureOptions = AppModule.naturesEngagement
+    this.etatOptions = AppModule.etatsEngagement
+    this.statutOptions = AppModule.statutsEngagement
+    this.tva = AppModule.tva
+
+    this.dialogFormVisible = true
+  }
+
+  private createEngagement() {
+    // this.dialogFormLoading = true
+    console.log('this.engagement : ', this.engagement)
+    createEngagement(this.engagement).then((response) => {
+      const newEngagement = response.data
+      this.initiatedEngagements.push(newEngagement)
+      this.initiatedEngagements.sort((a, b) => b.id - a.id)
+      this.submitDisabled = true
+      this.dialogFormLoading = false
+      this.dialogFormVisible = false
+    })
+  }
+
+  private changeMontantHT(value: number) {
+    this.engagement.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
+    this.formAttributeChange()
+  }
+
+  private formAttributeChange() {
+    this.submitDisabled = false
   }
 
   // data() {

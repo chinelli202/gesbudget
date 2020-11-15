@@ -1,16 +1,6 @@
 <template>
   <div class="dashboard-editor-container">
     <div class="clearfix">
-      <div class="introduction">
-        <div class="display_name">
-          {{ name }} | editor
-        </div>
-        <span
-          v-for="item in roles"
-          :key="item"
-          class="info-roles"
-        >{{ item }}</span>
-      </div>
       <div class="app-container">
         <PreEngagements />
       </div>
@@ -49,7 +39,7 @@ export default class extends Vue {
 .dashboard-editor-container {
   background-color: #ffffff;
   // min-height: 100vh;
-  padding: 10px 30px 0px;
+  padding: 0px 30px 0px;
 
   .introduction {
     margin: 0;
@@ -60,6 +50,10 @@ export default class extends Vue {
       line-height: 38px;
       color: #212121;
     }
+  }
+
+  .app-container {
+    padding: 10px 0px;
   }
 
   .info-roles {

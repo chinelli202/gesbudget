@@ -49,7 +49,7 @@
                   type="textarea"
                   :rows="2"
                   :disabled="!isbtnUpdate && !isResendUpdate"
-                  @change="formAttributeChange"
+                  @input="formAttributeChange"
                 />
               </el-form-item>
               <el-form-item label="Montant HT">

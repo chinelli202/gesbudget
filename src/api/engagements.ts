@@ -26,7 +26,17 @@ export const defaultArticleData: IEngagementData = {
   source: ''
 }
 
-export const getEngagements = (params: any) =>
+export const createEngagement = (data: any) =>
+  request({
+    url: `/engagement/nouveau`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
+
+  export const getEngagements = (params: any) =>
   request({
     url: '/getengagements',
     method: 'get',
@@ -153,24 +163,4 @@ export const cancelValidationPreeng = (data: any) =>
       Authorization: `Bearer ${getToken()}`
     },
     data
-  })
-
-export const createArticle = (data: any) =>
-  request({
-    url: '/articles',
-    method: 'post',
-    data
-  })
-
-export const updateArticle = (id: number, data: any) =>
-  request({
-    url: `/articles/${id}`,
-    method: 'put',
-    data
-  })
-
-export const deleteArticle = (id: number) =>
-  request({
-    url: `/articles/${id}`,
-    method: 'delete'
   })
