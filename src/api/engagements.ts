@@ -28,7 +28,7 @@ export const defaultArticleData: IEngagementData = {
 
 export const createEngagement = (data: any) =>
   request({
-    url: `/engagement/nouveau`,
+    url: `/engagement/create`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -57,7 +57,7 @@ export const detailEngagement = (params: any) =>
 
 export const updateEngagement = (data: any) =>
   request({
-    url: `/engagement/${data.id}`,
+    url: `/engagement/update/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`

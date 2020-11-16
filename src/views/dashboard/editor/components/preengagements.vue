@@ -111,11 +111,53 @@
       :visible.sync="dialogFormVisible"
     >
       <el-form :model="engagement">
-        <el-row>
-          <el-col :offset="2">
+        <el-row
+          type="flex"
+          justify="center"
+        >
+          <el-col
+            :span="12"
+            :offset="2"
+          >
             <h1>Créer un engagement</h1>
           </el-col>
         </el-row>
+        <el-row
+          type="flex"
+          justify="center"
+        >
+          <el-col
+            :span="8"
+            :offset="2"
+          >
+             <el-radio-group
+              v-model="domain"
+              @change="domainChange"
+              size="small"
+            >
+              <el-radio-button label="Fonctionnement"></el-radio-button>
+              <el-radio-button label="Mandat"></el-radio-button>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+        <el-form-item>
+          <el-row :gutter="10">
+            <el-col
+              :span="4"
+              :offset="2"
+            >
+              <strong>Chapitre</strong>
+            </el-col>
+            <el-col :span="16">
+              <el-autocomplete
+                v-model="chapitre"
+                :fetch-suggestions="querySearchAsync"
+                placeholder="Choisir un chapitre"
+                @select="handleSelect"
+              ></el-autocomplete>
+            </el-col>
+          </el-row>
+        </el-form-item>
         <el-row :gutter="10">
           <el-col
             :span="20"
@@ -280,6 +322,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { getEngagements, createEngagement } from '@/api/engagements'
 import { IEngagementData } from '@/api/types'
 import { AppModule } from '@/store/modules/app'
+import { getBudgetStructure } from '@/api/variables'
 
 @Component({
   name: 'PreEngagements',
@@ -290,8 +333,12 @@ import { AppModule } from '@/store/modules/app'
 export default class PreEngagements extends Vue {
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
+  private domain = "Fonctionnement"
+  private chapitresBudget = {}
+  private chapitresOptions = []
 
   /** Dialog Form Variables */
+  // Add rules validation on the form to prevent incorrect submissions
   private formLabelWidth = '120px'
   private dialogFormVisible = false
   private dialogFormLoading = false
@@ -303,10 +350,11 @@ export default class PreEngagements extends Vue {
   private tva = 0
   private submitDisabled = true
   private engagement = {
-    montant_ht: 0,
+    montant_ht: null,
     montant_ttc: 0,
     nature: '',
-    type: ''
+    type: '',
+    devise: 'XAF'
   }
 
   created() {
@@ -341,6 +389,20 @@ export default class PreEngagements extends Vue {
     this.listLoading = false
   }
 
+  private domainChange() {
+    console.log(this.domain)
+  }
+
+  querySearchAsync(queryString, cb) {
+    var links = this.links;
+    var results = queryString ? links.filter(this.createFilter(queryString)) : links;
+
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      cb(results);
+    }, 3000 * Math.random());
+  }
+
   private launchDialogForm() {
     this.deviseOptions = AppModule.devises
     this.typeOptions = AppModule.typesEngagement
@@ -348,6 +410,10 @@ export default class PreEngagements extends Vue {
     this.etatOptions = AppModule.etatsEngagement
     this.statutOptions = AppModule.statutsEngagement
     this.tva = AppModule.tva
+
+    for(const section in AppModule.budgetStructure[this.domain]) {
+      this.chapitresBudget[section] = this.chapitres.concat(AppModule.budgetStructure[this.domain][section]['chapitres'])
+    }
 
     this.dialogFormVisible = true
   }

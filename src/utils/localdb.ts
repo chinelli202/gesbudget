@@ -88,6 +88,11 @@ export const getStatutsEngagement = () => JSON.parse(localStorage.getItem(statut
 export const setStatutsEngagement = (statutsEngagement: string[]) => localStorage.setItem(statutsEngagementKey, JSON.stringify(statutsEngagement))
 export const removeStatutsEngagement = () => localStorage.removeItem(statutsEngagementKey)
 
+const budgetStructureKey = 'budgetStructure'
+export const getLocaldbBudgetStructure = () => JSON.parse(localStorage.getItem(budgetStructureKey) || '[]')
+export const setLocaldbBudgetStructure = (budgetStructure: any) => localStorage.setItem(budgetStructureKey, JSON.stringify(budgetStructure))
+export const removeLocaldbBudgetStructure = () => localStorage.removeItem(budgetStructureKey)
+
 export const removeAllEngagementVariables = () => {
   removeFirstNameUtilisateur()
   removeLastNameUtilisateur()
@@ -107,4 +112,5 @@ export const removeAllEngagementVariables = () => {
   removeNaturesEngagement()
   removeEtatsEngagement()
   removeStatutsEngagement()
+  removeLocaldbBudgetStructure()
 }

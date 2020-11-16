@@ -8,8 +8,9 @@ import {
   , setStatutsEngagement, setTva, setTypesEngagement, getTva
   , getDevises, getTypesEngagement, getNaturesEngagement
   , getEtatsEngagement, getStatutsEngagement
+  , getLocaldbBudgetStructure, setLocaldbBudgetStructure
 } from '@/utils/localdb'
-import { getVariables } from '@/api/variables'
+import { getVariables, getBudgetStructure } from '@/api/variables'
 import { getLocale } from '@/lang'
 import store from '@/store'
 
@@ -51,6 +52,8 @@ class App extends VuexModule implements IAppState {
   public etatsEngagement = getEtatsEngagement()
   public statutsEngagement = getStatutsEngagement()
 
+  public budgetStructure: any = getLocaldbBudgetStructure()
+
   @Action
   public async fetchEngagementVariables() {
     let response = await getVariables({ cle: 'DEVISE' })
@@ -85,6 +88,16 @@ class App extends VuexModule implements IAppState {
 
     response = await getVariables({ cle: 'CONSTANTE', code: 'TVA' })
     this.SET_TVA(parseFloat(response.data[0].valeur))
+    
+    response = await getBudgetStructure({ domain: "fonctionnement" })
+    const budget = {
+      fonctionnement: {},
+      mandat: {}
+    }
+    budget.fonctionnement = response.data
+    response = await getBudgetStructure({ domain: "mandat" })
+    budget.mandat = response.data
+    this.SET_BUDGET_STRUCTURE(budget)
   }
 
   @Mutation
@@ -156,6 +169,12 @@ class App extends VuexModule implements IAppState {
   private SET_STATUTS_ENGAGEMENT(statuts: string[]) {
     this.statutsEngagement = statuts
     setStatutsEngagement(this.statutsEngagement)
+  }
+  
+  @Mutation
+  private SET_BUDGET_STRUCTURE(budget: any) {
+    this.budgetStructure = budget
+    setLocaldbBudgetStructure(this.budgetStructure)
   }
 
   @Action

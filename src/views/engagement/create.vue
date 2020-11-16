@@ -26,7 +26,6 @@
             center
             show-icon
           />
-
           <el-main
             v-loading="cardLoading"
           >

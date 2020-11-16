@@ -10,3 +10,13 @@ export const getVariables = (params: any) =>
     },
     params
   })
+
+  export const getBudgetStructure = (params: any) =>
+  request({
+    url: `/getvariables/${params.domain}`,
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    params
+  })

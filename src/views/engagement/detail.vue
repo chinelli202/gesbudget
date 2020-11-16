@@ -8,28 +8,28 @@
               Detail Engagement - {{ engagement.id }}
             </h1>
           </el-header>
-          <el-alert
-            v-if="engagementIsClosed"
-            title="Ce pré-engagement a été clôturé."
-            type="info"
-            :closable="false"
-            effect="dark"
-            center
-            show-icon
-          />
-          <el-alert
-            v-else-if="engagement.next_statut !== null"
-            title="Ce pré-engagement a été renvoyé pour modification."
-            type="info"
-            :closable="false"
-            style="max-width: 400vw"
-            center
-            show-icon
-          />
-
           <el-main
             v-loading="cardLoading"
           >
+            <el-alert
+              v-if="engagementIsClosed"
+              title="Ce pré-engagement a été clôturé."
+              type="info"
+              :closable="false"
+              effect="dark"
+              style="margin-bottom: 10px"
+              center
+              show-icon
+            />
+            <el-alert
+              v-else-if="engagement.next_statut !== null"
+              title="Ce pré-engagement a été renvoyé pour modification."
+              type="info"
+              :closable="false"
+              style="max-width: 400vw; margin-bottom: 10px"
+              center
+              show-icon
+            />
             <el-form
               ref="form"
               :model="engagement"
