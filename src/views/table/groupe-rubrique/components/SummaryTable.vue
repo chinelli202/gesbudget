@@ -1,56 +1,57 @@
 <template>
   <div class="app-container">
-    <h4>Chapitres</h4>
+    <h4>Recapitulatif {{recapData.header.labelLabel}}</h4>
     <el-table
-      :data="tableData"
+      :data="recapData.collection"
 
       border
       style="width: 100%"
     >
       <el-table-column
-        prop="id"
-        label="LIBELLES"
+        prop="libelle"
+        :label="recapData.header.labelLabel"
         width="180"
       />
       <el-table-column
-        prop="name"
-        label="Prévisions 2020"
+        prop="realisations"
+        :label="recapData.header.realisationsLabel"
       />
       <el-table-column
-        prop="amount1"
+        prop="realisationsMois"
 
-        label="Réalisations du en cours"
+        :label="recapData.header.realisationsMoisLabel"
       />
       <el-table-column
-        prop="amount2"
+        prop="realisationsMoisPrecedents"
 
-        label="Réalisations précédentes"
+        :label="recapData.header.realisationsMoisPrecedentsLabel"
       />
       <el-table-column
-        prop="amount3"
+        prop="engagements"
 
-        label="Réalisations cumulées à ce jour"
+        :label="recapData.header.engagementsLabel"
       />
       <el-table-column
-        prop="amount3"
+        prop="execution"
 
-        label="Exécution à ce jour"
+        :label="recapData.header.executionLabel"
       />
       <el-table-column
-        prop="amount3"
+        prop="solde"
 
-        label="Solde"
+        :label="recapData.header.soldeLabel"
       />
       <el-table-column
-        prop="amount3"
+        prop="tauxExecution"
 
-        label="Taux d'exécution"
+        :label="recapData.header.tauxExecutionLabel"
       >
-        <el-progress :percentage="45" />
+          <template slot-scope="{row}">
+            <el-progress :percentage="row.tauxExecution" />
+          </template>
       </el-table-column>
       <el-table-column
         prop="amount3"
-
         label="Actions"
       >
         <el-button
@@ -62,21 +63,21 @@
         </el-button>
       </el-table-column>
     </el-table>
-    <p>Displaying data for {{ group.libelle }}</p>
   </div>
 </template>
 
 <script lang="ts">
 
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import { getGroupeFonctionnement } from '@/api/groupeFonctionnement'
-import { IGroupeFonctionnement } from '@/api/types'
+import { IGroupeFonctionnement, IRecapData } from '@/api/types'
 
 @Component({
   name: 'CustomTable'
 })
 
 export default class extends Vue {
+@Prop() private recapData!: IRecapData
 private group = {}
 private listQuery = {
   page: 1,
@@ -87,48 +88,16 @@ created() {
   this.getGroup()
 }
 
-private async getGroup() {
-  // const id = this.$route.params && this.$route.params.id
-  const groupename = this.$route.params && this.$route.params.groupename
-  const { data } = await getGroupeFonctionnement(groupename, this.listQuery)
-  this.group = data
-}
-
-data() {
-  return {
-    tableData: [{
-      id: '12987122',
-      name: 'Tom',
-      amount1: '234',
-      amount2: '3.2',
-      amount3: 10
-    }, {
-      id: '12987123',
-      name: 'Tom',
-      amount1: '165',
-      amount2: '4.43',
-      amount3: 12
-    }, {
-      id: '12987124',
-      name: 'Tom',
-      amount1: '324',
-      amount2: '1.9',
-      amount3: 9
-    }, {
-      id: '12987125',
-      name: 'Tom',
-      amount1: '621',
-      amount2: '2.2',
-      amount3: 17
-    }, {
-      id: '12987126',
-      name: 'Tom',
-      amount1: '539',
-      amount2: '4.1',
-      amount3: 15
-    }]
+  private async getGroup() {
+    // const id = this.$route.params && this.$route.params.id
+    const groupename = this.$route.params && this.$route.params.groupename
+    const { data } = await getGroupeFonctionnement(groupename, this.listQuery)
+    this.group = data
   }
-}
+
+  private handleDetails(row:number) {
+    
+  }
 }
 
 </script>

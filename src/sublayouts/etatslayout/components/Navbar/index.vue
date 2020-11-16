@@ -96,5 +96,13 @@ import { Component, Vue } from 'vue-property-decorator'
     name: 'EtatNavbar',
     components: {}
   })
-export default class extends Vue {}
+export default class extends Vue {
+
+private activeIndex2 : any = "dd"
+
+  private handleSelect(){
+
+  }
+}
+
 </script>

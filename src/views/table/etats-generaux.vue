@@ -9,7 +9,7 @@
       style="width: 100%"
     >
       <el-table-column
-        prop="sumrow.libelle"
+        prop="sumrow.label"
         label="LIBELLES"
         width="180"
       />
@@ -18,7 +18,7 @@
         label="Prévisions 2020"
       />
       <el-table-column
-        prop="sumrow.realisationsMois"
+        prop="realisationsMois"
 
         label="Réalisations du Mois en cours"
       />
@@ -38,14 +38,16 @@
         label="Exécution à ce jour"
       />
       <el-table-column
-        prop="sumrow.tauxExecution"
+        prop="sumrow.solde"
 
         label="Solde"
       />
       <el-table-column
+
         label="Taux d'exécution"
       >
         <template slot-scope="{row}">
+          
           <el-progress :percentage="row.sumrow.tauxExecution" />
         </template>
       </el-table-column>

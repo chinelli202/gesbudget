@@ -21,12 +21,12 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            New Visits
+            Prévisions
           </div>
           <count-to
             :start-val="0"
-            :end-val="102400"
-            :duration="2600"
+            :end-val="recapData.prevision"
+            :duration="3600"
             class="card-panel-num"
           />
         </div>
@@ -50,11 +50,11 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            Messages
+            Exécution
           </div>
           <count-to
             :start-val="0"
-            :end-val="81212"
+            :end-val="recapData.execution"
             :duration="3000"
             class="card-panel-num"
           />
@@ -79,11 +79,11 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            Purchases
+            Solde
           </div>
           <count-to
             :start-val="0"
-            :end-val="9280"
+            :end-val="recapData.solde"
             :duration="3200"
             class="card-panel-num"
           />
@@ -108,14 +108,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            Shoppings
+            Taux d'exécution
           </div>
-          <count-to
-            :start-val="0"
-            :end-val="13600"
-            :duration="3600"
-            class="card-panel-num"
-          />
+          <el-progress :percentage="recapData.tauxExecution" />
         </div>
       </div>
     </el-col>
@@ -123,8 +118,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import CountTo from 'vue-count-to'
+import {IRecapData} from '@/api/types'
 
 @Component({
   name: 'PanelGroup',
@@ -133,6 +129,7 @@ import CountTo from 'vue-count-to'
   }
 })
 export default class extends Vue {
+  @Prop() private recapData!: IRecapData
   private handleSetLineChartData(type: string) {
     this.$emit('handleSetLineChartData', type)
   }

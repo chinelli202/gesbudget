@@ -282,11 +282,29 @@ export const asyncRoutes: RouteConfig[] = [
             }
           },
           {
+            path: 'fonctionnement/:entitytype/:entitykey',
+            component: () => import('@/views/table/groupe-rubrique/index.vue'),
+            name: 'element.fonctionnement',
+            meta: {
+              title: 'elementFonctionnement',
+              hidden: true
+            }
+          },
+          {
             path: 'generaux',
             component: () => import('@/views/table/etats-generaux.vue'),
             name: 'Etats Generaux',
             meta: {
               title: 'etatsGeneraux',
+              hidden: true
+            }
+          },
+          {
+            path: 'navetats',
+            component: () => import('@/components/NavigateurEtats/index.vue'),
+            name: 'Navigateur Etats',
+            meta: {
+              title: 'navetats',
               hidden: true
             }
           }
