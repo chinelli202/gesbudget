@@ -303,20 +303,10 @@ export default class extends Vue {
     this.cardLoading = false
   }
 
-  private createSubmit() {
-    this.cardLoading = true
-    createEngagement(this.engagement).then((response) => {
-        // TODO : go to the detail vue with the created engagement id and with the fallbackUrl
-        this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
-        this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error update', error)
-    })
-    // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
-  }
+ 
 
   private onCancel() {
+    console.log("cancel", this.fallbackUrl)
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
   }
 

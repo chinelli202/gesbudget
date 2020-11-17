@@ -116,15 +116,15 @@
           justify="center"
         >
           <el-col
-            :span="12"
-            :offset="2"
+            :span="10"
           >
-            <h1>Créer un engagement</h1>
+            <h1 style="text-align: center">Créer un engagement</h1>
           </el-col>
         </el-row>
         <el-row
           type="flex"
           justify="center"
+          style="margin-bottom: 1.5em"
         >
           <el-col
             :span="8"
@@ -143,17 +143,18 @@
         <el-form-item>
           <el-row :gutter="10">
             <el-col
-              :span="4"
+              :span="3"
               :offset="2"
             >
-              <strong>Chapitre</strong>
+              <strong>Ligne budget</strong>
             </el-col>
-            <el-col :span="16">
+            <el-col :span="17">
               <el-cascader
                 v-model="cascade"
                 :options="chapitresOptions"
                 :props="{expandTrigger: 'hover'}"
                 @change="cascadeChange"
+                class="cascade-extra-lg"
               />
               <!-- <el-autocomplete
                 v-model="chapitre"
@@ -259,7 +260,7 @@
               <el-select
                 v-model="engagement.nature"
                 placeholder="Nature"
-                class="type-select"
+                class="select-large"
                 @input="formAttributeChange"
               >
                 <el-option
@@ -280,7 +281,7 @@
               <el-select
                 v-model="engagement.type"
                 placeholder="Type"
-                class="type-select"
+                class="select-large"
                 @input="formAttributeChange"
               >
                 <el-option
@@ -342,8 +343,8 @@ export default class PreEngagements extends Vue {
   private listLoading = true
   private domain = 'Fonctionnement'
   private chapitresBudget:Record<string, any> = {}
-  private chapitresOptions = []
-  private cascade = null
+  private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
+  private cascade = []
 
   /** Dialog Form Variables */
   // Add rules validation on the form to prevent incorrect submissions
@@ -362,11 +363,13 @@ export default class PreEngagements extends Vue {
     montant_ttc: 0,
     nature: '',
     type: '',
-    devise: 'XAF'
+    devise: 'XAF',
+    ligne: 0
   }
 
   created() {
     this.getInitiatedEngagements()
+    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
   }
 
   detail(value: any, engagement: any) {
@@ -398,27 +401,13 @@ export default class PreEngagements extends Vue {
   }
 
   private domainChange() {
-    console.log(this.domain)
-    this.updateChapitres()
+    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
   }
-
-  private updateChapitres() {
-    this.chapitresOptions = this.chapitresBudget[this.domain]
-    console.log(this.chapitresOptions)
-  }
-
-  /* querySearchAsync(queryString, cb) {
-    var links = this.links;
-    var results = queryString ? links.filter(this.createFilter(queryString)) : links;
-
-    clearTimeout(this.timeout);
-    this.timeout = setTimeout(() => {
-      cb(results);
-    }, 3000 * Math.random());
-  } */
 
   private cascadeChange() {
     console.log(this.cascade)
+    this.formAttributeChange()
+    this.engagement.ligne = this.cascade === null ? 0 : this.cascade[2]
   }
 
   private launchDialogForm() {
@@ -429,41 +418,10 @@ export default class PreEngagements extends Vue {
     this.statutOptions = AppModule.statutsEngagement
     this.tva = AppModule.tva
 
-    for (const domain in AppModule.budgetStructure) {
-      for (const section in AppModule.budgetStructure[domain]) {
-        this.chapitresBudget[domain] = this.chapitresBudget[domain].concat(AppModule.budgetStructure[domain][section].chapitres)
-      }
-      // this.chapitresBudget[domain] = this.chapitresBudget[domain].chapitres.map(
-      //   (chapitre) => {
-      //     return {
-      //       label: chapitre.label,
-      //       value: chapitre.id,
-      //       children: chapitre.rubriques.map(
-      //         (rubrique) => {
-      //           return {
-      //             label: rubrique.label,
-      //             value: rubrique.id,
-      //             children: rubrique.lignes.map(
-      //               (ligne) => {
-      //                 return {
-      //                   label: ligne.label,
-      //                   value: ligne.id
-      //                 }
-      //               }
-      //             )
-      //           }
-      //         }
-      //       )
-      //     }
-      //   }
-      // )
-    }
-    console.log(AppModule.budgetStructure)
     this.dialogFormVisible = true
   }
 
   private createEngagement() {
-    // this.dialogFormLoading = true
     console.log('this.engagement : ', this.engagement)
     createEngagement(this.engagement).then((response) => {
       const newEngagement = response.data
@@ -483,64 +441,15 @@ export default class PreEngagements extends Vue {
   private formAttributeChange() {
     this.submitDisabled = false
   }
-
-  // data() {
-  //   const { data } = await getEngagements({ etat: 'INIT' });
-  //   return {
-  //     tableData: data,
-
-  //     tableData2: [{
-  //         date: '2016-05-03',
-  //         name: 'Tom',
-  //         state: 'California',
-  //         city: 'Los Angeles',
-  //         address: 'No. 189, Grove St, Los Angeles',
-  //         zip: 'CA 90036'
-  //       }, {
-  //         date: '2016-05-02',
-  //         name: 'Tom',
-  //         state: 'California',
-  //         city: 'Los Angeles',
-  //         address: 'No. 189, Grove St, Los Angeles',
-  //         zip: 'CA 90036'
-  //       }, {
-  //         date: '2016-05-04',
-  //         name: 'Tom',
-  //         state: 'California',
-  //         city: 'Los Angeles',
-  //         address: 'No. 189, Grove St, Los Angeles',
-  //         zip: 'CA 90036'
-  //       }, {
-  //         date: '2016-05-01',
-  //         name: 'Tom',
-  //         state: 'California',
-  //         city: 'Los Angeles',
-  //         address: 'No. 189, Grove St, Los Angeles',
-  //         zip: 'CA 90036'
-  //       }, {
-  //         date: '2016-05-08',
-  //         name: 'Tom',
-  //         state: 'California',
-  //         city: 'Los Angeles',
-  //         address: 'No. 189, Grove St, Los Angeles',
-  //         zip: 'CA 90036'
-  //       }, {
-  //         date: '2016-05-06',
-  //         name: 'Tom',
-  //         state: 'California',
-  //         city: 'Los Angeles',
-  //         address: 'No. 189, Grove St, Los Angeles',
-  //         zip: 'CA 90036'
-  //       }, {
-  //         date: '2016-05-07',
-  //         name: 'Tom',
-  //         state: 'California',
-  //         city: 'Los Angeles',
-  //         address: 'No. 189, Grove St, Los Angeles',
-  //         zip: 'CA 90036'
-  //       }]
-  //   }
-  // }
 }
 
 </script>
+<style lang="scss" scoped>
+  .cascade-extra-lg{
+      width: 33.8vw;
+  }
+
+  .select-large{
+    width: 15.6vw;
+  }
+</style>

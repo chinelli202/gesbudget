@@ -54,20 +54,6 @@ class App extends VuexModule implements IAppState {
 
   public budgetStructure: any = getLocaldbBudgetStructure()
 
-  created(){
-    let budget = {
-      fonctionnement: {},
-      mandat: {}
-    }
-    getBudgetStructure({ domain: "fonctionnement" }).then((response)=>{
-      budget.fonctionnement = response.data
-    })
-    getBudgetStructure({ domain: "mandat" }).then((response) => {
-      budget.mandat = response.data
-      this.SET_BUDGET_STRUCTURE(budget)
-    })
-  }
-
   @Action
   public async fetchEngagementVariables() {
     let response = await getVariables({ cle: 'DEVISE' })
@@ -102,6 +88,55 @@ class App extends VuexModule implements IAppState {
 
     response = await getVariables({ cle: 'CONSTANTE', code: 'TVA' })
     this.SET_TVA(parseFloat(response.data[0].valeur))
+
+    const budget: Record<string, any> = {
+      fonctionnement: {},
+      mandat: {}
+    }
+
+    const respBudget: Record<string, any> = {
+      fonctionnement: {},
+      mandat: {}
+    }
+
+    getBudgetStructure({ domain: 'fonctionnement' }).then((response) => {
+      budget.fonctionnement = response.data
+    })
+    getBudgetStructure({ domain: 'mandat' }).then((response) => {
+      budget.mandat = response.data
+
+      for (const domain in budget) {
+        let chapts:Record<string, any>[] = []
+        for (const section in budget[domain]) {
+          chapts = chapts.concat(budget[domain][section].chapitres)
+        }
+        respBudget[domain] = chapts.map(
+          (chapitre) => {
+            return {
+              label: chapitre.label,
+              value: chapitre.id,
+              children: chapitre.rubriques.map(
+                (rubrique: any) => {
+                  return {
+                    label: rubrique.label,
+                    value: rubrique.id,
+                    children: rubrique.lignes.map(
+                      (ligne: any) => {
+                        return {
+                          label: ligne.label,
+                          value: ligne.id
+                        }
+                      }
+                    )
+                  }
+                }
+              )
+            }
+          }
+        )
+      }
+      this.SET_BUDGET_STRUCTURE(respBudget)
+    })
   }
 
   @Mutation
@@ -174,7 +209,7 @@ class App extends VuexModule implements IAppState {
     this.statutsEngagement = statuts
     setStatutsEngagement(this.statutsEngagement)
   }
-  
+
   @Mutation
   private SET_BUDGET_STRUCTURE(budget: any) {
     this.budgetStructure = budget
