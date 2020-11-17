@@ -284,9 +284,9 @@ export const asyncRoutes: RouteConfig[] = [
           {
             path: 'fonctionnement/:entitytype/:entitykey',
             component: () => import('@/views/table/groupe-rubrique/index.vue'),
-            name: 'element.fonctionnement',
+            name: 'etats-fonctionnement',
             meta: {
-              title: 'elementFonctionnement',
+              title: 'etats-fonctionnement',
               hidden: true
             }
           },

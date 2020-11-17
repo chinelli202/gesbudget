@@ -1,46 +1,9 @@
 <template>
   <div>
     <el-card class="box-card" shadow="hover">
-      <el-row :gutter="20">
-        <el-col :span="8">
-            <label>Division / Direction</label> 
-          <el-select v-model="selectedChapitre" placeholder="Selectionnez la Division / Direction" @change="handleChapitreItemChanged">
-            <el-option
-              v-for="item in chapitreOptions"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
-            >
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="8">
-          <label>Rubrique</label>
-          <el-select v-model="selectedRubrique" placeholder="Selectionnez la rubrique" @change="handleRubriqueItemChanged">
-            <el-option
-              v-for="item in rubriqueOptions"
-              :key="item.id"
-              :label="item.label"
-              :value="item"
-            >
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="8">
-            <label>Ligned bb</label>
-          <el-select v-model="selectedLigne" placeholder="Selectionnez la ligne" @change="handleLigneChanged">
-            <el-option
-              v-for="item in ligneOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </el-col>
-      </el-row>
       <el-row>
         <el-radio-group v-model="radio" @change="handleRadioGroupChange">
+          <el-radio :label="1">Groupes</el-radio>
           <el-radio :label="3">Chapitres</el-radio>
           <el-radio :label="6">Rubriques</el-radio>
           <el-radio :label="9">Lignes</el-radio>
@@ -49,13 +12,15 @@
       <el-row>
         <span>Choisir </span>
         <el-cascader
+        class="cascader"
+          size="medium"
           v-model="selectedId"
           :options="cascadeOptions"
           :props="{ expandTrigger: 'hover' }"
           @change="handleCascaderChange"></el-cascader>
       </el-row>
       <el-row>
-        <el-button class="submit-btn" plain>Défaut bb</el-button>
+        <el-button class="submit-btn" plain @click="handleButtonVoirEtatsClick">Voir Etats</el-button>
       </el-row>
     </el-card>
   </div>
@@ -83,12 +48,22 @@
       private selectedId: any = null
       private cascadeOptions: any [] = []
       private radio: any = 3
-      
+      private chosenEntity: string = ""
+      private chosenEntityId: number = 10
 
       private lignesCascadeOptions: any [] = []
       private chapitresCascadeOptions: any [] = []
       private rubriquesCascadeOptions: any [] = []
-
+      private groupesCascadeOptions: any [] = [
+        {label: "Charges de personnel", value: 10, groupname: "SALAIRE+DE+PERSONNEL"},
+        {label: "missions ", value: 11, groupname: "MISSIONS"},
+        {label: "Diverses représentations", value: 12, groupname: "DIVERSES+REPRESENTATIONS"},
+        {label: "Charges diverses de fonctionnement", value: 13, groupname: "CHARGES+DIVERSES+DE+FONCTIONNEMENT"},
+        {label: "Honoraires", value: 14, groupname: "HONORAIRES"},
+        {label: "Dons - Subventions", value: 15, groupname: "DONS+-+SUBVENTIONS"},
+        {label: "Formation", value: 16, groupname: "FORMATION"},
+        {label: "Imprévus", value: 17, groupname: "IMPREVUS"},
+      ]
       private listQuery = {
         id:1,
         size:10
@@ -99,49 +74,15 @@
         this.getFonctionnementMaquette()
       }
 
-      // beforeCreate(){
-      //   console.log("Vue beforeCreate ")
-      // }
-
-      // beforeMount(){
-      //   console.log("Vue beforeMount ")
-      // }
-      // mounted(){
-      //   console.log("Vue mounted ")
-      // }
-      // beforeUpdate(){
-      //   console.log("Vue beforeUpdate ")
-      // }
-      // updated(){
-      //   console.log("Vue updated ")
-      // }
-      // beforeDestroy(){
-      //   console.log("Vue beforeDestroy ")
-      // }
-      // destroyed(){
-      //   console.log("Vue destroyed ")
-      // }
-
       private async getFonctionnementMaquette() {
 
         const { data } = await getFonctionnementTree(this.listQuery)
         this.depensesTree = data.depenses
         this.recettesTree = data.recettes
-        this.chapitreOptions = data.depenses.chapitres
+        let depensesOption = data.depenses.chapitres
+        let recettesOption = data.recettes.chapitres
 
-         this.cascadeOptions = this.chapitreOptions.map((chapitre)=>{
-          //add properties
-          let mappedChapitre = {label: chapitre.label, value: chapitre.id, children: chapitre.rubriques.map((rubrique : any)=>{
-            let mappedRubrique = {label: rubrique.label, value: rubrique.id, children: rubrique.lignes.map((ligne : any)=>{
-              let mappedLigne = {label: ligne.label, value: ligne.id}
-              return mappedLigne
-            })}
-            return mappedRubrique
-          })}
-          return mappedChapitre
-        })
-
-        this.lignesCascadeOptions = this.chapitreOptions.map((chapitre)=>{
+        this.lignesCascadeOptions = depensesOption.map((chapitre : any)=>{
         //add properties
           let mappedChapitre = {label: chapitre.label, value: chapitre.id, children: chapitre.rubriques.map((rubrique : any)=>{
             let mappedRubrique = {label: rubrique.label, value: rubrique.id, children: rubrique.lignes.map((ligne : any)=>{
@@ -153,7 +94,7 @@
           return mappedChapitre
         })
 
-        this.rubriquesCascadeOptions = this.chapitreOptions.map((chapitre)=>{
+        this.rubriquesCascadeOptions = depensesOption.map((chapitre : any)=>{
         //add properties
           let mappedChapitre = {label: chapitre.label, value: chapitre.id, children: chapitre.rubriques.map((rubrique : any)=>{
             let mappedRubrique = {label: rubrique.label, value: rubrique.id}
@@ -162,11 +103,12 @@
           return mappedChapitre
         })
 
-        this.chapitresCascadeOptions = this.chapitreOptions.map((chapitre)=>{
+        this.chapitresCascadeOptions = depensesOption.map((chapitre : any)=>{
           let mappedChapitre = {label: chapitre.label, value: chapitre.id}
           return mappedChapitre
         })
 
+        this.cascadeOptions = this.chapitresCascadeOptions
       }
 
       private handleSectionChanged(){}
@@ -177,28 +119,73 @@
         console.log("this selected chapitre : " +this.selectedChapitre)
         console.log("rubrique option at this point : " +this.rubriqueOptions.length)
       }
-      private handleRubriqueItemChanged(selectedItem:any){
 
+      private handleRadioGroupChange(value: number){
+        if(value == 1){
+          this.chosenEntity = 'groupe'
+          this.cascadeOptions = this.groupesCascadeOptions
+        }
+        if(value == 3){
+          this.chosenEntity = 'chapitre'
+          this.cascadeOptions = this.chapitresCascadeOptions
+        }
+        if(value == 6){
+          this.chosenEntity = 'rubrique'
+          this.cascadeOptions = this.rubriquesCascadeOptions
+        }
+        if(value == 9){
+          this.chosenEntity = 'ligne'
+          this.cascadeOptions = this.lignesCascadeOptions
+        }
+      }
+
+       private handleButtonVoirEtatsClick(){
+         console.log("at this point, the component will navigate to : " + this.chosenEntity + " with the index : " + this.chosenEntityId) 
+          var url = "/tab/custom/fonctionnement/" + this.chosenEntity + "/" + this.chosenEntityId;
+        //  this.$router.push(url);
+        this.$router.push({ name: 'etats-fonctionnement', params: { entitytype: this.chosenEntity, entitykey: String(this.chosenEntityId) } })
+      }
+
+
+
+      private handleRubriqueItemChanged(selectedItem:any){
+        this.chosenEntityId = selectedItem
       }
       private handleLigneChanged(){}
 
-      private handleCascaderChange(){}
+      private handleCascaderChange(value:any){
+        // this.chosenEntityId = value
+        // console.log("this the chosen entity id : "+ typeof(value))
+        // console.log("trying to select first id : "+ (value[0]))
+        //   if(this.chosenEntity == 'rubrique'|| this.chosenEntity == 'ligne')
+        //     console.log("trying to select second id : "+ (value[1]))
+        // if(this.chosenEntity == 'ligne')
+        //   console.log("trying to select third id : "+ (value[2]))
 
-      private handleRadioGroupChange(value: number){
-        console.log("the new value is " + value)
-        if(value == 3){
-          console.log("this value is 3 nigga")
-          this.chapitreOptions = this.chapitresCascadeOptions
-          console.log("and the chapitre options looks like this " + this.chapitresCascadeOptions)
+
+        if(this.chosenEntity == 'chapitre'){
+          this.chosenEntity = 'chapitre'
+          this.chosenEntityId = value[0]
         }
-        if(value == 6){
-          console.log("this value is 6 nigga")
-          this.chapitreOptions = this.chapitresCascadeOptions
-          console.log("and the chapitre options looks like this " + this.chapitresCascadeOptions)
-          this.chapitreOptions = this.rubriquesCascadeOptions
+
+        if(this.chosenEntity == 'rubrique'){
+          this.chosenEntity = 'rubrique'
+          this.chosenEntityId = value[1]
         }
-        if(value == 9)
-          this.chapitreOptions = this.lignesCascadeOptions
+
+        if(this.chosenEntity == 'ligne'){
+          this.chosenEntity = 'ligne'
+          this.chosenEntityId = value[2]
+        }
+
+        if(this.chosenEntity == 'groupe'){
+          let selectedGroupe = this.groupesCascadeOptions.filter((groupe:any)=>{
+            return groupe.value == value
+          })[0]
+          this.chosenEntity = 'groupe'
+          this.chosenEntityId = selectedGroupe['groupname']
+          //console.log("this is the selected entity : " + selectedGroupe['groupname'])
+        }
       }
     }
 
@@ -222,5 +209,9 @@ label {
 
 .submit-btn {
     float: right;
+}
+
+.cascader {
+  width: 450px
 }
 </style>
