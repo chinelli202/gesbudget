@@ -130,13 +130,13 @@
             :span="8"
             :offset="2"
           >
-             <el-radio-group
+            <el-radio-group
               v-model="domain"
-              @change="domainChange"
               size="small"
+              @change="domainChange"
             >
-              <el-radio-button label="Fonctionnement"></el-radio-button>
-              <el-radio-button label="Mandat"></el-radio-button>
+              <el-radio-button label="Fonctionnement" />
+              <el-radio-button label="Mandat" />
             </el-radio-group>
           </el-col>
         </el-row>
@@ -149,12 +149,18 @@
               <strong>Chapitre</strong>
             </el-col>
             <el-col :span="16">
-              <el-autocomplete
+              <el-cascader
+                v-model="cascade"
+                :options="chapitresOptions"
+                :props="{expandTrigger: 'hover'}"
+                @change="cascadeChange"
+              />
+              <!-- <el-autocomplete
                 v-model="chapitre"
                 :fetch-suggestions="querySearchAsync"
                 placeholder="Choisir un chapitre"
                 @select="handleSelect"
-              ></el-autocomplete>
+              ></el-autocomplete> -->
             </el-col>
           </el-row>
         </el-form-item>
@@ -323,6 +329,7 @@ import { getEngagements, createEngagement } from '@/api/engagements'
 import { IEngagementData } from '@/api/types'
 import { AppModule } from '@/store/modules/app'
 import { getBudgetStructure } from '@/api/variables'
+import { REPLEval } from 'repl'
 
 @Component({
   name: 'PreEngagements',
@@ -333,9 +340,10 @@ import { getBudgetStructure } from '@/api/variables'
 export default class PreEngagements extends Vue {
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
-  private domain = "Fonctionnement"
-  private chapitresBudget = {}
+  private domain = 'Fonctionnement'
+  private chapitresBudget:Record<string, any> = {}
   private chapitresOptions = []
+  private cascade = null
 
   /** Dialog Form Variables */
   // Add rules validation on the form to prevent incorrect submissions
@@ -391,9 +399,15 @@ export default class PreEngagements extends Vue {
 
   private domainChange() {
     console.log(this.domain)
+    this.updateChapitres()
   }
 
-  querySearchAsync(queryString, cb) {
+  private updateChapitres() {
+    this.chapitresOptions = this.chapitresBudget[this.domain]
+    console.log(this.chapitresOptions)
+  }
+
+  /* querySearchAsync(queryString, cb) {
     var links = this.links;
     var results = queryString ? links.filter(this.createFilter(queryString)) : links;
 
@@ -401,6 +415,10 @@ export default class PreEngagements extends Vue {
     this.timeout = setTimeout(() => {
       cb(results);
     }, 3000 * Math.random());
+  } */
+
+  private cascadeChange() {
+    console.log(this.cascade)
   }
 
   private launchDialogForm() {
@@ -411,10 +429,36 @@ export default class PreEngagements extends Vue {
     this.statutOptions = AppModule.statutsEngagement
     this.tva = AppModule.tva
 
-    for(const section in AppModule.budgetStructure[this.domain]) {
-      this.chapitresBudget[section] = this.chapitres.concat(AppModule.budgetStructure[this.domain][section]['chapitres'])
+    for (const domain in AppModule.budgetStructure) {
+      for (const section in AppModule.budgetStructure[domain]) {
+        this.chapitresBudget[domain] = this.chapitresBudget[domain].concat(AppModule.budgetStructure[domain][section].chapitres)
+      }
+      // this.chapitresBudget[domain] = this.chapitresBudget[domain].chapitres.map(
+      //   (chapitre) => {
+      //     return {
+      //       label: chapitre.label,
+      //       value: chapitre.id,
+      //       children: chapitre.rubriques.map(
+      //         (rubrique) => {
+      //           return {
+      //             label: rubrique.label,
+      //             value: rubrique.id,
+      //             children: rubrique.lignes.map(
+      //               (ligne) => {
+      //                 return {
+      //                   label: ligne.label,
+      //                   value: ligne.id
+      //                 }
+      //               }
+      //             )
+      //           }
+      //         }
+      //       )
+      //     }
+      //   }
+      // )
     }
-
+    console.log(AppModule.budgetStructure)
     this.dialogFormVisible = true
   }
 

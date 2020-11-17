@@ -54,6 +54,20 @@ class App extends VuexModule implements IAppState {
 
   public budgetStructure: any = getLocaldbBudgetStructure()
 
+  created(){
+    let budget = {
+      fonctionnement: {},
+      mandat: {}
+    }
+    getBudgetStructure({ domain: "fonctionnement" }).then((response)=>{
+      budget.fonctionnement = response.data
+    })
+    getBudgetStructure({ domain: "mandat" }).then((response) => {
+      budget.mandat = response.data
+      this.SET_BUDGET_STRUCTURE(budget)
+    })
+  }
+
   @Action
   public async fetchEngagementVariables() {
     let response = await getVariables({ cle: 'DEVISE' })
@@ -88,16 +102,6 @@ class App extends VuexModule implements IAppState {
 
     response = await getVariables({ cle: 'CONSTANTE', code: 'TVA' })
     this.SET_TVA(parseFloat(response.data[0].valeur))
-    
-    response = await getBudgetStructure({ domain: "fonctionnement" })
-    const budget = {
-      fonctionnement: {},
-      mandat: {}
-    }
-    budget.fonctionnement = response.data
-    response = await getBudgetStructure({ domain: "mandat" })
-    budget.mandat = response.data
-    this.SET_BUDGET_STRUCTURE(budget)
   }
 
   @Mutation
