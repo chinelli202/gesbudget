@@ -49,6 +49,11 @@
         width="250"
       />
       <el-table-column
+        prop="ligne_libelle"
+        label="Ligne Budgétaire"
+        width="300"
+      />
+      <el-table-column
         prop="statut"
         label="Statut"
         width="75"
@@ -156,12 +161,6 @@
                 @change="cascadeChange"
                 class="cascade-extra-lg"
               />
-              <!-- <el-autocomplete
-                v-model="chapitre"
-                :fetch-suggestions="querySearchAsync"
-                placeholder="Choisir un chapitre"
-                @select="handleSelect"
-              ></el-autocomplete> -->
             </el-col>
           </el-row>
         </el-form-item>
@@ -364,7 +363,7 @@ export default class PreEngagements extends Vue {
     nature: '',
     type: '',
     devise: 'XAF',
-    ligne: 0
+    ligne_id: 0
   }
 
   created() {
@@ -407,7 +406,7 @@ export default class PreEngagements extends Vue {
   private cascadeChange() {
     console.log(this.cascade)
     this.formAttributeChange()
-    this.engagement.ligne = this.cascade === null ? 0 : this.cascade[2]
+    this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
   }
 
   private launchDialogForm() {
