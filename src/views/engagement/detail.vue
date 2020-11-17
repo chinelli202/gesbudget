@@ -36,13 +36,42 @@
               :rules="rules"
               label-width="100px"
             >
+              <el-row
+                type="flex"
+                justify="center"
+                style="margin-bottom: 1.5em"
+              >
+                <el-col
+                  :span="8"
+                  :offset="2"
+                >
+                  <el-radio-group
+                    v-model="domain"
+                    size="small"
+                    @change="domainChange"
+                  >
+                    <el-radio-button label="Fonctionnement" />
+                    <el-radio-button label="Mandat" />
+                  </el-radio-group>
+                </el-col>
+              </el-row>
               <el-form-item label="Code">
                 <el-input
                   v-model="engagement.code"
                   :disabled="true"
                 />
               </el-form-item>
-
+              <el-form-item label="Ligne">
+                <el-cascader
+                  v-model="cascade"
+                  :options="chapitresOptions"
+                  :props="{expandTrigger: 'hover'}"
+                  :disabled="!isbtnUpdate && !isResendUpdate"
+                  placeholder="Choisir la ligne budgétaire"
+                  @change="cascadeChange"
+                  class="cascade-extra-lg"
+                />
+              </el-form-item>
               <el-form-item label="Libellé">
                 <el-input
                   v-model="engagement.libelle"
@@ -504,6 +533,12 @@ import { PermissionModule } from '@/store/modules/permission'
 })
 
 export default class extends Vue {
+  /** Ligne budgetaire cascader */
+  private domain = 'Fonctionnement'
+  private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
+  private cascade: number[] = []
+
+  /** Main card */
   private cardLoading = true
   private deviseOptions = {}
   private typeOptions = {}
@@ -566,7 +601,11 @@ export default class extends Vue {
     etat: '',
     valideur_first: '',
     valideur_second: '',
-    valideur_final: ''
+    valideur_final: '',
+    ligne_id: 0,
+    chapitre_id: 0,
+    rubrique_id: 0,
+    domaine: 'Fonctionnement'
   }
 
   private rules = {
@@ -595,7 +634,23 @@ export default class extends Vue {
     this.tva = AppModule.tva
 
     this.initializeButtons()
+    
+    /** Initialize cascader */
+    this.cascade = [this.engagement.chapitre_id, this.engagement.rubrique_id, this.engagement.ligne_id]
+    this.domain = this.engagement.domaine
+    
     this.cardLoading = false
+  }
+
+  /** Ligne budgetaire selector */
+  private domainChange() {
+    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+  }
+
+  private cascadeChange() {
+    console.log(this.cascade)
+    this.formAttributeChange()
+    this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
   }
 
   private async sendComment() {
@@ -1156,6 +1211,11 @@ export default class extends Vue {
 .el-container{
   box-shadow: 2px;
 }
+
+.cascade-extra-lg{
+      width: 58.5vw;
+}
+
 .notes{
   color:gray;
 }

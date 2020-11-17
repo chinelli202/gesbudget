@@ -159,6 +159,7 @@
                 :options="chapitresOptions"
                 :props="{expandTrigger: 'hover'}"
                 @change="cascadeChange"
+                placeholder="Choisir la ligne budgétaire"
                 class="cascade-extra-lg"
               />
             </el-col>
@@ -340,10 +341,11 @@ import { REPLEval } from 'repl'
 export default class PreEngagements extends Vue {
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
+
+  /** Cascader variables */
   private domain = 'Fonctionnement'
-  private chapitresBudget:Record<string, any> = {}
   private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
-  private cascade = []
+  private cascade: number[] = []
 
   /** Dialog Form Variables */
   // Add rules validation on the form to prevent incorrect submissions
