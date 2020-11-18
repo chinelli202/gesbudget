@@ -122,18 +122,22 @@
 
       private handleRadioGroupChange(value: number){
         if(value == 1){
+          this.selectedId = 10
           this.chosenEntity = 'groupe'
           this.cascadeOptions = this.groupesCascadeOptions
         }
         if(value == 3){
+          this.selectedId = 10
           this.chosenEntity = 'chapitre'
           this.cascadeOptions = this.chapitresCascadeOptions
         }
         if(value == 6){
+          this.selectedId = 10
           this.chosenEntity = 'rubrique'
           this.cascadeOptions = this.rubriquesCascadeOptions
         }
         if(value == 9){
+          this.selectedId = 10
           this.chosenEntity = 'ligne'
           this.cascadeOptions = this.lignesCascadeOptions
         }
@@ -143,7 +147,7 @@
          console.log("at this point, the component will navigate to : " + this.chosenEntity + " with the index : " + this.chosenEntityId) 
           var url = "/tab/custom/fonctionnement/" + this.chosenEntity + "/" + this.chosenEntityId;
         //  this.$router.push(url);
-        this.$router.push({ name: 'etats-fonctionnement', params: { entitytype: this.chosenEntity, entitykey: String(this.chosenEntityId) } })
+        //this.$router.push({ name: 'etats-fonctionnement', params: { entitytype: this.chosenEntity, entitykey: String(this.chosenEntityId) } })
       }
 
 
@@ -164,17 +168,17 @@
 
 
         if(this.chosenEntity == 'chapitre'){
-          this.chosenEntity = 'chapitre'
+          //this.chosenEntity = 'chapitre'
           this.chosenEntityId = value[0]
         }
 
         if(this.chosenEntity == 'rubrique'){
-          this.chosenEntity = 'rubrique'
+          //this.chosenEntity = 'rubrique'
           this.chosenEntityId = value[1]
         }
 
         if(this.chosenEntity == 'ligne'){
-          this.chosenEntity = 'ligne'
+          //this.chosenEntity = 'ligne'
           this.chosenEntityId = value[2]
         }
 
@@ -182,7 +186,7 @@
           let selectedGroupe = this.groupesCascadeOptions.filter((groupe:any)=>{
             return groupe.value == value
           })[0]
-          this.chosenEntity = 'groupe'
+          //this.chosenEntity = 'groupe'
           this.chosenEntityId = selectedGroupe['groupname']
           //console.log("this is the selected entity : " + selectedGroupe['groupname'])
         }

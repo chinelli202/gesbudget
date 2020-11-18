@@ -83,16 +83,8 @@ private listQuery = {
   page: 1,
   limit: 10
 }
-
-created() {
-  this.getGroup()
-}
-
   private async getGroup() {
-    // const id = this.$route.params && this.$route.params.id
-    const groupename = this.$route.params && this.$route.params.groupename
-    const { data } = await getGroupeFonctionnement(groupename, this.listQuery)
-    this.group = data
+    
   }
 
   private handleDetails(row:number) {

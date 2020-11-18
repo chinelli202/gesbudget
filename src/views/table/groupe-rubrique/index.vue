@@ -13,17 +13,16 @@
         :lg="{span: 12}"
         :xl="{span: 12}"
       >
-        <bar-chart v-if="monthsRecapCollection" :recapMonths="monthsRecapCollection"/>  
+        <bar-chart :recapMonths="monthsRecapCollection"/>  
       </el-col>
-      <!-- <el-col
+      <el-col
         :xs="{span: 24}"
         :sm="{span: 24}"
         :md="{span: 24}"
         :lg="{span: 12}"
-        :xl="{span: 12}"
-      >
+        :xl="{span: 12}">
         <line-chart :chart-data="lineChartData" />
-      </el-col> -->
+      </el-col>
     </el-row>
     <!-- Summary Table -->
     <summary-table :recapData="recapData"/>
@@ -37,27 +36,14 @@ import SummaryTable from './components/SummaryTable.vue'
 import PanelGroup from './components/PanelGroup.vue'
 import LineChart, { ILineChartData } from './components/LineChart.vue'
 import BarChart from './components/BarChart.vue'
-import {getRecapData, defaultRecapData, getMonthsRecapCollection} from '@/api/recapData'
+import {getRecapData, defaultRecapData, getMonthsRecapCollection, defaultMonthRecapCollection} from '@/api/recapData'
 import NavigateurEtats from '@/components/NavigateurEtats/index.vue'
-import { IRecapData, IMonthRecapData } from '@/api/types'
+import { IRecapData, IMonthRecapData, IMonthRecapCollection } from '@/api/types'
 
-const lineChartData: { [type: string]: ILineChartData } = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
+const lineChartData: ILineChartData = {
+  months: [],
+  executions: [],
+  engagements: []
 }
 
     @Component({
@@ -72,14 +58,14 @@ const lineChartData: { [type: string]: ILineChartData } = {
     })
 
 export default class extends Vue {
-    private lineChartData = lineChartData.newVisitis
+    private lineChartData = lineChartData
 
     private handleSetLineChartData(type: string) {
-      this.lineChartData = lineChartData[type]
+      //this.lineChartData = lineChartData[type]
     }
 
     private recapData: IRecapData = defaultRecapData
-    private monthsRecapCollection: any
+    private monthsRecapCollection: IMonthRecapCollection = defaultMonthRecapCollection
     
     private listQuery = {
       critere: 'jour',
@@ -91,31 +77,68 @@ export default class extends Vue {
     created() {
       this.getRecapData()
       this.getMonthRecapCollection()
-      console.log("nigga say hooo" + this.monthsRecapCollection)
+      console.log("nigga say hooo " + this.monthsRecapCollection)
     }
 
-    private async getRecapData() {
+    private getRecapData() {
       // const id = this.$route.params && this.$route.params.id
+      console.log("getRecapData")
       const entitytype = this.$route.params && this.$route.params.entitytype
       const entitykey = this.$route.params && this.$route.params.entitykey
-      const { data } = await getRecapData(entitytype, entitykey,  this.listQuery)
+      getRecapData(entitytype, entitykey,  this.listQuery).then((response) => {
+        this.recapData = response.data
+      })
       //toggle the entity type and load the appropriate data
-      this.recapData = data
     }
 
-    private async getMonthRecapCollection(){
+    private getMonthRecapCollection(){
       const entitytype = this.$route.params && this.$route.params.entitytype
       const entitykey = this.$route.params && this.$route.params.entitykey
-      this.listQuery.critere= 'groupemois'
-      const { data } = await getMonthsRecapCollection(entitytype, entitykey,  this.listQuery)
-      //toggle the entity type and load the appropriate data
-      this.$nextTick()
-      if(data.months == undefined)  
-        console.log("this homie is undefined")
-      else 
-        console.log("this homie is definetely defined and has a size of " + data.months.length)
-      console.log("data is not null at this point")
-      this.monthsRecapCollection = data
+      this.listQuery.critere= 'intervalle'
+      getMonthsRecapCollection(entitytype, entitykey,  this.listQuery).then((response) => {
+        //toggle the entity type and load the appropriate data
+        this.$nextTick()
+        // if(response.data.months == undefined)  
+        //   console.log("this homie is undefined")
+        // else 
+        //   console.log("this homie is definetely defined and has a size of " + response.data.months.length)
+        console.log("data is not null at this point ", response)
+        this.monthsRecapCollection = response.data
+
+        //compute linechart data
+        var months = this.monthsRecapCollection.months.map((monthrow)=>{
+          return monthrow.mois
+        })
+
+        console.log("mois : ", months)
+
+        var executions = this.monthsRecapCollection.months.map((monthrow)=>{
+          var sumExecutions = 0
+          this.monthsRecapCollection.months.forEach((monthdata)=>{
+            if(monthdata.mois <= monthrow.mois){
+              sumExecutions += monthdata.execution
+            }
+          })
+          return sumExecutions
+        })
+
+        console.log("executions : ", executions)
+
+        var engagements = this.monthsRecapCollection.months.map((monthrow)=>{
+          var sumEngagements = 0
+          this.monthsRecapCollection.months.forEach((monthdata)=>{
+            if(monthdata.mois <= monthrow.mois){
+              sumEngagements += monthdata.engagements
+            }
+          })
+          return sumEngagements
+        })
+
+        console.log("engagements : ", engagements)
+
+        this.lineChartData = {months: months, executions: executions, engagements: engagements}
+
+      })
     }
 }
 

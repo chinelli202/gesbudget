@@ -12,8 +12,9 @@ import { mixins } from 'vue-class-component'
 import ResizeMixin from '@/components/Charts/mixins/resize'
 
 export interface ILineChartData {
-  expectedData: number[]
-  actualData: number[]
+  months: string[]
+  executions: number[]
+  engagements: number[]
 }
 
 @Component({
@@ -53,7 +54,7 @@ export default class extends mixins(ResizeMixin) {
     if (this.chart) {
       this.chart.setOption({
         xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: chartData.months,//['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           boundaryGap: false,
           axisTick: {
             show: false
@@ -80,7 +81,7 @@ export default class extends mixins(ResizeMixin) {
           }
         },
         legend: {
-          data: ['expected', 'actual']
+          data: ['Executions', 'Engagements']
         },
         series: [{
           name: 'expected',
@@ -93,7 +94,7 @@ export default class extends mixins(ResizeMixin) {
           },
           smooth: true,
           type: 'line',
-          data: chartData.expectedData,
+          data: chartData.executions,
           animationDuration: 2800,
           animationEasing: 'cubicInOut'
         },
@@ -111,7 +112,7 @@ export default class extends mixins(ResizeMixin) {
               color: '#f3f8ff'
             }
           },
-          data: chartData.actualData,
+          data: chartData.engagements,
           animationDuration: 2800,
           animationEasing: 'quadraticOut'
         }]

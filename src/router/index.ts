@@ -257,6 +257,10 @@ export const asyncRoutes: RouteConfig[] = [
   {
     path: '/tab',
     component: Layout,
+    meta: {
+      title: 'etatsBudget',
+      icon: 'tab'
+    },
     children: [
       {
         path: 'index',
@@ -273,12 +277,11 @@ export const asyncRoutes: RouteConfig[] = [
         name: 'Custom',
         children: [
           {
-            path: 'grouperubrique/:groupename',
-            component: () => import('@/views/table/groupe-rubrique/index.vue'),
-            name: 'depenses.grouperubrique',
+            path: 'generaux',
+            component: () => import('@/views/table/etats-generaux.vue'),
+            name: 'Etats Generaux',
             meta: {
-              title: 'simpletable',
-              hidden: true
+              title: 'etatsGeneraux',
             }
           },
           {
@@ -287,15 +290,6 @@ export const asyncRoutes: RouteConfig[] = [
             name: 'etats-fonctionnement',
             meta: {
               title: 'etats-fonctionnement',
-              hidden: true
-            }
-          },
-          {
-            path: 'generaux',
-            component: () => import('@/views/table/etats-generaux.vue'),
-            name: 'Etats Generaux',
-            meta: {
-              title: 'etatsGeneraux',
               hidden: true
             }
           },

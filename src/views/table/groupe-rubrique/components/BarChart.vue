@@ -33,17 +33,19 @@ export default class extends mixins(ResizeMixin) {
 
 
   mounted() {
-    setTimeout(() => {
-   // this.listLoading = false
-  }, 0.5 * 5000)
+  //   setTimeout(() => {
+  //  // this.listLoading = false
+  // }, 0.5 * 5000)
     this.$nextTick(() => {
-      this.initChart(this.recapMonths)
+      if(typeof this.recapMonths !== "undefined" && Object.keys(this.recapMonths).length === 0 && this.recapMonths.constructor === Object )
+        this.initChart(this.recapMonths)
     })
   }
 
   created(){
       console.log("nigga be like whaaat")
       console.log(this.recapMonths)
+      //this.initChart(this.recapMonths)
   }
 
   beforeDestroy() {

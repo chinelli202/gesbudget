@@ -2,7 +2,7 @@
   <div class="app-container">
     <p>will be displaying data for {{ group.libelle }}</p>
     <h4>Récapitulatif Fonctionnement</h4>
-    <el-table
+    <!-- <el-table
       :data="fonctionnementData.collection"
 
       border
@@ -51,7 +51,7 @@
           <el-progress :percentage="row.sumrow.tauxExecution" />
         </template>
       </el-table-column>
-    </el-table>
+    </el-table> -->
 
     <h4>Récapitulatif Investissements</h4>
     <el-table
@@ -177,9 +177,9 @@ private investissementData = {}
 private recetteData = {}
 
 created() {
-  this.getFonctionnementData()
-  this.getInvestissementData()
-  this.getRecetteData()
+  // this.getFonctionnementData()
+  // this.getInvestissementData()
+  // this.getRecetteData()
 }
 
 private async getFonctionnementData() {

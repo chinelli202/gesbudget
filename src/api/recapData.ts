@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { IRecapData } from './types'
+import { IMonthRecapCollection, IMonthRecapData, IRecapData } from './types'
 
 export const defaultRecapData: IRecapData = {
     sumrow: Object,
@@ -7,6 +7,19 @@ export const defaultRecapData: IRecapData = {
     //header:Object
   }
   
+  export const defaultMonthRecapData: IMonthRecapData = {
+    mois: "Janvier",
+    engagements: 0,
+    realisations: 0,
+    execution: 0,
+    tauxExecution: 0,
+    collection: []
+  }
+  
+  export const defaultMonthRecapCollection: IMonthRecapCollection = {
+    months:[defaultMonthRecapData]
+  }
+
   export const getGroupeRecapData = (groupename: string, params: any) =>
     request({
       url: `/etats/fonctionnement/depenses/groupe/'${groupename}`,
