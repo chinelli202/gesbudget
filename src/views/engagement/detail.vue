@@ -426,6 +426,12 @@
                 </el-button>
               </el-col>
             </el-row>
+            <footer-buttons
+              :entity="engagement"
+              type="INIT"
+              :submitDisabled="submitUpdateDisabled"
+            >
+            </footer-buttons>
           </el-main>
         </el-container>
       </el-card>
@@ -490,6 +496,7 @@
           </el-form-item>
         </el-form>
       </el-dialog>
+      
       next_statut : {{ engagement.next_statut }}<br>
       hasPermission {{ hasPermission("profile-read") }}<br>
       hasnotPermission {{ hasnotPermission("profile-read") }}<br><br>
@@ -517,6 +524,7 @@ import {
   , updateEngagement, validationpPreeng, validationPreeng, cancelValidationPreeng, cancelValidationpPreeng, validationsPreeng
   , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
 } from '@/api/engagements'
+import FooterButtons from './components/footerbuttons'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
@@ -524,6 +532,7 @@ import { PermissionModule } from '@/store/modules/permission'
 @Component({
   name: 'DetailEngagement',
   components: {
+    FooterButtons
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -538,7 +547,7 @@ export default class extends Vue {
   private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
   private cascade: number[] = []
 
-  /** Main card */
+  /** Main card form attributes */
   private cardLoading = true
   private deviseOptions = {}
   private typeOptions = {}
@@ -546,6 +555,8 @@ export default class extends Vue {
   private etatOptions = {}
   private statutOptions = {}
   private tva = 0
+
+  /** Variables for buttons rendering */
   private fallbackUrl = { path: '/' }
 
   private engagementIsClosed = false
@@ -624,22 +635,23 @@ export default class extends Vue {
 
   private async fetchData(engagementId: number) {
     this.cardLoading = true
-    const response = await detailEngagement({ id: engagementId })
-    this.engagement = response.data
-    this.deviseOptions = AppModule.devises
-    this.typeOptions = AppModule.typesEngagement
-    this.natureOptions = AppModule.naturesEngagement
-    this.etatOptions = AppModule.etatsEngagement
-    this.statutOptions = AppModule.statutsEngagement
-    this.tva = AppModule.tva
-
-    this.initializeButtons()
-    
-    /** Initialize cascader */
-    this.cascade = [this.engagement.chapitre_id, this.engagement.rubrique_id, this.engagement.ligne_id]
-    this.domain = this.engagement.domaine
-    
-    this.cardLoading = false
+    detailEngagement({ id: engagementId }).then((response) => {
+      this.engagement = response.data
+      this.deviseOptions = AppModule.devises
+      this.typeOptions = AppModule.typesEngagement
+      this.natureOptions = AppModule.naturesEngagement
+      this.etatOptions = AppModule.etatsEngagement
+      this.statutOptions = AppModule.statutsEngagement
+      this.tva = AppModule.tva
+  
+      this.initializeButtons()
+      
+      /** Initialize cascader */
+      this.cascade = [this.engagement.chapitre_id, this.engagement.rubrique_id, this.engagement.ligne_id]
+      this.domain = this.engagement.domaine
+      
+      this.cardLoading = false
+    })
   }
 
   /** Ligne budgetaire selector */
