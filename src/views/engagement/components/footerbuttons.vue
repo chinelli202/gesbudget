@@ -1,7 +1,7 @@
 <template>
   <div
-    style="padding: 1em;box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)"
     v-loading="footerLoading"
+    style="padding: 1em;box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)"
   >
     <el-row
       type="flex"
@@ -174,7 +174,7 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-  
+
     next_statut : {{ entity.next_statut }}<br>
     hasPermission {{ hasPermission("profile-read") }}<br>
     hasnotPermission {{ hasnotPermission("profile-read") }}<br><br>
@@ -194,7 +194,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import {
   detailEngagement
   , updateEngagement, validationpPreeng, validationPreeng, cancelValidationPreeng, cancelValidationpPreeng, validationsPreeng
@@ -219,6 +219,13 @@ export default class FooterButtons extends Vue {
   @Prop({ required: true }) private entity!: any
   @Prop({ required: true }) private type!: any
   @Prop({ default: false, required: true }) private submitDisabled!: any
+  mounted() {
+    this.$watch('entity', entity => {
+      this.footerLoading = true
+      this.initializeButtons()
+      this.footerLoading = false
+    }, { immediate: true })
+  }
 
   /** Variables for buttons rendering */
   private footerLoading = false
@@ -266,23 +273,17 @@ export default class FooterButtons extends Vue {
   private permissions : any[] = []
   private permissionCodes = {}
 
-
   created() {
     this.footerLoading = true
     const id = this.$route.params && this.$route.params.id
     this.permissions = UserModule.permissions
     this.permissionCodes = PermissionModule.permissionCodes
-
-    console.log("fb ->entity.statut ", this.entity)
-
-    this.initializeButtons()
-    
     this.footerLoading = false
   }
 
   private entityLabel() {
     if (this.entity.etat === AppModule.etatsEngagement.INIT.code) {
-      return "le pré-engagement"
+      return 'le pré-engagement'
     } else if (this.entity.etat === AppModule.etatsEngagement.PEG.code) {
       return "l'imputation"
     } else if (this.entity.etat === AppModule.etatsEngagement.IMP.code) {
@@ -551,9 +552,6 @@ export default class FooterButtons extends Vue {
 
     // The engagement is closed
     this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code
-    console.log("fb ->this type ", this.type)
-    console.log("fb ->AppModule.etatsEngagement.INIT.code ", AppModule.etatsEngagement.INIT.code)
-    console.log("fb ->Entity statut ", this.entity.statut)
     if (this.type === AppModule.etatsEngagement.INIT.code) {
       // The engagement is at the state of an initiated pré-engagement
       console.log('fb ->The engagement is at the state of an initiated pré-engagement')
