@@ -541,6 +541,9 @@ export default class FooterButtons extends Vue {
     this.isCurrentUserValideurp = UserModule.matricule === this.entity.valideur_first
     this.isCurrentUserValideurs = UserModule.matricule === this.entity.valideur_second
     this.isCurrentUserValideurf = UserModule.matricule === this.entity.valideur_final
+
+    // The engagement is closed
+    this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code
   }
 
   private initializeButtons() {
@@ -550,294 +553,75 @@ export default class FooterButtons extends Vue {
     // We re-evaluate the isCurrentUser... variables
     this.evaluateVariables()
 
-    // The engagement is closed
-    this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code
-    if (this.type === AppModule.etatsEngagement.INIT.code) {
-      // The engagement is at the state of an initiated pré-engagement
-      console.log('fb ->The engagement is at the state of an initiated pré-engagement')
+    // PlusDactions button is always activated
+    this.isbtnPlusDactions = true
 
-      if (this.entity.statut === AppModule.statutsEngagement.SAISI.code) {
-        // The engagement have just been initiated
-        console.log('fb ->The engagement have just been initiated')
+    // Activer le bouton Ok d'abord. On le désactivera éventuellement par la suite si l'un des boutons principaux est activé
+    this.isbtnOk = true
 
-        if (!this.isCurrentUserSaisisseur) {
-          // The current user is not the one who initiated the engagement
-          console.log('fb ->The current user is not the one who initiated the engagement')
+    // The current user has the right to perform the n+1 action so we activate the corresponding Validation and sendBack buttons
+    if (this.userCanPerformNextAction() && !this.userHasPerformPreviousAction()) {
+      this.activateBtnForCurrentAction()
+      this.isbtnRenvoyer = true
+    }
 
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDP)) {
-            /* The current user has the permission to validate at the first level
-             So we'll give him/her :
-             1- the 'Valider P' button to validate the engagement
-             2- the 'Plus d'actions...' button if he/she just wants to add a comment
-             3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
-             This button is to display only if the engagement hasn't been sent back yet.
-            */
+    // The current user has performed the current statut and one of n++ action has been performed
+    if (this.userPerformedCurrentStatut() && this.superiorActionHasBeenPerformed()) {
+      this.isbtnOptionsAnnuler = true
+    }
 
-            console.log('fb ->The current user has the permission to validate at the first level')
-            this.isbtnPlusDactions = true
-            if (this.entity.next_statut !== null) {
-              /** The current engagement has been sent back to SAISI for updating
-               * So the current user can't do no validation
-               */
-              this.isbtnOk = true
-            } else {
-              /** The current engagement has not been sent back to SAISI for updating
-               * So the current user can
-               * 1- Validate at the first level with the 'Valider P' button
-               * 2- Send back with the 'Renvoyer' button
-               */
-              this.isbtnRenvoyer = true
-              this.isbtnValiderp = true
-            }
-          } else {
-            /* The current user doesn't have the permission to validate at the first level
-             So we'll give him/her :
-             1- the 'Ok' button
-             2- the 'Plus d'actions...' button if he/she wants to add a comment */
+    // The current statut is intermediary and none of n++ action has been performed
+    if (this.statutIsIntermediary() && !this.superiorActionHasBeenPerformed()) {
+      this.isbtnAnnulerValider = true
+    }
 
-            console.log("fb ->The current user doesn't have the permission to validate at the first level")
-            this.isbtnOk = true
-            this.isbtnPlusDactions = true
-          }
-        } else {
-          // The current user is the one who initiated the engagement
-          console.log('fb ->The current user is the one who initiated the engagement')
+    // The entity is at final statut and the user has the permission to perform NextEtat
+    if (this.statutIsFinal() && this.userCanNextEtat()) {
+      this.isbtnImputer = true
+    }
+    
+    // If the current user is the one who performed the SAISI
+    if (this.isCurrentUserSaisisseur) {
 
-          if (this.entity.next_statut === 'SAISI') {
-            /** The engagement has been sent back by the current user superior.
-             * He/She needs to correct the engagement and re-submit it for the superior to validate.
-             * So he/she will needs :
-             * 1- to edit and resend the engagement to his superior. With the 'Mettre à jour' secion
-             * 2- also to close the engagement. Withe the 'Cloturer' button
-             * 3- the 'Plus d'actions...' button if he/she wants to add a comment
-             */
-
-            console.log('fb ->The engagement has been sent back by the current user superior.')
-            this.isResendUpdate = true
-            this.isbtnClose = true
-            this.isbtnPlusDactions = true
-          } else {
-            // The engagement has not been sent back by the current user superior.
-            console.log('fb ->The engagement has not been sent back by the current user superior.')
-
-            if (this.entity.valideur_first === null && this.entity.valideur_second === null && this.entity.valideur_final === null) {
-              /** The engagement has not yet been validated by one of current user superiors
-              * So, he/she :
-              * 1- can still edit the engagement. With the 'Mettre à jour' button
-              * 2- can also close the engagement. Withe the 'Cloturer' button
-              * 3- the 'Plus d'actions...' button if he/she wants to add a comment
-              */
-
-              console.log('fb ->The engagement has not yet been validated by one of current user superiors, \'' + this.entity.valideur_first + "'")
-              this.isbtnUpdate = true
-              this.isbtnClose = true
-              this.isbtnPlusDactions = true
-            } else {
-              /* The engagement has already been validated by one of current user superiors. So, he/she can no more edit the engagement.
-              So we'll give him/her :
-               1- the 'Ok' button
-               2- the 'Je veux annuler ma validation' button, which will display a message on how to proceed for annulation in this particular scenario.
-                It'll be handled off system.
-               3- the 'Plus d'actions...' button if he/she wants to add a comment */
-
-              console.log("fb ->The engagement has been validated by one of current user superiors, '" + this.entity.valideur_first + "'")
-              this.isbtnOk = true
-              this.isbtnPlusDactions = true
-            }
-          }
-        }
-      } else if (this.entity.statut === AppModule.statutsEngagement.VALIDP.code) {
-        // The engagement has been validated at the first level
-        console.log('fb ->The engagement has been validated at the first level')
-
-        if (!this.isCurrentUserValideurp) {
-          // The current user is not the one who validated the engagement at the first level
-          console.log('fb ->The current user is not the one who validated the engagement at the first level')
-
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDS) &&
-            !this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
-            /* The user has the permission to validate at the second level but not at the final level
-            So we'll give him/her:
-            1- The 'Validate S' button, to validate at the second level
-            2- the 'Plus d'actions...' button if he/she just wants to add a comment
-             3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
-             This button is to display only if the engagement hasn't been sent back yet.
-            */
-            console.log('fb ->The user has the permission to validate at the second level but not at the final level')
-
-            this.isbtnValiders = true
-            this.isbtnPlusDactions = true
-            if (this.entity.next_statut === null) {
-              this.isbtnRenvoyer = true
-            }
-          } else if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
-            /** The user has the permission to validate at the final level
-            * So we'll give him/her:
-            * 1- The 'Validate F' button, to validate at the final level. If the user validate at final level,
-            * there'll be no more need of validation at second level
-            * 2- the 'Plus d'actions...' button if he/she just wants to add a comment
-            * 3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
-            * This button is to display only if the engagement hasn't been sent back yet.
-            */
-            console.log('fb ->The user has the permission to validate at the final level')
-
-            this.isbtnValiderf = true
-            this.isbtnPlusDactions = true
-            if (this.entity.next_statut === null) {
-              this.isbtnRenvoyer = true
-            }
-          } else {
-            /** The user has no permission to validate neither at the second or the final level */
-
-            console.log('fb ->The user has no permission to validate neither at the second or the final level')
-            if (!this.isCurrentUserSaisisseur) {
-              /** The user is not the one who initiated the engagement
-               * We'll just give him/her :
-               * 1- the 'Ok' button
-               * 2- the 'Plus d'actions...' button for comments
-              */
-
-              console.log('fb ->The user is not the one who initiated the engagement')
-              this.isbtnOk = true
-              this.isbtnPlusDactions = true
-            } else {
-              /** The user is the one who initiated the engagement
-               * We'll just give him/her :
-               * 1- the 'Ok' button
-               * 2- the 'Plus d'actions...' button for comments
-               * 3- the 'Clôturer l'engagement' button
-              */
-
-              console.log('fb ->The user is the one who initiated the engagement')
-              this.isbtnOk = true
-              this.isbtnPlusDactions = true
-              this.isbtnClose = true
-            }
-          }
-        } else {
-          // The current user is the one who validated the engagement at the first level
-          console.log('fb ->The current user is the one who validated the engagement at the first level')
-
-          if (this.entity.valideur_second === null && this.entity.valideur_final === null) {
-            /* The engagement has not yet been validated by one of current user superiors.
-            So, he/she :
-            * 1- can still cancel his validation. With the 'Annuler Validation' button
-            * 2- the 'Plus d'actions...' button if he/she wants to add a comment
-            */
-            console.log('fb ->The engagement has not yet been validated by one of current user superiors.')
-
-            this.isbtnAnnulerValider = true
-            this.isbtnPlusDactions = true
-          } else {
-            /** The engagement has been validated by one of current user superiors.
-            * So, he/she :
-            * 1- will have the 'Ok' button
-            * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
-            * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
-
-            console.log('fb ->The engagement has been validated by one of current user superiors')
-            this.isbtnOk = true
-            this.isbtnOptionsAnnuler = true
-            this.isbtnPlusDactions = true
-          }
-        }
-      } else if (this.entity.statut === AppModule.statutsEngagement.VALIDS.code) {
-        // The engagement's statut is VALIDS
-        console.log('fb ->The engagement\'s statut is VALIDS')
-
-        if (!this.isCurrentUserValideurs) {
-          // The current user is not the one who validated the engagement at the second level
-          console.log('fb ->The current user is not the one who validated the engagement at the second level')
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
-            /** The user has the permission to validate at the final level.
-             * we'll give him/her :
-             * 1- The 'Validate F' button for final validation
-             * 2- the 'Plus d'actions...' button if he/she just wants to add a comment
-             * 3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
-             * This button is to display only if the engagement hasn't been sent back yet.
-            */
-            console.log('fb ->The user has the permission to validate at the final level.')
-            this.isbtnValiderf = true
-            this.isbtnPlusDactions = true
-            if (this.entity.next_statut === null) {
-              this.isbtnRenvoyer = true
-            }
-          } else {
-            /** The user doesn't have the permission to validate at the final level.
-             * we'll give him/her :
-             * 1- the 'Ok' button
-             * 2- the 'Plus d'actions..' button for adding a comment
-             */
-
-            console.log("fb ->The user doesn't have the permission to validate at the final level. ")
-            this.isbtnOk = true
-            this.isbtnPlusDactions = true
-          }
-        } else {
-          // The current user is the one who validated the engagement at the second level
-          console.log('fb ->The current user is the one who validated the engagement at the second level')
-
-          if (this.entity.valideur_final === null) {
-            /* The engagement has not yet been validated by one of current user superiors.
-            So, he/she :
-            * 1- can still cancel his validation. With the 'Annuler Validation' button
-            * 2- the 'Plus d'actions...' button if he/she wants to add a comment
-            */
-
-            console.log('fb ->The engagement has not yet been validated by one of current user superiors.')
-            this.isbtnAnnulerValider = true
-            this.isbtnPlusDactions = true
-          } else {
-            /** The engagement has been validated by one of current user superiors.
-            * So, he/she :
-            * 1- will have the 'Ok' button
-            * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
-            * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
-
-            console.log('fb ->The engagement has been validated by one of current user superiors.')
-            this.isbtnOk = true
-            this.isbtnOptionsAnnuler = true
-            this.isbtnPlusDactions = true
-          }
-        }
-      } else if (this.entity.statut === AppModule.statutsEngagement.VALIDF.code) {
-        /** The final level validation cannot be canceled.
-         * So the user :
-         * 1- will have the 'Ok' button
-         * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
-         *
-         * TODO : make the final level validation cancelable when no 'imputation' have'nt been created for the engagement
-         *        This could be handled with a 'nb_imputations_en_suspens' & 'cumul_imputations_en_suspens' attributes on the engagement.
-         *        These 2 attributes will aggregate the count and cumul of imputation that have been initiated for the engagement.
-         */
-
-        console.log('fb ->The final level validation cannot be canceled.')
-        this.isbtnOk = true
-        this.isbtnOptionsAnnuler = true
+      // Tant qu'on n'a pas validé p ou plus, si l'utilisateur est celui qui a saisi alors il peut update
+      if (!this.entityHasBeenValidatePOrMore()) {
+        this.isbtnUpdate = true
       }
-    } else if (this.entity.etat === AppModule.etatsEngagement.CLOT.code) {
-      /** The engagement is closed
-       * The user could :
-       * 1- either restore it via the 'Restaurer' button. If the user is the one who created it.
-       * 2- Just notice with the 'Ok' button
-       */
 
-      console.log('fb ->The engagement is closed')
-      if (this.isCurrentUserSaisisseur) {
+      // While there has been no final validation, the user who has performed the SAISI can still close
+      if (!this.hasBeenValidatedF()) {
+        this.isbtnClose = true
+      }
+
+      // If the entity is Closed, the user who has performed the SAISI can still close
+      if (this.entityIsClosed) {
         this.isbtnRestaurer = true
       }
-      this.isbtnOk = true
-    } else if (this.entity.etat === AppModule.etatsEngagement.PEG.code) {
-      // TODO
-      console.log('fb ->The engagement is etat PEG')
-    } else if (this.entity.etat === AppModule.etatsEngagement.IMP.code) {
-      // TODO
-      console.log('fb ->The engagement is etat IMP')
-    } else if (this.entity.etat === AppModule.etatsEngagement.REA.code) {
-      // TODO
-      console.log('fb ->The engagement is etat REA')
-    } else {
-      console.log('fb ->we dont know this ', this.entity.etat)
+
+      // The entity hasn't been sent back, so we give the user who performed the Saisi to ResendUpdate
+      if (this.entity.next_statut != null) {
+        this.isResendUpdate = true
+      }
+    }
+
+    // Si l'un des boutons principaux est activé, désactiver le bouton Ok
+    if (this.isbtnImputer || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp || this.isbtnValiders || this.isbtnValiderf) {
+      this.isbtnOk = false
+    }
+
+    // Deactivate buttons in case the entity is closed or has been sent back for SAISI
+    if (this.entityIsClosed || this.entity.next_statut != null) {
+      this.isbtnUpdate = false
+      this.isbtnValiderp = false
+      this.isbtnValiders = false
+      this.isbtnValiderf = false
+      this.isbtnRenvoyer = false
+      this.isbtnImputer = false
+
+      if (this.entityIsClosed) {
+        this.isbtnAnnulerValider = false
+        this.isResendUpdate = false
+      }
     }
   }
 }
