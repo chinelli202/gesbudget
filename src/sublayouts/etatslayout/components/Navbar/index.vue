@@ -11,7 +11,7 @@
       text-color="#fff"
       active-text-color="#ffd04b"
       @select="handleSelect"
-    >
+   >
       <!-- <router-link to="/tab/custom/generaux">
         <el-menu-item index="1">Général</el-menu-item>
       </router-link> -->
@@ -101,32 +101,151 @@
             Autres recettes
           </el-menu-item>
       </el-submenu>
-      <el-menu-item index="4">
-        <a
-          href="https://www.ele.me"
-          target="_blank"
-        >Commandes</a>
+      <el-menu-item @click="handleNavigate">
+        Aller à...
+      </el-menu-item>
+      <el-menu-item style="float:right;">
+        <div>      
+          <el-select v-model="periodTypeSelected" placeholder="Select" @change="handlePeriodTypeChanged">
+            <el-option
+              v-for="item in periodTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-date-picker
+            v-model="selectedPeriod"
+            :disabled="isDatePickerDisabled"
+            v-if="isDatePickerVisible"
+            :type="periodType"
+            placeholder="Choississez un jour"
+            @disabledDate="checkIfDateIsDisabled">
+          </el-date-picker>
+          <el-button slot="append" icon="el-icon-search" @click="handleNavigateToSetFiltre"></el-button>
+        </div>
+        <!-- <el-input placeholder="Entrez quelque chose" v-model="input2" class="myinput">
+        </el-input> -->
+              <!-- <template slot="append">.com</template> -->
+        
       </el-menu-item>
     </el-menu>
+
+    <el-dialog :visible.sync="dialogTableVisible">
+       <navigateur-etats/>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import NavigateurEtats from '@/components/NavigateurEtats/index.vue'
+import {FiltreEtatsModule as etatsmodule} from '@/store/modules/filtre-etats'
+  
+export interface periodTypeSelection {
+  value: string,
+  label: string
+}
   @Component({
     name: 'EtatNavbar',
-    components: {}
+    components: {
+      NavigateurEtats
+    }
   })
+
 export default class extends Vue {
 
 private activeIndex2 : any = "dd"
-
+private input2 : string = ""
+private dialogTableVisible: boolean = false
+private periodType : string = "date"
+private selectedPeriod: string = ""
+private periodTypes : any = {
+  JOUR: 'date',
+  MOIS: 'month',
+  SEMAINE: 'week',
+  INTERVALLE: 'daterange',
+}
+private isDatePickerDisabled: boolean = false
+private isDatePickerVisible: boolean = false
   private handleSelect(){
 
   }
 
   private handleClick(element: any){
     console.log("this is the instance ", element.index)
+  }
+
+  private handleNavigate() {
+    this.dialogTableVisible = true;
+  }
+
+  private periodTypeSelected : periodTypeSelection = {
+      value: 'date-today',
+      label: 'Aujourd\'hui',
+  }
+
+  private periodTypeOptions:periodTypeSelection [] =  [{
+      value: 'date-today',
+      label: 'Aujourd\'hui',
+    }, {
+      value: 'month-thismonth',
+      label: 'Ce mois çi'
+    }, {
+      value: 'date-selectday',
+      label: 'Choisir le jour'
+    }, {
+      value: 'week-selectweek',
+      label: 'Choisir la semaine'
+    },
+    {
+      value: 'month-selectmonth',
+      label: 'Choisir le mois '
+    },
+    {
+      value: 'monthrange-selectinterval',
+      label: 'Choisir la période'
+    }]
+  
+  private handlePeriodTypeChanged(type:string){
+    console.log("this the type selected", type)
+    this.routeFirstParam(type.split("-",2)[0])
+    this.routeSecondParam(type.split("-",2)[1])
+  }
+
+  private routeFirstParam(type:string){
+    if(type == this.periodTypes.JOUR){
+      this.periodType = this.periodTypes.JOUR
+    }
+    if(type == this.periodTypes.MOIS){
+      this.periodType = this.periodTypes.MOIS
+    }
+    if(type == this.periodTypes.SEMAINE){
+      this.periodType = this.periodTypes.SEMAINE
+    }
+    if(type == this.periodTypes.INTERVALLE){
+      this.periodType = this.periodTypes.INTERVALLE
+    }
+  }
+
+  private routeSecondParam(param:string){
+    if(param == 'today'){
+      this.isDatePickerDisabled = true
+      this.isDatePickerVisible = false
+      
+    }
+    else {
+      this.isDatePickerDisabled = false
+      this.isDatePickerVisible = true
+      }
+  }
+
+  private checkIfDateIsDisabled(date:string){
+    return false
+  }
+
+  private handleNavigateToSetFiltre(){
+    console.log("selected section ", etatsmodule.section)
   }
 }
 

@@ -1,7 +1,13 @@
 <template>
   <div>
     <el-card class="box-card" shadow="hover">
-      <el-row>
+      <div class="dialog-row">
+        <el-radio-group v-model="choixSection" @change="handleSectionChange">
+          <el-radio :label="100" border>Dépenses</el-radio>
+          <el-radio :label="200" border>Recettes</el-radio>
+        </el-radio-group>
+      </div>
+      <el-row class="dialog-row">
         <el-radio-group v-model="radio" @change="handleRadioGroupChange">
           <el-radio :label="1">Groupes</el-radio>
           <el-radio :label="3">Chapitres</el-radio>
@@ -9,8 +15,8 @@
           <el-radio :label="9">Lignes</el-radio>
         </el-radio-group>
       </el-row>
-      <el-row>
-        <span>Choisir </span>
+      <el-row class="dialog-row">
+
         <el-cascader
         class="cascader"
           size="medium"
@@ -19,10 +25,11 @@
           :props="{ expandTrigger: 'hover' }"
           @change="handleCascaderChange"></el-cascader>
       </el-row>
-      <el-row>
-        <el-button class="submit-btn" plain @click="handleButtonVoirEtatsClick">Voir Etats</el-button>
-      </el-row>
     </el-card>
+      <div class="footer-group clearfix">
+        <el-button plain @click="handleButtonVoirEtatsClick" style="float: right; margin-left: 20px">Aller</el-button>
+        <el-button plain style="float: right; ">Annuler</el-button>
+      </div>
   </div>
 </template>
 
@@ -50,6 +57,7 @@
       private radio: any = 3
       private chosenEntity: string = ""
       private chosenEntityId: number = 10
+      private choixSection: number = 100
 
       private lignesCascadeOptions: any [] = []
       private chapitresCascadeOptions: any [] = []
@@ -143,6 +151,10 @@
         }
       }
 
+      private handleSectionChange(selected:number){
+
+      }
+
        private handleButtonVoirEtatsClick(){
          console.log("at this point, the component will navigate to : " + this.chosenEntity + " with the index : " + this.chosenEntityId) 
           var url = "/tab/custom/fonctionnement/" + this.chosenEntity + "/" + this.chosenEntityId;
@@ -208,7 +220,9 @@ label {
 .box-card {
   widows: 480px;
   background: #ffffff;
-
+  width: 100%;
+  margin:auto;
+  padding: 0;
 }
 
 .submit-btn {
@@ -217,5 +231,15 @@ label {
 
 .cascader {
   width: 450px
+}
+
+.dialog-row {
+  text-align: center;
+  margin: 20px auto;
+  width: 50%;
+}
+
+.footer-group{
+  margin-top: 10px;
 }
 </style>

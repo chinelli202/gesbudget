@@ -2,11 +2,26 @@
   <div>
     <EtatNavBar />
     <h1>NOTHING MEANS NOTHING</h1>
-    <el-row>
-      <el-button plain>Plein</el-button>
-      <el-button type="primary" plain>Primary</el-button>
-      <el-button type="success" plain>Success</el-button>
-    </el-row>
+        <div>      
+          <el-select v-model="value" placeholder="Select">
+            <el-option
+              v-for="item in filterPeriod"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-date-picker slot="append"
+            v-model="value1"
+            type="date"
+            placeholder="Choississez un jour">
+          </el-date-picker>
+          <el-button slot="append" icon="el-icon-search"></el-button>
+        </div>
+        <!-- <el-input placeholder="Entrez quelque chose" v-model="input2" class="myinput">
+        </el-input> -->
+              <!-- <template slot="append">.com</template> -->
+        
     <router-view />
   </div>
 </template>
