@@ -31,7 +31,7 @@
 
 <script lang="ts">
 
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import SummaryTable from './components/SummaryTable.vue'
 import PanelGroup from './components/PanelGroup.vue'
 import LineChart, { ILineChartData } from './components/LineChart.vue'
@@ -39,6 +39,9 @@ import BarChart from './components/BarChart.vue'
 import {getRecapData, defaultRecapData, getMonthsRecapCollection, defaultMonthRecapCollection} from '@/api/recapData'
 import NavigateurEtats from '@/components/NavigateurEtats/index.vue'
 import { IRecapData, IMonthRecapData, IMonthRecapCollection } from '@/api/types'
+import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre-etats'
+import {Store} from 'vuex'
+
 
 const lineChartData: ILineChartData = {
   months: [],
@@ -74,10 +77,26 @@ export default class extends Vue {
       endmonth:6
     }
 
+    public getproprieteRecap() {
+      console.log("Etats module was changed,  ", etatsmodule.jourPeriodeJour)
+      return etatsmodule.jourPeriodeJour
+    }
+
+    @Watch('$store.state.FiltreEtatsModule.periode',{immediate:true})
+    private onPeriodeChange(value: string, oldValue: string){
+      console.log("watcher captured periode change");
+    }
+
+    public get critereParam(): string {
+      console.log("etat module has changed for some reason into this" + etatsmodule.periode)
+      return etatsmodule.periode
+    }
     created() {
       this.getRecapData()
       this.getMonthRecapCollection()
       console.log("nigga say hooo " + this.monthsRecapCollection)
+      //this.$store.watch((FiltreEtatsModule)=>{console.log("filtre module change catched by watcher")},(val)=>{})
+      console.log("my property, ",this.getproprieteRecap)
     }
 
     private getRecapData() {

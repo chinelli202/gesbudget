@@ -21,10 +21,11 @@ const defaultFiltreEtat : IFiltreEtats = {
     finPeriodeIntervalle: 1
 }
 
-const periodes : any = {
+export const periodes = {
     TODAY: 'today',
     JOUR: 'jour',
     MOIS: 'mois',
+    CEMOIS: 'thismonth',
     INTERVALLE: 'intervalle'
 }
 
@@ -42,8 +43,10 @@ class FiltreEtats extends VuexModule implements IFiltreEtats {
     const { jourParam, value } = payload
     if(jourParam == periodes.TODAY){
         this.periode = periodes.TODAY
+        console.log("from within module periode today")
     }
     else if (jourParam == periodes.JOUR){
+      console.log("from within module periode jour")
         this.periode = periodes.JOUR
         this.jourPeriodeJour = value
     }
@@ -66,6 +69,7 @@ class FiltreEtats extends VuexModule implements IFiltreEtats {
 
   @Action
   public SetPeriodeJour(payload: { jourParam: string, value: string }){
+    console.log("from within module periode jour ttrrryyyyy")
       this.SET_PERIODE_JOUR(payload)
   }
   @Action

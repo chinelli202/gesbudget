@@ -2,7 +2,7 @@
   <div>
     <EtatNavBar />
     <h1>NOTHING MEANS NOTHING</h1>
-        <div>      
+        <!-- <div>      
           <el-select v-model="value" placeholder="Select">
             <el-option
               v-for="item in filterPeriod"
@@ -17,7 +17,7 @@
             placeholder="Choississez un jour">
           </el-date-picker>
           <el-button slot="append" icon="el-icon-search"></el-button>
-        </div>
+        </div> -->
         <!-- <el-input placeholder="Entrez quelque chose" v-model="input2" class="myinput">
         </el-input> -->
               <!-- <template slot="append">.com</template> -->
