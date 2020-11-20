@@ -430,6 +430,19 @@
               :entity="engagement"
               type="INIT"
               :submitDisabled="submitUpdateDisabled"
+              :onCancel="onCancel"
+              :updateSubmit="updateSubmit"
+              :resendUpdate="resendUpdate"
+              :validerpSubmit="validerpSubmit"
+              :validersSubmit="validersSubmit"
+              :validerfSubmit="validerfSubmit"
+              :restorePreeng="restorePreeng"
+              :optionsAnnulerValider="optionsAnnulerValider"
+              :commentaireSubmit="fbcommentaireSubmit"
+              :closePreeng="fbclosePreeng"
+              :sendBackSubmit="sendBackSubmit"
+              :cancelValiderSubmit="cancelValiderSubmit"
+              :nextEtatAction="imputer"
             >
             </footer-buttons>
           </el-main>
@@ -697,6 +710,10 @@ export default class extends Vue {
         })
     }
   }
+  
+  private async fbcommentaireSubmit(id: number, comment:string) {
+    return await addComment({ id: id, comment: comment })
+  }
 
   private closePreeng() {
     this.$confirm('Voulez-vous vraiment clôturer cet engagement ?'
@@ -724,6 +741,16 @@ export default class extends Vue {
       .catch(error => {
         console.log('Error when closing engagement', error)
       })
+  }
+  
+  private async fbclosePreeng(id: number, comment: string) {
+    console.log('fbclosePreeng '+id+'--'+comment)
+    this.cardLoading = true
+    const response = await closePreeng({id: id, comment: comment})
+    this.engagement = response.data
+    this.initializeButtons()
+    this.cardLoading = false
+    return response
   }
 
   private restorePreeng() {
@@ -858,6 +885,14 @@ export default class extends Vue {
       })
   }
 
+  private imputer() {
+    console.log('Imputer')
+  }
+
+  private optionsAnnulerValider() {
+    console.log('optionsAnnulerValider')
+  }
+
   private onCancel() {
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
   }
@@ -939,7 +974,7 @@ export default class extends Vue {
           // The current user is not the one who initiated the engagement
           console.log('The current user is not the one who initiated the engagement')
 
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDP)) {
+          if (this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDP)) {
             /* The current user has the permission to validate at the first level
              So we'll give him/her :
              1- the 'Valider P' button to validate the engagement
@@ -1029,8 +1064,8 @@ export default class extends Vue {
           // The current user is not the one who validated the engagement at the first level
           console.log('The current user is not the one who validated the engagement at the first level')
 
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDS) &&
-            !this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
+          if (this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDS) &&
+            !this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDF)) {
             /* The user has the permission to validate at the second level but not at the final level
             So we'll give him/her:
             1- The 'Validate S' button, to validate at the second level
@@ -1045,7 +1080,7 @@ export default class extends Vue {
             if (this.engagement.next_statut === null) {
               this.isbtnRenvoyer = true
             }
-          } else if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
+          } else if (this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDF)) {
             /** The user has the permission to validate at the final level
             * So we'll give him/her:
             * 1- The 'Validate F' button, to validate at the final level. If the user validate at final level,
@@ -1123,7 +1158,7 @@ export default class extends Vue {
         if (!this.isCurrentUserValideurs) {
           // The current user is not the one who validated the engagement at the second level
           console.log('The current user is not the one who validated the engagement at the second level')
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.enregistrer.VALIDF)) {
+          if (this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDF)) {
             /** The user has the permission to validate at the final level.
              * we'll give him/her :
              * 1- The 'Validate F' button for final validation

@@ -59,7 +59,7 @@
         <el-button
           v-if="isbtnImputer"
           type="primary"
-          @click="imputer"
+          @click="nextEtatAction"
         >
           Imputer
         </el-button>
@@ -143,7 +143,7 @@
           <el-button
             type="info"
             :disabled="sendCommentDisabled"
-            @click="commentaireSubmit"
+            @click="preCommentaireSubmit"
           >
             Envoyer un commentaire
           </el-button>
@@ -151,7 +151,7 @@
             v-if="isbtnClose"
             type="primary"
             :disabled="sendCommentDisabled"
-            @click="closePreeng"
+            @click="preClosePreeng"
           >
             Clôturer {{ entityLabel() }}
           </el-button>
@@ -218,7 +218,21 @@ import { PermissionModule } from '@/store/modules/permission'
 export default class FooterButtons extends Vue {
   @Prop({ required: true }) private entity!: any
   @Prop({ required: true }) private type!: any
-  @Prop({ default: false, required: true }) private submitDisabled!: any
+  @Prop({ default: true, required: true }) private submitDisabled!: any
+  @Prop() private onCancel!: any
+  @Prop() private updateSubmit!: any
+  @Prop() private resendUpdate!: any
+  @Prop() private validerpSubmit!: any
+  @Prop() private validersSubmit!: any
+  @Prop() private validerfSubmit!: any
+  @Prop() private restorePreeng!: any
+  @Prop() private optionsAnnulerValider!: any
+  @Prop() private commentaireSubmit!: any
+  @Prop() private closePreeng!: any
+  @Prop() private sendBackSubmit!: any
+  @Prop() private cancelValiderSubmit!: any
+  @Prop() private nextEtatAction!: any
+
   mounted() {
     this.$watch('entity', entity => {
       this.footerLoading = true
@@ -230,6 +244,7 @@ export default class FooterButtons extends Vue {
   /** Variables for buttons rendering */
   private footerLoading = false
   private fallbackUrl = { path: '/' }
+  private footerEntity:any
 
   private entityIsClosed = false
 
@@ -288,217 +303,12 @@ export default class FooterButtons extends Vue {
       return "l'imputation"
     } else if (this.entity.etat === AppModule.etatsEngagement.IMP.code) {
       return "l'apurement"
-    }
-  }
-
-  private async sendComment() {
-    if (!this.plusDactionsForm.commentaire || this.plusDactionsForm.commentaire === '') {
-      return false
-    }
-    const response = await addComment({ id: this.entity.id, comment: this.plusDactionsForm.commentaire })
-    this.plusDactionsDialogVisible = false
-    this.plusDactionsForm.commentaire = ''
-    this.sendCommentDisabled = true
-    this.plusDactionsForm.used = true
-    this.entity = response.data
-    this.initializeButtons()
-  }
-
-  private async commentaireSubmit() {
-    if (!this.plusDactionsForm.used) {
-      this.sendComment()
     } else {
-      this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter ce nouveau commentaire ?'
-        , 'Commentaire existant'
-        , {
-          confirmButtonText: 'Oui, ajouter ce commentaire',
-          cancelButtonText: 'Annuler',
-          type: 'warning'
-        }
-      ).then(_ => {
-        this.sendComment()
-      })
-        .catch(error => {
-          console.log('fb ->Error comment submit confirmation', error)
-        })
+      return "Unknown entity"
     }
   }
 
-  private closePreeng() {
-    this.$confirm('Voulez-vous vraiment clôturer cet engagement ?'
-      , 'Clôture de l\'engagement'
-      , {
-        confirmButtonText: 'Oui, clôturer cet engagement',
-        cancelButtonText: 'Annuler',
-        type: 'warning'
-      }
-    ).then(_ => {
-      this.footerLoading = true
-      closePreeng({ id: this.entity.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-        this.sendCommentDisabled = true
-        this.entity = response.data
-        this.initializeButtons()
-        this.footerLoading = false
-      }).catch(error => {
-        this.footerLoading = false
-        console.log('fb ->Error close', error)
-      })
-    })
-      .catch(error => {
-        console.log('fb ->Error when closing engagement', error)
-      })
-  }
-
-  private restorePreeng() {
-    this.$confirm('Voulez-vous vraiment restaurer cet engagement ?'
-      , 'Restauration de l\'engagement'
-      , {
-        confirmButtonText: 'Oui, restaurer cet engagement',
-        cancelButtonText: 'Annuler',
-        type: 'warning'
-      }
-    ).then(_ => {
-      this.footerLoading = true
-      restorePreeng({ id: this.entity.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-        this.sendCommentDisabled = true
-        this.entity = response.data
-        this.initializeButtons()
-        this.footerLoading = false
-      }).catch(error => {
-        this.footerLoading = false
-        console.log('fb ->Error restore', error)
-      })
-    })
-      .catch(error => {
-        console.log('fb ->Error when restoring engagement', error)
-      })
-  }
-
-  private async updateSubmit() {
-    this.footerLoading = true
-    updateEngagement(this.entity).then((response) => {
-      this.initializeButtons()
-      this.footerLoading = false
-    }).catch(error => {
-      this.footerLoading = false
-      console.log('fb ->Error update', error)
-    })
-    // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
-  }
-
-  private async resendUpdate() {
-    this.footerLoading = true
-    resendUpdateEngagement(this.entity).then((response) => {
-      this.entity = response.data
-      this.initializeButtons()
-      this.footerLoading = false
-    }).catch(error => {
-      this.footerLoading = false
-      console.log('fb ->Error resendUpdate', error)
-    })
-  }
-
-  private sendBackSubmit() {
-    this.$confirm('Voulez-vous vraiment renvoyer cet engagement ?'
-      , 'Renvoi de l\'engagement'
-      , {
-        confirmButtonText: 'Oui, renvoyer cet engagement',
-        cancelButtonText: 'Annuler',
-        type: 'warning'
-      }
-    ).then(_ => {
-      this.footerLoading = true
-      sendBack({ id: this.entity.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-        this.sendCommentDisabled = true
-        this.entity = response.data
-        this.initializeButtons()
-        this.footerLoading = false
-      }).catch(error => {
-        this.footerLoading = false
-        console.log('fb ->Error sendBack', error)
-      })
-    })
-      .catch(error => {
-        console.log('fb ->Error when sending back engagement', error)
-      })
-  }
-
-  private validerpSubmit() {
-    this.validerSubmit('VALIDP')
-  }
-
-  private validersSubmit() {
-    this.validerSubmit('VALIDS')
-  }
-
-  private validerfSubmit() {
-    this.validerSubmit('VALIDF')
-  }
-
-  private validerSubmit(statut: string) {
-    this.footerLoading = true
-    validationPreeng({ id: this.entity.id, statut: statut }).then((response) => {
-      this.entity = response.data
-      this.initializeButtons()
-      this.footerLoading = false
-    }).catch(error => {
-      this.footerLoading = false
-      console.log('fb ->Error validationsPreeng', error)
-    })
-  }
-
-  private cancelValiderSubmit() {
-    this.$confirm('Voulez-vous vraiment annuler votre validation au 1er niveau ?'
-      , 'Annulation de validation au 1er niveau'
-      , {
-        confirmButtonText: 'Oui, annuler ma validation',
-        cancelButtonText: 'Retour',
-        type: 'warning'
-      }
-    ).then(_ => {
-      this.footerLoading = true
-      cancelValidationPreeng({ id: this.entity.id, comment: this.plusDactionsForm.commentaire, statut: this.entity.statut }).then((response) => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-        this.sendCommentDisabled = true
-        this.entity = response.data
-        this.initializeButtons()
-        this.footerLoading = false
-      }).catch(error => {
-        this.footerLoading = false
-        console.log('fb ->Error cancelValidationpPreeng', error)
-      })
-    })
-      .catch(error => {
-        console.log('fb ->Error when canceling validationp on Pre-engagement', error)
-      })
-  }
-
-  private onCancel() {
-    this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
-  }
-
-  private changeMontantHT(value: number) {
-    this.entity.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.formAttributeChange()
-  }
-
-  private formAttributeChange() {
-    this.submitUpdateDisabled = false
-    this.resendUpdateDisabled = false
-  }
-
-  private commentFieldChange() {
+   private commentFieldChange() {
     if (this.plusDactionsForm.commentaire && this.plusDactionsForm.commentaire !== '') {
       this.sendCommentDisabled = false
     } else {
@@ -546,70 +356,240 @@ export default class FooterButtons extends Vue {
     this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code
   }
 
+  /** Pre handlers: functions used to preprocessed stuffs before executing Props function */
+  private async sendComment() {
+    if (!this.plusDactionsForm.commentaire || this.plusDactionsForm.commentaire === '') {
+      return false
+    }
+    const response = await this.commentaireSubmit(this.entity.id, this.plusDactionsForm.commentaire)
+    this.plusDactionsDialogVisible = false
+    this.plusDactionsForm.commentaire = ''
+    this.sendCommentDisabled = true
+    this.plusDactionsForm.used = true
+  }
+
+  private async preCommentaireSubmit() {
+    if (!this.plusDactionsForm.used) {
+      this.sendComment()
+    } else {
+      this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter ce nouveau commentaire ?'
+        , 'Commentaire existant'
+        , {
+          confirmButtonText: 'Oui, ajouter ce commentaire',
+          cancelButtonText: 'Annuler',
+          type: 'warning'
+        }
+      ).then(_ => {
+        this.sendComment()
+      })
+        .catch(error => {
+          console.log('Error comment submit confirmation', error)
+        })
+    }
+  }
+
+  private preClosePreeng() {
+    this.$confirm('Voulez-vous vraiment clôturer cet engagement ?'
+      , 'Clôture de l\'engagement'
+      , {
+        confirmButtonText: 'Oui, clôturer cet engagement',
+        cancelButtonText: 'Annuler',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.footerLoading = true
+      this.closePreeng(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
+        this.plusDactionsDialogVisible = false
+        this.plusDactionsForm.commentaire = ''
+        this.plusDactionsForm.used = true
+        this.sendCommentDisabled = true
+        this.footerLoading = false
+      }).catch((error:any) => {
+        this.footerLoading = false
+        console.log('Error close', error)
+      })
+    })
+      .catch(error => {
+        console.log('Error when closing engagement', error)
+      })
+  }
+
+  /** Utilities functions */
+  private userPerformedCurrentStatut() {
+    switch(this.entity.statut) {
+      case AppModule.statutsEngagement.SAISI.code:
+        return this.isCurrentUserSaisisseur
+      case AppModule.statutsEngagement.VALIDP.code:
+        return this.isCurrentUserValideurp
+      case AppModule.statutsEngagement.VALIDS.code:
+        return this.isCurrentUserValideurs
+      case AppModule.statutsEngagement.VALIDF.code:
+        return this.isCurrentUserValideurf
+      default:
+        return false
+    }
+  }
+
+  private activateBtnForNextAction() {
+    switch(this.entity.statut) {
+      case AppModule.statutsEngagement.SAISI.code:
+        this.isbtnValiderp = true
+        break
+      case AppModule.statutsEngagement.VALIDP.code:
+        this.isbtnValiders = true
+        break
+      case AppModule.statutsEngagement.VALIDS.code:
+        this.isbtnValiderf = true
+        break
+    }
+  }
+
+  private statutIsFinal() {
+    return this.entity.statut === AppModule.statutsEngagement.VALIDF.code
+  }
+
+  private userCanNextEtat() {
+    let nextEtat:string = ''
+    // find the next etat
+    switch(this.entity.etat) {
+      case AppModule.etatsEngagement.INIT.code:
+        nextEtat = AppModule.etatsEngagement.PEG.code
+        break
+      case AppModule.etatsEngagement.PEG.code:
+        nextEtat = AppModule.etatsEngagement.IMP.code
+        break
+      case AppModule.etatsEngagement.IMP.code:
+        nextEtat = AppModule.etatsEngagement.REA.code
+        break
+      case AppModule.etatsEngagement.REA.code:
+        return false
+    }
+
+    if(nextEtat === '') {
+      return false
+    }
+    // Test if the user has the permission
+    return this.hasPermission(PermissionModule.permissionCodes.engagement[nextEtat]['SAISI'])
+  }
+  
+  private nextStatut(statut:string) {
+    switch(statut) {
+      case AppModule.statutsEngagement.SAISI.code:
+        return AppModule.statutsEngagement.VALIDP.code
+      case AppModule.statutsEngagement.VALIDP.code:
+        return AppModule.statutsEngagement.VALIDS.code
+      case AppModule.statutsEngagement.VALIDS.code:
+        return AppModule.statutsEngagement.VALIDF.code
+      case AppModule.statutsEngagement.VALIDF.code:
+        return null
+    }
+  }
+
+  private userCanNextStatut(){
+    let nextStatut:string = this.nextStatut(this.entity.statut)
+    if(!nextStatut) {
+      return false
+    }
+    // Test if the user has the permission
+    return this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat][nextStatut])
+  }
+
+  private superiorActionHasBeenPerformed() {
+    switch(this.entity.statut) {
+      case AppModule.statutsEngagement.SAISI.code:
+        return this.entity.valideur_first || this.entity.valideur_second || this.entity.valideur_final
+      case AppModule.statutsEngagement.VALIDP.code:
+        return this.entity.valideur_second || this.entity.valideur_final
+      case AppModule.statutsEngagement.VALIDS.code:
+        return this.entity.valideur_final
+      case AppModule.statutsEngagement.VALIDF.code:
+        return true
+      default:
+        return false
+    }
+  }
+
+  private statutIsIntermediary() {
+    return !(this.entity.statut === AppModule.statutsEngagement.SAISI.code || this.entity.statut === AppModule.statutsEngagement.VALIDF.code)
+  }
+
+  private etatIsClosed() {
+    return this.entity.etat === AppModule.etatsEngagement.CLOT.code
+  }
+
+  private entityHasBeenValidatePOrMore() {
+    console.log('this.entity.valideur_first ',this.entity.valideur_first)
+    console.log('this.entity.valideur_second ',this.entity.valideur_second)
+    console.log('this.entity.valideur_final ',this.entity.valideur_first || this.entity.valideur_second || this.entity.valideur_final)
+    return this.entity.valideur_first || this.entity.valideur_second || this.entity.valideur_final
+  }
+
+  private hasBeenValidatedF() {
+    return this.entity.statut === AppModule.statutsEngagement.VALIDF.code
+  }
+
+  /** Buttons initializations */
   private initializeButtons() {
-    // We reset first all buttons
+    // 1.We reset first all buttons
     this.resetButtons()
 
-    // We re-evaluate the isCurrentUser... variables
+    // 2.We re-evaluate the isCurrentUser... variables
     this.evaluateVariables()
 
-    // PlusDactions button is always activated
+    // 3.PlusDactions button is always activated
     this.isbtnPlusDactions = true
 
-    // Activer le bouton Ok d'abord. On le désactivera éventuellement par la suite si l'un des boutons principaux est activé
+    // 4.Activer le bouton Ok d'abord. On le désactivera éventuellement par la suite si l'un des boutons principaux est activé
     this.isbtnOk = true
+    console.log('4.isbtnOk ', this.isbtnOk)
 
-    // The current user has the right to perform the n+1 action so we activate the corresponding Validation and sendBack buttons
-    if (this.userCanPerformNextAction() && !this.userHasPerformPreviousAction()) {
-      this.activateBtnForCurrentAction()
+    // 5.The entity is at final statut and the user has the permission to perform NextEtat
+    if (this.statutIsFinal() && this.userCanNextEtat()) {
+      this.isbtnImputer = true
+    }
+
+    // 6.The current user has the right to perform the n+1 action so we activate the corresponding Validation and sendBack buttons
+    if (!this.statutIsFinal() && this.userCanNextStatut() && !this.userPerformedCurrentStatut()) {
+      this.activateBtnForNextAction()
       this.isbtnRenvoyer = true
     }
 
-    // The current user has performed the current statut and one of n++ action has been performed
+    // 7.The current user has performed the current statut and one of n++ action has been performed
     if (this.userPerformedCurrentStatut() && this.superiorActionHasBeenPerformed()) {
       this.isbtnOptionsAnnuler = true
     }
 
-    // The current statut is intermediary and none of n++ action has been performed
-    if (this.statutIsIntermediary() && !this.superiorActionHasBeenPerformed()) {
+    // 8.The current statut is intermediary and none of n++ action has been performed
+    if (this.statutIsIntermediary() && !this.superiorActionHasBeenPerformed() && this.userPerformedCurrentStatut()) {
       this.isbtnAnnulerValider = true
     }
 
-    // The entity is at final statut and the user has the permission to perform NextEtat
-    if (this.statutIsFinal() && this.userCanNextEtat()) {
-      this.isbtnImputer = true
-    }
-    
-    // If the current user is the one who performed the SAISI
+    // 9.If the current user is the one who performed the SAISI
     if (this.isCurrentUserSaisisseur) {
 
-      // Tant qu'on n'a pas validé p ou plus, si l'utilisateur est celui qui a saisi alors il peut update
+      // 9.a.Tant qu'on n'a pas validé p ou plus, si l'utilisateur est celui qui a saisi alors il peut update
       if (!this.entityHasBeenValidatePOrMore()) {
         this.isbtnUpdate = true
+        console.log('9.a.Tant quon na pas')
       }
 
-      // While there has been no final validation, the user who has performed the SAISI can still close
-      if (!this.hasBeenValidatedF()) {
+      // 9.c.While there has been no final validation, the user who has performed the SAISI can still close
+      if (!this.hasBeenValidatedF() && !this.etatIsClosed()) {
         this.isbtnClose = true
       }
 
-      // If the entity is Closed, the user who has performed the SAISI can still close
+      // 9.d.If the entity is Closed, the user who has performed the SAISI can still close
       if (this.entityIsClosed) {
         this.isbtnRestaurer = true
       }
 
-      // The entity hasn't been sent back, so we give the user who performed the Saisi to ResendUpdate
+      // 9.e.The entity hasn't been sent back, so we give the user who performed the Saisi to ResendUpdate
       if (this.entity.next_statut != null) {
         this.isResendUpdate = true
       }
     }
 
-    // Si l'un des boutons principaux est activé, désactiver le bouton Ok
-    if (this.isbtnImputer || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp || this.isbtnValiders || this.isbtnValiderf) {
-      this.isbtnOk = false
-    }
-
-    // Deactivate buttons in case the entity is closed or has been sent back for SAISI
+    // 10.Deactivate buttons in case the entity is closed or has been sent back for SAISI
     if (this.entityIsClosed || this.entity.next_statut != null) {
       this.isbtnUpdate = false
       this.isbtnValiderp = false
@@ -623,6 +603,12 @@ export default class FooterButtons extends Vue {
         this.isResendUpdate = false
       }
     }
+
+    // 11.Si l'un des boutons principaux est activé, désactiver le bouton Ok
+    if (this.isbtnImputer || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp || this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider) {
+      this.isbtnOk = false
+    }
+    console.log('11.this.isbtnUpdate ',this.isbtnUpdate)
   }
 }
 

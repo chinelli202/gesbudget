@@ -34,32 +34,34 @@ export interface IPermissionState {
 class Permission extends VuexModule implements IPermissionState {
   public routes: RouteConfig[] = []
   public dynamicRoutes: RouteConfig[] = []
-  public permissionCodes = {
+  public permissionCodes: Record<string, any> = {
     engagement: {
-      enregistrer: {
+      INIT: { //enregistrer
         SAISI: 'saisir-pre-engagement',
         VALIDP: 'validerp-pre-engagement',
         VALIDS: 'validers-pre-engagement',
         VALIDF: 'validerf-pre-engagement'
       },
-      cloture: {
-        CLOT: 'cloturer-pre-engagement',
+      CLOT: { //cloture
+        SAISI: 'cloturer-pre-engagement', //CLOT
         VALIDP: 'validerp-cloture-preg',
         VALIDS: 'validers-cloture-preg',
         VALIDF: 'validerf-cloture-preg'
       },
-      imputer: {
-        IMP: 'saisir-imputation',
-        REG: 'regulariser-imputation',
+      IMP: { //imputer
+        SAISI: 'saisir-imputation', // IMP
         VALIDP: 'validerp-imputation',
         VALIDS: 'validers-imputation',
-        VALIDF: 'validerf-imputation'
+        VALIDF: 'validerf-imputation',
       },
-      apurer: {
-        APUR: 'saisir-apurement',
+      APUR: { //apurer
+        SAISI: 'saisir-apurement', // APUR
         VALIDP: 'validerp-apurement',
         VALIDS: 'validers-apurement',
         VALIDF: 'validerf-apurement'
+      }, 
+      REG: {
+        IMP: 'regulariser-imputation'
       }
     }
   }
