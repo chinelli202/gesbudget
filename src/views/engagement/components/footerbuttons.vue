@@ -81,7 +81,7 @@
         <el-button
           v-if="isbtnRestaurer"
           type="text"
-          @click="restorePreeng"
+          @click="preRestorePreeng"
         >
           Restaurer
         </el-button>
@@ -159,7 +159,7 @@
             v-if="isbtnRenvoyer"
             type="primary"
             :disabled="sendCommentDisabled"
-            @click="sendBackSubmit"
+            @click="preSendBackSubmit"
           >
             Renvoyer l'engagement
           </el-button>
@@ -167,29 +167,13 @@
             v-if="isbtnAnnulerValider"
             type="primary"
             :disabled="sendCommentDisabled"
-            @click="cancelValiderSubmit"
+            @click="preCancelValiderSubmit"
           >
             Annuler ma validation
           </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
-
-    next_statut : {{ entity.next_statut }}<br>
-    hasPermission {{ hasPermission("profile-read") }}<br>
-    hasnotPermission {{ hasnotPermission("profile-read") }}<br><br>
-    isbtnUpdate : {{ isbtnUpdate }}<br>
-    isbtnValiderp : {{ isbtnValiderp }}<br>
-    isbtnValiders : {{ isbtnValiders }}<br>
-    isbtnValiderf : {{ isbtnValiderf }}<br>
-    isbtnOk : {{ isbtnOk }}<br>
-    isbtnClose : {{ isbtnClose }}<br>
-    isbtnRestaurer : {{ isbtnRestaurer }}<br>
-    isbtnRenvoyer : {{ isbtnRenvoyer }}<br>
-    isbtnOptionsAnnuler : {{ isbtnOptionsAnnuler }}<br>
-    isbtnAnnulerValider : {{ isbtnAnnulerValider }}<br>
-    isbtnPlusDactions : {{ isbtnPlusDactions }}<br>
-    isbtnImputer : {{ isbtnImputer }}<br><br>
   </div>
 </template>
 
@@ -203,15 +187,11 @@ import {
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
+import { Console } from 'console'
 
 @Component({
   name: 'FooterButtons',
   components: {
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.fallbackUrl = from.path
-    })
   }
 })
 
@@ -239,11 +219,14 @@ export default class FooterButtons extends Vue {
       this.initializeButtons()
       this.footerLoading = false
     }, { immediate: true })
+
+    this.$watch('footerLoading', footerLoading => {
+      this.$emit('footerload', this.footerLoading)
+    }, { immediate: true })
   }
 
   /** Variables for buttons rendering */
   private footerLoading = false
-  private fallbackUrl = { path: '/' }
   private footerEntity:any
 
   private entityIsClosed = false
@@ -300,15 +283,15 @@ export default class FooterButtons extends Vue {
     if (this.entity.etat === AppModule.etatsEngagement.INIT.code) {
       return 'le pré-engagement'
     } else if (this.entity.etat === AppModule.etatsEngagement.PEG.code) {
-      return "l'imputation"
+      return 'l\'imputation'
     } else if (this.entity.etat === AppModule.etatsEngagement.IMP.code) {
-      return "l'apurement"
+      return 'l\'apurement'
     } else {
-      return "Unknown entity"
+      return 'Unknown entity'
     }
   }
 
-   private commentFieldChange() {
+  private commentFieldChange() {
     if (this.plusDactionsForm.commentaire && this.plusDactionsForm.commentaire !== '') {
       this.sendCommentDisabled = false
     } else {
@@ -414,9 +397,88 @@ export default class FooterButtons extends Vue {
       })
   }
 
+  private preRestorePreeng() {
+    this.$confirm('Voulez-vous vraiment restaurer cet engagement ?'
+      , 'Restauration de l\'engagement'
+      , {
+        confirmButtonText: 'Oui, restaurer cet engagement',
+        cancelButtonText: 'Annuler',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.footerLoading = true
+      this.restorePreeng(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
+        this.plusDactionsDialogVisible = false
+        this.plusDactionsForm.commentaire = ''
+        this.plusDactionsForm.used = true
+        this.sendCommentDisabled = true
+        this.footerLoading = false
+      }).catch((error:any) => {
+        this.footerLoading = false
+        console.log('Error restore', error)
+      })
+    })
+      .catch(error => {
+        console.log('Error when restoring engagement', error)
+      })
+  }
+
+  private preSendBackSubmit() {
+    this.$confirm('Voulez-vous vraiment renvoyer cet engagement ?'
+      , 'Renvoi de l\'engagement'
+      , {
+        confirmButtonText: 'Oui, renvoyer cet engagement',
+        cancelButtonText: 'Annuler',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.footerLoading = true
+      this.sendBackSubmit(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
+        this.plusDactionsDialogVisible = false
+        this.plusDactionsForm.commentaire = ''
+        this.plusDactionsForm.used = true
+        this.sendCommentDisabled = true
+        this.footerLoading = false
+      }).catch((error:any) => {
+        this.footerLoading = false
+        console.log('Error sendBack', error)
+      })
+    })
+      .catch(error => {
+        console.log('Error when sending back engagement', error)
+      })
+  }
+
+  private preCancelValiderSubmit() {
+    this.$confirm('Voulez-vous vraiment annuler votre validation au 1er niveau ?'
+      , 'Annulation de validation au 1er niveau'
+      , {
+        confirmButtonText: 'Oui, annuler ma validation',
+        cancelButtonText: 'Retour',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.footerLoading = true
+      this.cancelValiderSubmit(this.entity.id, this.plusDactionsForm.commentaire, this.entity.statut)
+        .then((response:any) => {
+          this.plusDactionsDialogVisible = false
+          this.plusDactionsForm.commentaire = ''
+          this.plusDactionsForm.used = true
+          this.sendCommentDisabled = true
+          this.footerLoading = false
+        }).catch((error:any) => {
+          this.footerLoading = false
+          console.log('Error cancelValidationpPreeng', error)
+        })
+    })
+      .catch((error:any) => {
+        console.log('Error when canceling validationp on Pre-engagement', error)
+      })
+  }
+
   /** Utilities functions */
   private userPerformedCurrentStatut() {
-    switch(this.entity.statut) {
+    switch (this.entity.statut) {
       case AppModule.statutsEngagement.SAISI.code:
         return this.isCurrentUserSaisisseur
       case AppModule.statutsEngagement.VALIDP.code:
@@ -431,7 +493,7 @@ export default class FooterButtons extends Vue {
   }
 
   private activateBtnForNextAction() {
-    switch(this.entity.statut) {
+    switch (this.entity.statut) {
       case AppModule.statutsEngagement.SAISI.code:
         this.isbtnValiderp = true
         break
@@ -449,9 +511,9 @@ export default class FooterButtons extends Vue {
   }
 
   private userCanNextEtat() {
-    let nextEtat:string = ''
+    let nextEtat = ''
     // find the next etat
-    switch(this.entity.etat) {
+    switch (this.entity.etat) {
       case AppModule.etatsEngagement.INIT.code:
         nextEtat = AppModule.etatsEngagement.PEG.code
         break
@@ -465,15 +527,15 @@ export default class FooterButtons extends Vue {
         return false
     }
 
-    if(nextEtat === '') {
+    if (nextEtat === '') {
       return false
     }
     // Test if the user has the permission
-    return this.hasPermission(PermissionModule.permissionCodes.engagement[nextEtat]['SAISI'])
+    return this.hasPermission(PermissionModule.permissionCodes.engagement[nextEtat].SAISI)
   }
-  
+
   private nextStatut(statut:string) {
-    switch(statut) {
+    switch (statut) {
       case AppModule.statutsEngagement.SAISI.code:
         return AppModule.statutsEngagement.VALIDP.code
       case AppModule.statutsEngagement.VALIDP.code:
@@ -485,9 +547,9 @@ export default class FooterButtons extends Vue {
     }
   }
 
-  private userCanNextStatut(){
-    let nextStatut:string = this.nextStatut(this.entity.statut)
-    if(!nextStatut) {
+  private userCanNextStatut() {
+    const nextStatut:string = this.nextStatut(this.entity.statut)
+    if (!nextStatut) {
       return false
     }
     // Test if the user has the permission
@@ -495,7 +557,7 @@ export default class FooterButtons extends Vue {
   }
 
   private superiorActionHasBeenPerformed() {
-    switch(this.entity.statut) {
+    switch (this.entity.statut) {
       case AppModule.statutsEngagement.SAISI.code:
         return this.entity.valideur_first || this.entity.valideur_second || this.entity.valideur_final
       case AppModule.statutsEngagement.VALIDP.code:
@@ -518,9 +580,6 @@ export default class FooterButtons extends Vue {
   }
 
   private entityHasBeenValidatePOrMore() {
-    console.log('this.entity.valideur_first ',this.entity.valideur_first)
-    console.log('this.entity.valideur_second ',this.entity.valideur_second)
-    console.log('this.entity.valideur_final ',this.entity.valideur_first || this.entity.valideur_second || this.entity.valideur_final)
     return this.entity.valideur_first || this.entity.valideur_second || this.entity.valideur_final
   }
 
@@ -541,7 +600,6 @@ export default class FooterButtons extends Vue {
 
     // 4.Activer le bouton Ok d'abord. On le désactivera éventuellement par la suite si l'un des boutons principaux est activé
     this.isbtnOk = true
-    console.log('4.isbtnOk ', this.isbtnOk)
 
     // 5.The entity is at final statut and the user has the permission to perform NextEtat
     if (this.statutIsFinal() && this.userCanNextEtat()) {
@@ -566,11 +624,9 @@ export default class FooterButtons extends Vue {
 
     // 9.If the current user is the one who performed the SAISI
     if (this.isCurrentUserSaisisseur) {
-
       // 9.a.Tant qu'on n'a pas validé p ou plus, si l'utilisateur est celui qui a saisi alors il peut update
       if (!this.entityHasBeenValidatePOrMore()) {
         this.isbtnUpdate = true
-        console.log('9.a.Tant quon na pas')
       }
 
       // 9.c.While there has been no final validation, the user who has performed the SAISI can still close
@@ -608,7 +664,6 @@ export default class FooterButtons extends Vue {
     if (this.isbtnImputer || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp || this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider) {
       this.isbtnOk = false
     }
-    console.log('11.this.isbtnUpdate ',this.isbtnUpdate)
   }
 }
 

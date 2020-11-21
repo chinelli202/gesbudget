@@ -48,6 +48,7 @@
                   <el-radio-group
                     v-model="domain"
                     size="small"
+                    :disabled="!isbtnUpdate && !isResendUpdate"
                     @change="domainChange"
                   >
                     <el-radio-button label="Fonctionnement" />
@@ -68,8 +69,8 @@
                   :props="{expandTrigger: 'hover'}"
                   :disabled="!isbtnUpdate && !isResendUpdate"
                   placeholder="Choisir la ligne budgétaire"
-                  @change="cascadeChange"
                   class="cascade-extra-lg"
+                  @change="cascadeChange"
                 />
               </el-form-item>
               <el-form-item label="Libellé">
@@ -313,219 +314,30 @@
                   </el-col>
                 </el-row>
               </el-form-item>
-              <el-form-item class="notes">
-                <el-row
-                  type="flex"
-                  class="row-bg"
-                  justify="end"
-                >
-                  <el-col :span="10">
-                    <el-button @click="onCancel">
-                      Retour
-                    </el-button>
-                    <el-button
-                      v-if="isbtnUpdate"
-                      type="primary"
-                      :disabled="submitUpdateDisabled"
-                      @click="updateSubmit"
-                    >
-                      Mettre à jour
-                    </el-button>
-                    <el-button
-                      v-if="isResendUpdate"
-                      type="primary"
-                      :disabled="resendUpdateDisabled"
-                      @click="resendUpdate"
-                    >
-                      Renvoyer la mise à jour
-                    </el-button>
-                    <el-button
-                      v-if="isbtnAnnulerValider"
-                      type="primary"
-                      @click="plusDactionsDialogVisible = true"
-                    >
-                      Annuler ma validation
-                    </el-button>
-                    <el-button
-                      v-if="isbtnValiderp"
-                      type="primary"
-                      @click="validerpSubmit"
-                    >
-                      Valider au 1er niveau
-                    </el-button>
-                    <el-button
-                      v-if="isbtnValiders"
-                      type="primary"
-                      @click="validersSubmit"
-                    >
-                      Valider au second niveau
-                    </el-button>
-                    <el-button
-                      v-if="isbtnValiderf"
-                      type="primary"
-                      @click="validerfSubmit"
-                    >
-                      Valider au niveau final
-                    </el-button>
-                    <el-button
-                      v-if="isbtnImputer"
-                      type="primary"
-                      @click="imputer"
-                    >
-                      Imputer
-                    </el-button>
-                    <el-button
-                      v-if="isbtnOk"
-                      type="primary"
-                      @click="onCancel"
-                    >
-                      Okay
-                    </el-button>
-                  </el-col>
-                </el-row>
-              </el-form-item>
             </el-form>
-            <el-row :gutter="10">
-              <el-col
-                :span="7"
-                :offset="1"
-              >
-                >
-                <el-button
-                  v-if="isbtnRestaurer"
-                  type="text"
-                  @click="restorePreeng"
-                >
-                  Restaurer
-                </el-button>
-                <el-button
-                  v-if="isbtnClose"
-                  type="text"
-                  @click="plusDactionsDialogVisible = true"
-                >
-                  Clôturer le pré-engagement
-                </el-button>
-                <el-button
-                  v-if="isbtnOptionsAnnuler"
-                  type="text"
-                  @click="optionsAnnulerValider"
-                >
-                  Je veux annuler ma validation
-                </el-button>
-              </el-col>
-              <el-col
-                :span="6"
-                :offset="8"
-              >
-                <el-button
-                  v-if="isbtnPlusDactions"
-                  type="text"
-                  @click="plusDactionsDialogVisible = true"
-                >
-                  Plus d'actions...
-                </el-button>
-              </el-col>
-            </el-row>
             <footer-buttons
               :entity="engagement"
               type="INIT"
-              :submitDisabled="submitUpdateDisabled"
-              :onCancel="onCancel"
-              :updateSubmit="updateSubmit"
-              :resendUpdate="resendUpdate"
-              :validerpSubmit="validerpSubmit"
-              :validersSubmit="validersSubmit"
-              :validerfSubmit="validerfSubmit"
-              :restorePreeng="restorePreeng"
-              :optionsAnnulerValider="optionsAnnulerValider"
-              :commentaireSubmit="fbcommentaireSubmit"
-              :closePreeng="fbclosePreeng"
-              :sendBackSubmit="sendBackSubmit"
-              :cancelValiderSubmit="cancelValiderSubmit"
-              :nextEtatAction="imputer"
-            >
-            </footer-buttons>
+              :submit-disabled="submitUpdateDisabled"
+              :fallback-url="fallbackUrl"
+              :on-cancel="onCancel"
+              :update-submit="updateSubmit"
+              :resend-update="resendUpdate"
+              :validerp-submit="validerpSubmit"
+              :validers-submit="validersSubmit"
+              :validerf-submit="validerfSubmit"
+              :restore-preeng="fbRestorePreeng"
+              :options-annuler-valider="optionsAnnulerValider"
+              :commentaire-submit="fbcommentaireSubmit"
+              :close-preeng="fbclosePreeng"
+              :send-back-submit="fbsendBackSubmit"
+              :cancel-valider-submit="fbcancelValiderSubmit"
+              :next-etat-action="imputer"
+              @footerload="loadHandler($event)"
+            />
           </el-main>
         </el-container>
       </el-card>
-
-      <el-dialog
-        v-loading="true"
-        title="Actions supplémentaires"
-        :visible.sync="plusDactionsDialogVisible"
-        width="50%"
-      >
-        <el-form
-          ref="plusDactionsForm"
-          :model="plusDactionsForm"
-          :rules="rulesPlusDactionsForm"
-        >
-          <el-form-item label="Ajouter un commentaire">
-            <el-input
-              v-model="plusDactionsForm.commentaire"
-              type="textarea"
-              prop="commentaire"
-              :rows="3"
-              @input="commentFieldChange"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              @click="plusDactionsDialogVisible = false"
-            >
-              Annuler
-            </el-button>
-            <el-button
-              type="info"
-              :disabled="sendCommentDisabled"
-              @click="commentaireSubmit"
-            >
-              Envoyer un commentaire
-            </el-button>
-            <el-button
-              v-if="isbtnClose"
-              type="primary"
-              :disabled="sendCommentDisabled"
-              @click="closePreeng"
-            >
-              Clôturer le pré-engagement
-            </el-button>
-            <el-button
-              v-if="isbtnRenvoyer"
-              type="primary"
-              :disabled="sendCommentDisabled"
-              @click="sendBackSubmit"
-            >
-              Renvoyer l'engagement
-            </el-button>
-            <el-button
-              v-if="isbtnAnnulerValider"
-              type="primary"
-              :disabled="sendCommentDisabled"
-              @click="cancelValiderSubmit"
-            >
-              Annuler ma validation
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
-      
-      next_statut : {{ engagement.next_statut }}<br>
-      hasPermission {{ hasPermission("profile-read") }}<br>
-      hasnotPermission {{ hasnotPermission("profile-read") }}<br><br>
-      isbtnUpdate : {{ isbtnUpdate }}<br>
-      isbtnValiderp : {{ isbtnValiderp }}<br>
-      isbtnValiders : {{ isbtnValiders }}<br>
-      isbtnValiderf : {{ isbtnValiderf }}<br>
-      isbtnOk : {{ isbtnOk }}<br>
-      isbtnClose : {{ isbtnClose }}<br>
-      isbtnRestaurer : {{ isbtnRestaurer }}<br>
-      isbtnRenvoyer : {{ isbtnRenvoyer }}<br>
-      isbtnOptionsAnnuler : {{ isbtnOptionsAnnuler }}<br>
-      isbtnAnnulerValider : {{ isbtnAnnulerValider }}<br>
-      isbtnPlusDactions : {{ isbtnPlusDactions }}<br>
-      isbtnImputer : {{ isbtnImputer }}<br><br>
-      {{ typeOptions }}
     </div>
   </div>
 </template>
@@ -569,7 +381,6 @@ export default class extends Vue {
   private statutOptions = {}
   private tva = 0
 
-  /** Variables for buttons rendering */
   private fallbackUrl = { path: '/' }
 
   private engagementIsClosed = false
@@ -580,36 +391,12 @@ export default class extends Vue {
   private isCurrentUserValideurf = false
 
   private submitUpdateDisabled = true;
-  private resendUpdateDisabled = true;
-  private sendCommentDisabled = true;
 
   private isbtnUpdate = false; // Display 'Mettre à jour' button, when the current user is the owner of the engagement. In other for him to update.
-  private isbtnValiderp = false; // Display 'ValiderP' button, for the first level of validation
-  private isbtnValiders = false; // Display 'ValiderS' button, for the second level of validation
-  private isbtnValiderf = false; // Display 'ValiderF' button, for the final level of validation
-  private isbtnOk = false; // Display 'Ok' button, which does nothing. A redirection to the previous route.
-  private isbtnClose = false; // Display 'Clôturer le pré-engagement' button to close the pre-engagement
-  private isbtnRestaurer = false; // Display 'Restaurer le pré-engagement' button to restore closed pre-engagement
-  private isbtnRenvoyer = false; // Display 'Renvoyer' button, for the n+1th user to send back the engagement to the nth user with some comment
   private isResendUpdate = false; /* Display 'Mettre à jour' section, when the current user is the owner of the engagement.
     and his/her superior has sent back the engagement (with comments) for update. In other for him to update. */
-  private isbtnOptionsAnnuler = false; /** Display a 'Je veux annuler ma validation' button associated with a dialog box : when the nth user want to
-    cancel the validation he/she has done but the n+1th user has already proceed to a n+1's validation. */
-  private isbtnAnnulerValider = false; // Display 'Annuler Validation' button to cancel a validation.
-  private isbtnPlusDactions = false; // Display a 'Plus d'actions...' button for the user to have some actions like writing only a comment and others.
-  private isbtnImputer = false; // Display 'Imputer' button for engagement imputation
 
-  private plusDactionsDialogVisible = false
-  private plusDactionsForm = {
-    commentaire: '',
-    used: false
-  }
-
-  private rulesPlusDactionsForm = {
-    commentaire: [
-      { required: true, message: 'Veuillez saisir un commentaire.', trigger: 'blur' }
-    ]
-  }
+  /** Variables for buttons rendering */
 
   private permissions : any[] = []
   private permissionCodes = {}
@@ -632,13 +419,6 @@ export default class extends Vue {
     domaine: 'Fonctionnement'
   }
 
-  private rules = {
-    montant_ttc: [
-      { required: true, message: 'Veuillez saisir un montant', trigger: 'blur' },
-      { type: 'number', message: 'Veuillez saisir un nombre', trigger: 'blur' }
-    ]
-  }
-
   created() {
     const id = this.$route.params && this.$route.params.id
     this.permissions = UserModule.permissions
@@ -656,13 +436,12 @@ export default class extends Vue {
       this.etatOptions = AppModule.etatsEngagement
       this.statutOptions = AppModule.statutsEngagement
       this.tva = AppModule.tva
-  
-      this.initializeButtons()
-      
+
       /** Initialize cascader */
       this.cascade = [this.engagement.chapitre_id, this.engagement.rubrique_id, this.engagement.ligne_id]
       this.domain = this.engagement.domaine
-      
+      this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+
       this.cardLoading = false
     })
   }
@@ -678,113 +457,34 @@ export default class extends Vue {
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
   }
 
-  private async sendComment() {
-    if (!this.plusDactionsForm.commentaire || this.plusDactionsForm.commentaire === '') {
-      return false
-    }
-    const response = await addComment({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire })
-    this.plusDactionsDialogVisible = false
-    this.plusDactionsForm.commentaire = ''
-    this.sendCommentDisabled = true
-    this.plusDactionsForm.used = true
-    this.engagement = response.data
-    this.initializeButtons()
+  /** footer button utitlities functions */
+  private loadHandler(event:any) {
+    this.cardLoading = event
   }
 
-  private async commentaireSubmit() {
-    if (!this.plusDactionsForm.used) {
-      this.sendComment()
-    } else {
-      this.$confirm('Vous venez d\'ajouter un commentaire à cette entité. Êtes vous sûr(e) de vouloir ajouter ce nouveau commentaire ?'
-        , 'Commentaire existant'
-        , {
-          confirmButtonText: 'Oui, ajouter ce commentaire',
-          cancelButtonText: 'Annuler',
-          type: 'warning'
-        }
-      ).then(_ => {
-        this.sendComment()
-      })
-        .catch(error => {
-          console.log('Error comment submit confirmation', error)
-        })
-    }
-  }
-  
   private async fbcommentaireSubmit(id: number, comment:string) {
     return await addComment({ id: id, comment: comment })
   }
 
-  private closePreeng() {
-    this.$confirm('Voulez-vous vraiment clôturer cet engagement ?'
-      , 'Clôture de l\'engagement'
-      , {
-        confirmButtonText: 'Oui, clôturer cet engagement',
-        cancelButtonText: 'Annuler',
-        type: 'warning'
-      }
-    ).then(_ => {
-      this.cardLoading = true
-      closePreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-        this.sendCommentDisabled = true
-        this.engagement = response.data
-        this.initializeButtons()
-        this.cardLoading = false
-      }).catch(error => {
-        this.cardLoading = false
-        console.log('Error close', error)
-      })
-    })
-      .catch(error => {
-        console.log('Error when closing engagement', error)
-      })
-  }
-  
   private async fbclosePreeng(id: number, comment: string) {
-    console.log('fbclosePreeng '+id+'--'+comment)
     this.cardLoading = true
-    const response = await closePreeng({id: id, comment: comment})
+    const response = await closePreeng({ id: id, comment: comment })
     this.engagement = response.data
-    this.initializeButtons()
     this.cardLoading = false
     return response
   }
 
-  private restorePreeng() {
-    this.$confirm('Voulez-vous vraiment restaurer cet engagement ?'
-      , 'Restauration de l\'engagement'
-      , {
-        confirmButtonText: 'Oui, restaurer cet engagement',
-        cancelButtonText: 'Annuler',
-        type: 'warning'
-      }
-    ).then(_ => {
-      this.cardLoading = true
-      restorePreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-        this.sendCommentDisabled = true
-        this.engagement = response.data
-        this.initializeButtons()
-        this.cardLoading = false
-      }).catch(error => {
-        this.cardLoading = false
-        console.log('Error restore', error)
-      })
-    })
-      .catch(error => {
-        console.log('Error when restoring engagement', error)
-      })
+  private async fbRestorePreeng(id: number, comment: string) {
+    this.cardLoading = true
+    const response = await closePreeng({ id: id, comment: comment })
+    this.engagement = response.data
+    this.cardLoading = false
+    return response
   }
 
   private async updateSubmit() {
     this.cardLoading = true
     updateEngagement(this.engagement).then((response) => {
-      this.initializeButtons()
       this.cardLoading = false
     }).catch(error => {
       this.cardLoading = false
@@ -797,7 +497,6 @@ export default class extends Vue {
     this.cardLoading = true
     resendUpdateEngagement(this.engagement).then((response) => {
       this.engagement = response.data
-      this.initializeButtons()
       this.cardLoading = false
     }).catch(error => {
       this.cardLoading = false
@@ -805,32 +504,12 @@ export default class extends Vue {
     })
   }
 
-  private sendBackSubmit() {
-    this.$confirm('Voulez-vous vraiment renvoyer cet engagement ?'
-      , 'Renvoi de l\'engagement'
-      , {
-        confirmButtonText: 'Oui, renvoyer cet engagement',
-        cancelButtonText: 'Annuler',
-        type: 'warning'
-      }
-    ).then(_ => {
-      this.cardLoading = true
-      sendBack({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire }).then((response) => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-        this.sendCommentDisabled = true
-        this.engagement = response.data
-        this.initializeButtons()
-        this.cardLoading = false
-      }).catch(error => {
-        this.cardLoading = false
-        console.log('Error sendBack', error)
-      })
-    })
-      .catch(error => {
-        console.log('Error when sending back engagement', error)
-      })
+  private async fbsendBackSubmit(id: number, comment: string) {
+    this.cardLoading = true
+    const response = await sendBack({ id: id, comment: comment })
+    this.engagement = response.data
+    this.cardLoading = false
+    return response
   }
 
   private validerpSubmit() {
@@ -849,7 +528,6 @@ export default class extends Vue {
     this.cardLoading = true
     validationPreeng({ id: this.engagement.id, statut: statut }).then((response) => {
       this.engagement = response.data
-      this.initializeButtons()
       this.cardLoading = false
     }).catch(error => {
       this.cardLoading = false
@@ -857,32 +535,12 @@ export default class extends Vue {
     })
   }
 
-  private cancelValiderSubmit() {
-    this.$confirm('Voulez-vous vraiment annuler votre validation au 1er niveau ?'
-      , 'Annulation de validation au 1er niveau'
-      , {
-        confirmButtonText: 'Oui, annuler ma validation',
-        cancelButtonText: 'Retour',
-        type: 'warning'
-      }
-    ).then(_ => {
-      this.cardLoading = true
-      cancelValidationPreeng({ id: this.engagement.id, comment: this.plusDactionsForm.commentaire, statut: this.engagement.statut }).then((response) => {
-        this.plusDactionsDialogVisible = false
-        this.plusDactionsForm.commentaire = ''
-        this.plusDactionsForm.used = true
-        this.sendCommentDisabled = true
-        this.engagement = response.data
-        this.initializeButtons()
-        this.cardLoading = false
-      }).catch(error => {
-        this.cardLoading = false
-        console.log('Error cancelValidationpPreeng', error)
-      })
-    })
-      .catch(error => {
-        console.log('Error when canceling validationp on Pre-engagement', error)
-      })
+  private async fbcancelValiderSubmit(id:number, comment:string, statut:string) {
+    this.cardLoading = true
+    const response = await cancelValidationPreeng({ id: id, comment: comment, statut: statut })
+    this.engagement = response.data
+    this.cardLoading = false
+    return response
   }
 
   private imputer() {
@@ -904,15 +562,6 @@ export default class extends Vue {
 
   private formAttributeChange() {
     this.submitUpdateDisabled = false
-    this.resendUpdateDisabled = false
-  }
-
-  private commentFieldChange() {
-    if (this.plusDactionsForm.commentaire && this.plusDactionsForm.commentaire !== '') {
-      this.sendCommentDisabled = false
-    } else {
-      this.sendCommentDisabled = true
-    }
   }
 
   private hasPermission(permission: string) {
@@ -925,24 +574,7 @@ export default class extends Vue {
 
   private resetButtons() {
     this.submitUpdateDisabled = true
-    this.resendUpdateDisabled = true
-    this.sendCommentDisabled = true
-
     this.isbtnUpdate = false
-    this.isbtnValiderp = false
-    this.isbtnValiders = false
-    this.isbtnValiderf = false
-    this.isbtnOk = false
-    this.isbtnClose = false
-    this.isbtnRestaurer = false
-    this.isbtnRenvoyer = false
-    this.isResendUpdate = false
-    this.isbtnOptionsAnnuler = false
-    this.isbtnAnnulerValider = false
-    this.isbtnPlusDactions = false
-    this.isbtnImputer = false
-
-    this.plusDactionsDialogVisible = false
   }
 
   private evaluateVariables() {
@@ -950,305 +582,6 @@ export default class extends Vue {
     this.isCurrentUserValideurp = UserModule.matricule === this.engagement.valideur_first
     this.isCurrentUserValideurs = UserModule.matricule === this.engagement.valideur_second
     this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
-  }
-
-  private initializeButtons() {
-    // We reset first all buttons
-    this.resetButtons()
-
-    // We re-evaluate the isCurrentUser... variables
-    this.evaluateVariables()
-
-    // The engagement is closed
-    this.engagementIsClosed = this.engagement.etat === AppModule.etatsEngagement.CLOT.code
-
-    if (this.engagement.etat === AppModule.etatsEngagement.INIT.code) {
-      // The engagement is at the state of an initiated pré-engagement
-      console.log('The engagement is at the state of an initiated pré-engagement')
-
-      if (this.engagement.statut === AppModule.statutsEngagement.SAISI.code) {
-        // The engagement have just been initiated
-        console.log('The engagement have just been initiated')
-
-        if (!this.isCurrentUserSaisisseur) {
-          // The current user is not the one who initiated the engagement
-          console.log('The current user is not the one who initiated the engagement')
-
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDP)) {
-            /* The current user has the permission to validate at the first level
-             So we'll give him/her :
-             1- the 'Valider P' button to validate the engagement
-             2- the 'Plus d'actions...' button if he/she just wants to add a comment
-             3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
-             This button is to display only if the engagement hasn't been sent back yet.
-            */
-
-            console.log('The current user has the permission to validate at the first level')
-            this.isbtnPlusDactions = true
-            if (this.engagement.next_statut !== null) {
-              /** The current engagement has been sent back to SAISI for updating
-               * So the current user can't do no validation
-               */
-              this.isbtnOk = true
-            } else {
-              /** The current engagement has not been sent back to SAISI for updating
-               * So the current user can
-               * 1- Validate at the first level with the 'Valider P' button
-               * 2- Send back with the 'Renvoyer' button
-               */
-              this.isbtnRenvoyer = true
-              this.isbtnValiderp = true
-            }
-          } else {
-            /* The current user doesn't have the permission to validate at the first level
-             So we'll give him/her :
-             1- the 'Ok' button
-             2- the 'Plus d'actions...' button if he/she wants to add a comment */
-
-            console.log("The current user doesn't have the permission to validate at the first level")
-            this.isbtnOk = true
-            this.isbtnPlusDactions = true
-          }
-        } else {
-          // The current user is the one who initiated the engagement
-          console.log('The current user is the one who initiated the engagement')
-
-          if (this.engagement.next_statut === 'SAISI') {
-            /** The engagement has been sent back by the current user superior.
-             * He/She needs to correct the engagement and re-submit it for the superior to validate.
-             * So he/she will needs :
-             * 1- to edit and resend the engagement to his superior. With the 'Mettre à jour' secion
-             * 2- also to close the engagement. Withe the 'Cloturer' button
-             * 3- the 'Plus d'actions...' button if he/she wants to add a comment
-             */
-
-            console.log('The engagement has been sent back by the current user superior.')
-            this.isResendUpdate = true
-            this.isbtnClose = true
-            this.isbtnPlusDactions = true
-          } else {
-            // The engagement has not been sent back by the current user superior.
-            console.log('The engagement has not been sent back by the current user superior.')
-
-            if (this.engagement.valideur_first === null && this.engagement.valideur_second === null && this.engagement.valideur_final === null) {
-              /** The engagement has not yet been validated by one of current user superiors
-              * So, he/she :
-              * 1- can still edit the engagement. With the 'Mettre à jour' button
-              * 2- can also close the engagement. Withe the 'Cloturer' button
-              * 3- the 'Plus d'actions...' button if he/she wants to add a comment
-              */
-
-              console.log('The engagement has not yet been validated by one of current user superiors, \'' + this.engagement.valideur_first + "'")
-              this.isbtnUpdate = true
-              this.isbtnClose = true
-              this.isbtnPlusDactions = true
-            } else {
-              /* The engagement has already been validated by one of current user superiors. So, he/she can no more edit the engagement.
-              So we'll give him/her :
-               1- the 'Ok' button
-               2- the 'Je veux annuler ma validation' button, which will display a message on how to proceed for annulation in this particular scenario.
-                It'll be handled off system.
-               3- the 'Plus d'actions...' button if he/she wants to add a comment */
-
-              console.log("The engagement has been validated by one of current user superiors, '" + this.engagement.valideur_first + "'")
-              this.isbtnOk = true
-              this.isbtnPlusDactions = true
-            }
-          }
-        }
-      } else if (this.engagement.statut === AppModule.statutsEngagement.VALIDP.code) {
-        // The engagement has been validated at the first level
-        console.log('The engagement has been validated at the first level')
-
-        if (!this.isCurrentUserValideurp) {
-          // The current user is not the one who validated the engagement at the first level
-          console.log('The current user is not the one who validated the engagement at the first level')
-
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDS) &&
-            !this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDF)) {
-            /* The user has the permission to validate at the second level but not at the final level
-            So we'll give him/her:
-            1- The 'Validate S' button, to validate at the second level
-            2- the 'Plus d'actions...' button if he/she just wants to add a comment
-             3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
-             This button is to display only if the engagement hasn't been sent back yet.
-            */
-            console.log('The user has the permission to validate at the second level but not at the final level')
-
-            this.isbtnValiders = true
-            this.isbtnPlusDactions = true
-            if (this.engagement.next_statut === null) {
-              this.isbtnRenvoyer = true
-            }
-          } else if (this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDF)) {
-            /** The user has the permission to validate at the final level
-            * So we'll give him/her:
-            * 1- The 'Validate F' button, to validate at the final level. If the user validate at final level,
-            * there'll be no more need of validation at second level
-            * 2- the 'Plus d'actions...' button if he/she just wants to add a comment
-            * 3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
-            * This button is to display only if the engagement hasn't been sent back yet.
-            */
-            console.log('The user has the permission to validate at the final level')
-
-            this.isbtnValiderf = true
-            this.isbtnPlusDactions = true
-            if (this.engagement.next_statut === null) {
-              this.isbtnRenvoyer = true
-            }
-          } else {
-            /** The user has no permission to validate neither at the second or the final level */
-
-            console.log('The user has no permission to validate neither at the second or the final level')
-            if (!this.isCurrentUserSaisisseur) {
-              /** The user is not the one who initiated the engagement
-               * We'll just give him/her :
-               * 1- the 'Ok' button
-               * 2- the 'Plus d'actions...' button for comments
-              */
-
-              console.log('The user is not the one who initiated the engagement')
-              this.isbtnOk = true
-              this.isbtnPlusDactions = true
-            } else {
-              /** The user is the one who initiated the engagement
-               * We'll just give him/her :
-               * 1- the 'Ok' button
-               * 2- the 'Plus d'actions...' button for comments
-               * 3- the 'Clôturer l'engagement' button
-              */
-
-              console.log('The user is the one who initiated the engagement')
-              this.isbtnOk = true
-              this.isbtnPlusDactions = true
-              this.isbtnClose = true
-            }
-          }
-        } else {
-          // The current user is the one who validated the engagement at the first level
-          console.log('The current user is the one who validated the engagement at the first level')
-
-          if (this.engagement.valideur_second === null && this.engagement.valideur_final === null) {
-            /* The engagement has not yet been validated by one of current user superiors.
-            So, he/she :
-            * 1- can still cancel his validation. With the 'Annuler Validation' button
-            * 2- the 'Plus d'actions...' button if he/she wants to add a comment
-            */
-            console.log('The engagement has not yet been validated by one of current user superiors.')
-
-            this.isbtnAnnulerValider = true
-            this.isbtnPlusDactions = true
-          } else {
-            /** The engagement has been validated by one of current user superiors.
-            * So, he/she :
-            * 1- will have the 'Ok' button
-            * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
-            * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
-
-            console.log('The engagement has been validated by one of current user superiors')
-            this.isbtnOk = true
-            this.isbtnOptionsAnnuler = true
-            this.isbtnPlusDactions = true
-          }
-        }
-      } else if (this.engagement.statut === AppModule.statutsEngagement.VALIDS.code) {
-        // The engagement's statut is VALIDS
-        console.log('The engagement\'s statut is VALIDS')
-
-        if (!this.isCurrentUserValideurs) {
-          // The current user is not the one who validated the engagement at the second level
-          console.log('The current user is not the one who validated the engagement at the second level')
-          if (this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.VALIDF)) {
-            /** The user has the permission to validate at the final level.
-             * we'll give him/her :
-             * 1- The 'Validate F' button for final validation
-             * 2- the 'Plus d'actions...' button if he/she just wants to add a comment
-             * 3- the 'Renvoyer' button to send back the engagement to  the n-1th user.
-             * This button is to display only if the engagement hasn't been sent back yet.
-            */
-            console.log('The user has the permission to validate at the final level.')
-            this.isbtnValiderf = true
-            this.isbtnPlusDactions = true
-            if (this.engagement.next_statut === null) {
-              this.isbtnRenvoyer = true
-            }
-          } else {
-            /** The user doesn't have the permission to validate at the final level.
-             * we'll give him/her :
-             * 1- the 'Ok' button
-             * 2- the 'Plus d'actions..' button for adding a comment
-             */
-
-            console.log("The user doesn't have the permission to validate at the final level. ")
-            this.isbtnOk = true
-            this.isbtnPlusDactions = true
-          }
-        } else {
-          // The current user is the one who validated the engagement at the second level
-          console.log('The current user is the one who validated the engagement at the second level')
-
-          if (this.engagement.valideur_final === null) {
-            /* The engagement has not yet been validated by one of current user superiors.
-            So, he/she :
-            * 1- can still cancel his validation. With the 'Annuler Validation' button
-            * 2- the 'Plus d'actions...' button if he/she wants to add a comment
-            */
-
-            console.log('The engagement has not yet been validated by one of current user superiors.')
-            this.isbtnAnnulerValider = true
-            this.isbtnPlusDactions = true
-          } else {
-            /** The engagement has been validated by one of current user superiors.
-            * So, he/she :
-            * 1- will have the 'Ok' button
-            * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
-            * 3- the 'Plus d'actions...' button if he/she wants to add a comment */
-
-            console.log('The engagement has been validated by one of current user superiors.')
-            this.isbtnOk = true
-            this.isbtnOptionsAnnuler = true
-            this.isbtnPlusDactions = true
-          }
-        }
-      } else if (this.engagement.statut === AppModule.statutsEngagement.VALIDF.code) {
-        /** The final level validation cannot be canceled.
-         * So the user :
-         * 1- will have the 'Ok' button
-         * 2- can just see how to proceed off system to initiate the cancelation process. With the 'Je veux annuler ma validation' button
-         *
-         * TODO : make the final level validation cancelable when no 'imputation' have'nt been created for the engagement
-         *        This could be handled with a 'nb_imputations_en_suspens' & 'cumul_imputations_en_suspens' attributes on the engagement.
-         *        These 2 attributes will aggregate the count and cumul of imputation that have been initiated for the engagement.
-         */
-
-        console.log('The final level validation cannot be canceled.')
-        this.isbtnOk = true
-        this.isbtnOptionsAnnuler = true
-      }
-    } else if (this.engagement.etat === AppModule.etatsEngagement.CLOT.code) {
-      /** The engagement is closed
-       * The user could :
-       * 1- either restore it via the 'Restaurer' button. If the user is the one who created it.
-       * 2- Just notice with the 'Ok' button
-       */
-
-      console.log('The engagement is closed')
-      if (this.isCurrentUserSaisisseur) {
-        this.isbtnRestaurer = true
-      }
-      this.isbtnOk = true
-    } else if (this.engagement.etat === AppModule.etatsEngagement.PEG.code) {
-      // TODO
-      console.log('The engagement is etat PEG')
-    } else if (this.engagement.etat === AppModule.etatsEngagement.IMP.code) {
-      // TODO
-      console.log('The engagement is etat IMP')
-    } else if (this.engagement.etat === AppModule.etatsEngagement.REA.code) {
-      // TODO
-      console.log('The engagement is etat REA')
-    } else {
-      console.log('we dont know this ', this.engagement.etat)
-    }
   }
 }
 
@@ -1260,7 +593,7 @@ export default class extends Vue {
 }
 
 .cascade-extra-lg{
-      width: 58.5vw;
+  width: 58.5vw;
 }
 
 .notes{

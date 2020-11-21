@@ -36,32 +36,25 @@ class Permission extends VuexModule implements IPermissionState {
   public dynamicRoutes: RouteConfig[] = []
   public permissionCodes: Record<string, any> = {
     engagement: {
-      INIT: { //enregistrer
+      INIT: { //actions possibles lorsque l'engagement est à l'état Initial
         SAISI: 'saisir-pre-engagement',
         VALIDP: 'validerp-pre-engagement',
         VALIDS: 'validers-pre-engagement',
-        VALIDF: 'validerf-pre-engagement'
+        VALIDF: 'validerf-pre-engagement',
+        CLOT: 'cloturer-pre-engagement'
       },
-      CLOT: { //cloture
-        SAISI: 'cloturer-pre-engagement', //CLOT
-        VALIDP: 'validerp-cloture-preg',
-        VALIDS: 'validers-cloture-preg',
-        VALIDF: 'validerf-cloture-preg'
-      },
-      IMP: { //imputer
+      PEG: { //actions possibles lorsque l'engagement est à l'état pré-engagé
         SAISI: 'saisir-imputation', // IMP
         VALIDP: 'validerp-imputation',
         VALIDS: 'validers-imputation',
         VALIDF: 'validerf-imputation',
       },
-      APUR: { //apurer
+      IMP: { //actions possibles lorsque l'engagement est à l'état Imputé
         SAISI: 'saisir-apurement', // APUR
         VALIDP: 'validerp-apurement',
         VALIDS: 'validers-apurement',
-        VALIDF: 'validerf-apurement'
-      }, 
-      REG: {
-        IMP: 'regulariser-imputation'
+        VALIDF: 'validerf-apurement',
+        REG: 'regulariser-imputation'
       }
     }
   }

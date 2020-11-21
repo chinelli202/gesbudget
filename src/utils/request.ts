@@ -40,6 +40,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 7 * 1000
       })
+      console.log('message error')
       if (res.status === 508 || res.status === 512 || res.status === 514) {
         MessageBox.confirm(
           'Vous avez été déconnecté, essayez de vous connecter à nouveau',
@@ -54,6 +55,7 @@ service.interceptors.response.use(
           location.reload() // To prevent bugs from vue-router
         })
       }
+      console.log('Promise.reject(new Error(res.message || Error))')
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
       if (res.message) {
@@ -72,6 +74,7 @@ service.interceptors.response.use(
       type: 'error',
       duration: 7 * 1000
     })
+    console.log('return Promise.reject(error)')
     return Promise.reject(error)
   }
 )
