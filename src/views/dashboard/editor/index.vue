@@ -2,7 +2,32 @@
   <div class="dashboard-editor-container">
     <div class="clearfix">
       <div class="app-container">
-        <PreEngagements />
+        <el-row
+          type="flex"
+          justify="center"
+          style="margin-bottom: 1.5em"
+        >
+          <el-col
+            :span="8"
+            :offset="2"
+          >
+            <el-radio-group
+              v-model="etatLibelle"
+              size="small"
+              @change="etatChange"
+            >
+              <el-radio-button label="Initiés"/>
+              <el-radio-button label="Engagés"/>
+              <el-radio-button label="Imputés"/>
+              <el-radio-button label="Apurés"/>
+              <el-radio-button label="Clôturés"/>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+        <PreEngagements
+          :etat="etat"
+          :title="title"
+        />
       </div>
     </div>
     <div />
@@ -21,6 +46,20 @@ import PreEngagements from './components/preengagements'
   }
 })
 export default class extends Vue {
+  private etat = 'INIT'
+  private etatLibelle = 'Initiés'
+  private title = 'Pré engagements initiés'
+  private etatsLibelle: Record<string, any> = {
+    'Initiés': {code: 'INIT', title: 'Pré engagements initiés'},
+    'Engagés': {code: 'PEG', title: 'Liste des engagements'},
+    'Imputés': {code: 'IMP', title: 'Engagements imputés'},
+    'Apurés': {code: 'REA', title: 'Engagements apurés'},
+    'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés'}
+  }
+
+  created() {
+  }
+
   get name() {
     return UserModule.name
   }
@@ -31,6 +70,11 @@ export default class extends Vue {
 
   get roles() {
     return UserModule.roles
+  }
+
+  private etatChange() {
+    this.etat = this.etatsLibelle[this.etatLibelle].code
+    this.title = this.etatsLibelle[this.etatLibelle].title
   }
 }
 </script>

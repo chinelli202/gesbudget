@@ -1,7 +1,7 @@
 <template>
   <div
     v-loading="footerLoading"
-    style="padding: 1em;box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)"
+    style="padding: 1em;"
   >
     <el-row
       type="flex"
@@ -57,11 +57,11 @@
           Valider au niveau final
         </el-button>
         <el-button
-          v-if="isbtnImputer"
+          v-if="isbtnNextEtatAction"
           type="primary"
           @click="nextEtatAction"
         >
-          Imputer
+          {{ nextEtatActionText }}
         </el-button>
         <el-button
           v-if="isbtnOk"
@@ -198,7 +198,10 @@ import { Console } from 'console'
 export default class FooterButtons extends Vue {
   @Prop({ required: true }) private entity!: any
   @Prop({ required: true }) private type!: any
-  @Prop({ default: true, required: true }) private submitDisabled!: any
+  @Prop() private submitDisabled!: any
+  @Prop() private nextEtatActionText!: any
+  @Prop() private isNextEtatAction!: any
+
   @Prop() private onCancel!: any
   @Prop() private updateSubmit!: any
   @Prop() private resendUpdate!: any
@@ -242,7 +245,7 @@ export default class FooterButtons extends Vue {
     cancel the validation he/she has done but the n+1th user has already proceed to a n+1's validation. */
   private isbtnAnnulerValider = false; // Display 'Annuler Validation' button to cancel a validation.
   private isbtnPlusDactions = false; // Display a 'Plus d'actions...' button for the user to have some actions like writing only a comment and others.
-  private isbtnImputer = false; // Display 'Imputer' button for engagement imputation
+  private isbtnNextEtatAction = false; // Display 'Imputer' button for engagement imputation
 
   private plusDactionsDialogVisible = false
   private plusDactionsForm = {
@@ -318,7 +321,7 @@ export default class FooterButtons extends Vue {
     this.isbtnOptionsAnnuler = false
     this.isbtnAnnulerValider = false
     this.isbtnPlusDactions = false
-    this.isbtnImputer = false
+    this.isbtnNextEtatAction = false
 
     this.plusDactionsDialogVisible = false
   }
@@ -596,8 +599,9 @@ export default class FooterButtons extends Vue {
     this.isbtnOk = true
 
     // 5.The entity is at final statut and the user has the permission to perform NextEtat
-    if (this.statutIsFinal() && this.userCanNextEtat()) {
-      this.isbtnImputer = true
+    if (this.statutIsFinal() && this.userCanNextEtat() && this.isNextEtatAction) {
+      console.log('isNextEtatAction ', this.isNextEtatAction)
+      this.isbtnNextEtatAction = true
     }
 
     // 6.The current user has the right to perform the n+1 action so we activate the corresponding Validation and sendBack buttons
@@ -646,7 +650,7 @@ export default class FooterButtons extends Vue {
       this.isbtnValiders = false
       this.isbtnValiderf = false
       this.isbtnRenvoyer = false
-      this.isbtnImputer = false
+      this.isbtnNextEtatAction = false
 
       if (this.entityIsClosed) {
         this.isbtnAnnulerValider = false
@@ -655,7 +659,7 @@ export default class FooterButtons extends Vue {
     }
 
     // 11.Si l'un des boutons principaux est activé, désactiver le bouton Ok
-    if (this.isbtnImputer || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp || this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider) {
+    if (this.isbtnNextEtatAction || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp || this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider) {
       this.isbtnOk = false
     }
   }

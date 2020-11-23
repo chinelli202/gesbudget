@@ -1,12 +1,37 @@
 <template>
   <div class="clearfix">
     <div class="app-container max-w-600 center">
+      <div
+        v-for="(imputation) in engagement.imputations_labelled"
+        :key="imputation.id"
+        style="margin-bottom: 2em"
+        >
+          <imputation-card
+            :imputation="imputation"
+            :engagement="engagement"
+            :deviseOptions="deviseOptions"
+            :tva="tva"
+            :fallbackUrl=fallbackUrl
+          >
+          </imputation-card>
+      </div>
       <el-card shadow="always">
         <el-container>
           <el-header>
-            <h1 align="center">
-              Detail Engagement - {{ engagement.id }}
-            </h1>
+            <el-row
+              type="flex"
+              justify="center"
+              style="margin-bottom: 1.5em"
+            >
+              <el-col
+                :span="8"
+                :offset="2"
+              >
+                <h1 align="center">
+                  Detail Engagement - {{ engagement.id }}
+                </h1>
+              </el-col>
+            </el-row>
           </el-header>
           <el-main
             v-loading="cardLoading"
@@ -45,14 +70,18 @@
                   :offset="2"
                 >
                   <el-radio-group
+                    v-if="toEdit"
                     v-model="domain"
                     size="small"
-                    :disabled="!toEdit"
                     @change="domainChange"
                   >
                     <el-radio-button label="Fonctionnement" />
                     <el-radio-button label="Mandat" />
                   </el-radio-group>
+                  <el-input v-else
+                    v-model="domain"
+                    :disabled="true"
+                  />
                 </el-col>
               </el-row>
               <el-form-item label="Code">
@@ -332,6 +361,8 @@
               :send-back-submit="fbsendBackSubmit"
               :cancel-valider-submit="fbcancelValiderSubmit"
               :next-etat-action="launchImputer"
+              :next-etat-action-text="nextEtatActionText"
+              :is-next-etat-action="isNextEtatAction"
               @footerload="loadHandler($event)"
             />
           </el-main>
@@ -546,9 +577,10 @@ import {
   detailEngagement
   , updateEngagement, validationpPreeng, validationPreeng, cancelValidationPreeng, cancelValidationpPreeng, validationsPreeng
   , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
-  , imputerEngagement
 } from '@/api/engagements'
+import { imputerEngagement } from '@/api/imputations'
 import FooterButtons from './components/footerbuttons'
+import ImputationCard from './components/imputationcard'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
@@ -556,7 +588,7 @@ import { PermissionModule } from '@/store/modules/permission'
 @Component({
   name: 'DetailEngagement',
   components: {
-    FooterButtons
+    FooterButtons, ImputationCard
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -592,6 +624,8 @@ export default class extends Vue {
   private submitUpdateDisabled = true;
 
   private toEdit = false;
+  private nextEtatActionText = "Imputer l'engagement";
+  private isNextEtatAction = true
 
   /** Variables for buttons rendering */
   private permissions : any[] = []
@@ -601,6 +635,9 @@ export default class extends Vue {
     code: '',
     montant_ht: 0,
     montant_ttc: 0,
+    cumul_imputations: 0,
+    cumul_apurements_initie_ht: 0,
+    cumul_imputations_initie_ht: 0,
     devise: 'XAF',
     saisisseur: '',
     saisisseur_name: '',
@@ -624,7 +661,6 @@ export default class extends Vue {
   private submitImputerDisabled = true
   private tvaImputerMismatch = false
 
-  private imputations = []
   private imputation = {
     engagement_id: '',
     reference: '',
@@ -790,16 +826,32 @@ export default class extends Vue {
     this.checkImputerTvaMismatch()
   }
 
+  private resetImputerForm() {
+    this.imputation = {
+      engagement_id: '',
+      reference: '',
+      montant_ht: 0,
+      montant_ttc: 0,
+      devise: 'XAF',
+      observations: '',
+      statut: '',
+      files: []
+    }
+  }
+
   private imputerEngagement() {
     console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)
-    this.cardLoading = true
-    imputerEngagement(this.engagement).then((response:any) => {
-      this.engagement.imputations.push(response.data)
+    this.imputerFormLoading = true
+    this.imputation.engagement_id = this.engagement.code
+    imputerEngagement(this.imputation).then((response:any) => {
+      this.engagement = response.data
       this.updateViewVariables()
-      this.cardLoading = false
+      this.imputerFormLoading = false
+      // this.imputerFormVisible = false
+      this.resetImputerForm()
     }).catch(error => {
-      this.cardLoading = false
-      console.log('Error update', error)
+      this.imputerFormLoading = false
+      // this.imputerFormVisible = false
     })
     // TODO : handle file upload
     this.updateViewVariables()
@@ -862,6 +914,13 @@ export default class extends Vue {
     this.isCurrentUserValideurp = UserModule.matricule === this.engagement.valideur_first
     this.isCurrentUserValideurs = UserModule.matricule === this.engagement.valideur_second
     this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
+
+    this.nextEtatActionText = this.engagement.cumul_imputations_initie_ht > 0 ? "Nouvelle imputation" : "Imputer l'engagement"
+    if (this.engagement.cumul_imputations_initie_ht >= 0 && this.engagement.cumul_imputations_initie_ht <= this.engagement.cumul_imputations) {
+      this.isNextEtatAction =  true
+    } else {
+      this.isNextEtatAction =  false
+    }
 
     // The engagement is closed
     this.engagementIsClosed = this.engagement.etat === AppModule.etatsEngagement.CLOT.code

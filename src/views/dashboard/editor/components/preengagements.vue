@@ -2,7 +2,7 @@
   <div>
     <el-row>
       <el-col :span="10">
-        <h1>Pré engagements initiés</h1>
+        <h1>{{ title }}</h1>
       </el-col>
       <el-col
         :span="4"
@@ -91,7 +91,7 @@
         width="75"
       />
       <el-table-column
-        prop="saisisseur"
+        prop="saisisseur_name"
         label="Saisi par"
         width="100"
       />
@@ -325,7 +325,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import { getEngagements, createEngagement } from '@/api/engagements'
 import { IEngagementData } from '@/api/types'
 import { AppModule } from '@/store/modules/app'
@@ -339,6 +339,9 @@ import { REPLEval } from 'repl'
 })
 
 export default class PreEngagements extends Vue {
+  @Prop({ required: true }) private etat!: string
+  @Prop({ required: true }) private title!: string
+
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
 
@@ -369,8 +372,14 @@ export default class PreEngagements extends Vue {
   }
 
   created() {
-    this.getInitiatedEngagements()
+    this.getEngagements()
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+  }
+
+  mounted() {
+    this.$watch('etat', etat => {
+      this.getEngagements()
+    }, { immediate: true })
   }
 
   detail(value: any, engagement: any) {
@@ -394,9 +403,9 @@ export default class PreEngagements extends Vue {
     return formattedDate
   }
 
-  private async getInitiatedEngagements() {
+  private async getEngagements() {
     this.listLoading = true
-    const { data } = await getEngagements({ etat: 'INIT' })
+    const { data } = await getEngagements({ etat: this.etat })
     this.initiatedEngagements = data
     this.listLoading = false
   }
