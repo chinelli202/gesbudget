@@ -213,20 +213,8 @@ export default class FooterButtons extends Vue {
   @Prop() private cancelValiderSubmit!: any
   @Prop() private nextEtatAction!: any
 
-  mounted() {
-    this.$watch('entity', entity => {
-      this.footerLoading = true
-      this.initializeButtons()
-      this.footerLoading = false
-    }, { immediate: true })
-
-    this.$watch('footerLoading', footerLoading => {
-      this.$emit('footerload', this.footerLoading)
-    }, { immediate: true })
-  }
-
   /** Variables for buttons rendering */
-  private footerLoading = false
+  private footerLoading = true // TODO : this attribute is no more useful, to delete it in this class
   private footerEntity:any
 
   private entityIsClosed = false
@@ -277,6 +265,12 @@ export default class FooterButtons extends Vue {
     this.permissions = UserModule.permissions
     this.permissionCodes = PermissionModule.permissionCodes
     this.footerLoading = false
+  }
+
+  mounted() {
+    this.$watch('entity', entity => {
+      this.initializeButtons()
+    }, { immediate: true })
   }
 
   private entityLabel() {

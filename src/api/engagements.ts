@@ -164,3 +164,13 @@ export const cancelValidationPreeng = (data: any) =>
     },
     data
   })
+
+export const imputerEngagement = (data: any) =>
+  request({
+    url: `/imputation/create/${data.id}`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
