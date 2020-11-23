@@ -26,15 +26,16 @@
           @change="handleCascaderChange"></el-cascader>
       </el-row>
     </el-card>
-      <div class="footer-group clearfix">
-        <el-button plain @click="handleButtonVoirEtatsClick" style="float: right; margin-left: 20px">Aller</el-button>
-        <el-button plain style="float: right; ">Annuler</el-button>
+    <div class="footer-group clearfix">
+        <el-button plain  style="float: right; margin-left: 20px" @click="handleAllerButtonClick" :disabled="allerButtonDisabled">Aller</el-button>
+        <el-button plain style="float: right; " @click="handleExitClick">Annuler</el-button>
       </div>
+      
   </div>
 </template>
 
 <script lang="ts">
-    import { Component, Vue, Watch } from "vue-property-decorator";
+    import { Component, Prop, Vue, Watch } from "vue-property-decorator";
     import {getFonctionnementTree} from "@/api/maquetteTree";
 
 
@@ -43,6 +44,7 @@
 })
 
     export default class extends Vue {
+      @Prop() private maquetteTree!: any
       private groupeoptions: any = {}
       private chapitreOptions: any [] = []
       private rubriqueOptions: any [] = []
@@ -55,9 +57,10 @@
       private selectedId: any = null
       private cascadeOptions: any [] = []
       private radio: any = 3
-      private chosenEntity: string = ""
+      private chosenEntity: string = "chapitre"
       private chosenEntityId: number = 10
       private choixSection: number = 100
+      private allerButtonDisabled = true
 
       private lignesCascadeOptions: any [] = []
       private chapitresCascadeOptions: any [] = []
@@ -79,16 +82,18 @@
 
       created() {
         console.log('vivre')
-        this.getFonctionnementMaquette()
+        //this.getFonctionnementMaquette()
+        this.setNavigateur()
       }
 
-      private async getFonctionnementMaquette() {
+      private setNavigateur() {
 
-        const { data } = await getFonctionnementTree(this.listQuery)
-        this.depensesTree = data.depenses
-        this.recettesTree = data.recettes
-        let depensesOption = data.depenses.chapitres
-        let recettesOption = data.recettes.chapitres
+        //const { data } = await getFonctionnementTree(this.listQuery)
+
+        this.depensesTree = this.maquetteTree.depenses
+        this.recettesTree = this.maquetteTree.recettes
+        let depensesOption = this.maquetteTree.depenses.chapitres
+        let recettesOption = this.maquetteTree.recettes.chapitres
 
         this.lignesCascadeOptions = depensesOption.map((chapitre : any)=>{
         //add properties
@@ -155,29 +160,30 @@
 
       }
 
-       private handleButtonVoirEtatsClick(){
+       private handleAllerButtonClick(){
+         const path = this.$router.currentRoute.path
+         var domaine = path.split("/")[2]
+         var routename
+         if(domaine == 'fonctionnement')
+          routename = 'element-fonctionnement'
+         if(domaine == 'mandat')
+          routename = 'element-mandat'
          console.log("at this point, the component will navigate to : " + this.chosenEntity + " with the index : " + this.chosenEntityId) 
           var url = "/tab/custom/fonctionnement/" + this.chosenEntity + "/" + this.chosenEntityId;
         //  this.$router.push(url);
-        //this.$router.push({ name: 'etats-fonctionnement', params: { entitytype: this.chosenEntity, entitykey: String(this.chosenEntityId) } })
+        this.$router.push({ name: routename, params: { entitytype: this.chosenEntity, entitykey: String(this.chosenEntityId) } })
       }
-
-
 
       private handleRubriqueItemChanged(selectedItem:any){
         this.chosenEntityId = selectedItem
       }
       private handleLigneChanged(){}
 
-      private handleCascaderChange(value:any){
-        // this.chosenEntityId = value
-        // console.log("this the chosen entity id : "+ typeof(value))
-        // console.log("trying to select first id : "+ (value[0]))
-        //   if(this.chosenEntity == 'rubrique'|| this.chosenEntity == 'ligne')
-        //     console.log("trying to select second id : "+ (value[1]))
-        // if(this.chosenEntity == 'ligne')
-        //   console.log("trying to select third id : "+ (value[2]))
+      private handleExitClick(){
+        this.$emit('exit-navigateur-dialog')
+      }
 
+      private handleCascaderChange(value:any){
 
         if(this.chosenEntity == 'chapitre'){
           //this.chosenEntity = 'chapitre'
@@ -202,6 +208,8 @@
           this.chosenEntityId = selectedGroupe['groupname']
           //console.log("this is the selected entity : " + selectedGroupe['groupname'])
         }
+
+        this.allerButtonDisabled = false
       }
     }
 

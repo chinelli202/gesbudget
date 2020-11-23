@@ -18,7 +18,7 @@ const defaultFiltreEtat : IFiltreEtats = {
     jourPeriodeJour: '2020-06-12',
     moisPeriodeMois: 1,
     debutPeriodeIntervalle: 1,
-    finPeriodeIntervalle: 1
+    finPeriodeIntervalle: 6
 }
 
 export const periodes = {
@@ -43,12 +43,20 @@ class FiltreEtats extends VuexModule implements IFiltreEtats {
     const { jourParam, value } = payload
     if(jourParam == periodes.TODAY){
         this.periode = periodes.TODAY
+        this.jourPeriodeJour = value
+        var vdate = new Date(value)
+        this.moisPeriodeMois = vdate.getMonth() + 1
         console.log("from within module periode today")
+        this.debutPeriodeIntervalle = 1
+        this.finPeriodeIntervalle = vdate.getMonth()
     }
     else if (jourParam == periodes.JOUR){
       console.log("from within module periode jour")
         this.periode = periodes.JOUR
         this.jourPeriodeJour = value
+        var vdate = new Date(value)
+        this.debutPeriodeIntervalle = 1
+        this.finPeriodeIntervalle = vdate.getMonth()
     }
   }
 
@@ -62,7 +70,7 @@ class FiltreEtats extends VuexModule implements IFiltreEtats {
   @Mutation
   private SET_PERIODE_INTERVALLE(payload: { debut: number, fin: number }) {
     const { debut, fin } = payload
-    this.periode = periodes.MOIS 
+    this.periode = periodes.INTERVALLE 
     this.debutPeriodeIntervalle = debut
     this.finPeriodeIntervalle = fin    
   }

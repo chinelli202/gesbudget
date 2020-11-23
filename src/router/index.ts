@@ -255,7 +255,7 @@ export const asyncRoutes: RouteConfig[] = [
     ]
   },
   {
-    path: '/tab',
+    path: '/etats',
     component: Layout,
     meta: {
       title: 'etatsBudget',
@@ -263,33 +263,52 @@ export const asyncRoutes: RouteConfig[] = [
     },
     children: [
       {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "tab" */ '@/views/tab/index.vue'),
-        name: 'Tab',
-        meta: {
-          title: 'tab',
-          icon: 'tab'
-        }
-      },
-      {
-        path: 'custom',
+        path: 'mandat',
         component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
-        name: 'Custom',
+        name: 'Mandat',
         children: [
           {
             path: 'generaux',
             component: () => import('@/views/table/etats-generaux.vue'),
-            name: 'Etats Generaux',
+            name: 'Mandat',
             meta: {
-              title: 'etatsGeneraux',
+              title: 'mandat',
             }
           },
           {
-            path: 'fonctionnement/:entitytype/:entitykey',
+            path: ':entitytype/:entitykey',
             component: () => import('@/views/table/groupe-rubrique/index.vue'),
-            name: 'etats-fonctionnement',
+            name: 'element-mandat',
             meta: {
-              title: 'etats-fonctionnement',
+              title: 'elementMandat',
+              hidden: true
+            }
+          }
+        ],
+        meta: {
+          title: 'etatsMandat',
+          icon: 'tab'
+        }
+      },
+      {
+        path: 'fonctionnement',
+        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        name: 'Fonctionnement',
+        children: [
+          {
+            path: 'generaux',
+            component: () => import('@/views/table/etats-generaux.vue'),
+            name: 'Fonctionnement',
+            meta: {
+              title: 'fonctionnement',
+            }
+          },
+          {
+            path: ':entitytype/:entitykey',
+            component: () => import('@/views/table/groupe-rubrique/index.vue'),
+            name: 'element-fonctionnement',
+            meta: {
+              title: 'elementFonctionnement',
               hidden: true
             }
           },
@@ -304,7 +323,7 @@ export const asyncRoutes: RouteConfig[] = [
           }
         ],
         meta: {
-          title: 'custom',
+          title: 'etatsFonctionnement',
           icon: 'tab'
         }
       }

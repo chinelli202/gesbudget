@@ -7,3 +7,10 @@ import { IGroupeFonctionnement } from './types'
       method: 'get',
       params
     })
+
+    export const getMandatTree = (params:any) =>
+    request({
+      url: '/maquettes/mandat',
+      method: 'get',
+      params
+    })
