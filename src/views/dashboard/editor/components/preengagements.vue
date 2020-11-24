@@ -10,6 +10,7 @@
       >
         <div>
           <el-button
+            v-if="canCreateEngagement"
             type="primary"
             @click="launchDialogForm"
           >
@@ -331,6 +332,8 @@ import { Component, Vue, Prop } from 'vue-property-decorator'
 import { getEngagements, createEngagement } from '@/api/engagements'
 import { IEngagementData } from '@/api/types'
 import { AppModule } from '@/store/modules/app'
+import { UserModule } from '@/store/modules/user'
+import { PermissionModule } from '@/store/modules/permission'
 import { getBudgetStructure } from '@/api/variables'
 import { REPLEval } from 'repl'
 
@@ -346,6 +349,7 @@ export default class PreEngagements extends Vue {
 
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
+  private canCreateEngagement = true
 
   /** Cascader variables */
   private domain = 'Fonctionnement'
@@ -375,13 +379,23 @@ export default class PreEngagements extends Vue {
 
   created() {
     this.getEngagements()
+    this.initializeVariables()
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
   }
 
   mounted() {
     this.$watch('etat', etat => {
       this.getEngagements()
+      this.initializeVariables()
     }, { immediate: true })
+  }
+
+  private initializeVariables() {
+    this.canCreateEngagement = this.hasPermission(PermissionModule.permissionCodes.engagement.INIT.SAISI)
+  }
+
+  private hasPermission(permission: string) {
+    return UserModule.permissions.filter(item => item.code === permission).length > 0
   }
 
   detail(value: any, engagement: any) {
