@@ -2,9 +2,9 @@ import request from '@/utils/request'
 import { IMonthRecapCollection, IMonthRecapData, IRecapData } from './types'
 
 export const defaultRecapData: IRecapData = {
-    sumrow: Object,
+    sumrow: {},
     //collection: [],
-    //header:Object
+    header:{}
   }
   
   export const defaultMonthRecapData: IMonthRecapData = {
@@ -61,3 +61,10 @@ export const defaultRecapData: IRecapData = {
         method: 'get',
         params
     })
+
+    export const getSectionRecapData = (sectionname: string, domainename: string, params: any) =>
+    request({
+      url: `/etats/section/${sectionname}/${domainename}`,
+      method: 'get',
+      params
+  })

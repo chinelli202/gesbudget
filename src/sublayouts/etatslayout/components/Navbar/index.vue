@@ -215,6 +215,7 @@ private maquetteTree : any = {}
   }
 
   private handleExporter(){
+    console.log("route params", this.$route.params.entitytype)
     const entitytype = this.$route.params && this.$route.params.entitytype
     const entitykey = this.$route.params && this.$route.params.entitykey
     const periode = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? periodes.JOUR : 
