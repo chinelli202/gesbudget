@@ -117,7 +117,7 @@ export const sendBack = (data: any) =>
 
 export const validationpPreeng = (data: any) =>
   request({
-    url: `/engagement/validerp/peg/${data.id}`,
+    url: `/engagement/valider/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -127,7 +127,7 @@ export const validationpPreeng = (data: any) =>
 
 export const cancelValidationpPreeng = (data: any) =>
   request({
-    url: `/engagement/cancelvaliderp/peg/${data.id}`,
+    url: `/engagement/cancelvalider/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -135,33 +135,5 @@ export const cancelValidationpPreeng = (data: any) =>
     data
   })
 
-export const validationsPreeng = (data: any) =>
-  request({
-    url: `/engagement/validers/peg/${data.id}`,
-    method: 'post',
-    headers: {
-      Authorization: `Bearer ${getToken()}`
-    },
-    data
-  })
 
-export const validationPreeng = (data: any) =>
-  request({
-    url: `/engagement/valider/peg/${data.id}`,
-    method: 'post',
-    headers: {
-      Authorization: `Bearer ${getToken()}`
-    },
-    data
-  })
-
-export const cancelValidationPreeng = (data: any) =>
-  request({
-    url: `/engagement/cancelValider/peg/${data.id}`,
-    method: 'post',
-    headers: {
-      Authorization: `Bearer ${getToken()}`
-    },
-    data
-  })
 

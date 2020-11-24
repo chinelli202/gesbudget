@@ -9,6 +9,15 @@
       <el-main
         v-loading="cardLoading"
       >
+        <el-alert
+          v-if="imputation.next_statut !== null"
+          title="Cette imputation a été renvoyé pour modification."
+          type="info"
+          :closable="false"
+          style="max-width: 400vw; margin-bottom: 10px"
+          center
+          show-icon
+        />
         <el-form
           ref="form"
           :model="engagement"
@@ -184,7 +193,7 @@
           :is-next-etat-action="isNextEtatAction"
           @footerload="loadHandler($event)"
           @updateBtnStateChanged="isbtnUpdate = $event"
-          @resendBtnStateChanged="resendUpdate = $event"
+          @resendBtnStateChanged="isResendUpdate = $event"
         />
       </el-main>
     </el-container>
@@ -422,7 +431,6 @@ export default class ImputationCard extends Vue {
 
     // If the engagement is closed then the card should be inactive
     this.cardActive = !(this.engagement.etat === AppModule.etatsEngagement.CLOT.code)
-    console.log('variables imputation', this.cardActive, this.isbtnUpdate, this.isResendUpdate, !this.cardActive || (!this.isbtnUpdate && !this.isResendUpdate))
   }
 
   private formAttributeChange() {
