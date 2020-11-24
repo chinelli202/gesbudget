@@ -183,6 +183,8 @@
           :next-etat-action-text="nextEtatActionText"
           :is-next-etat-action="isNextEtatAction"
           @footerload="loadHandler($event)"
+          @updateBtnStateChanged="isbtnUpdate = $event"
+          @resendBtnStateChanged="resendUpdate = $event"
         />
       </el-main>
     </el-container>
@@ -420,6 +422,7 @@ export default class ImputationCard extends Vue {
 
     // If the engagement is closed then the card should be inactive
     this.cardActive = !(this.engagement.etat === AppModule.etatsEngagement.CLOT.code)
+    console.log('variables imputation', this.cardActive, this.isbtnUpdate, this.isResendUpdate, !this.cardActive || (!this.isbtnUpdate && !this.isResendUpdate))
   }
 
   private formAttributeChange() {

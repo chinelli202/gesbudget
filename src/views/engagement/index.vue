@@ -27,7 +27,7 @@
         <PreEngagements
           :etat="etat"
           :title="title"
-          :canCreateEngagement="true"
+          :displayCreateButton="true"
         />
       </div>
     </div>

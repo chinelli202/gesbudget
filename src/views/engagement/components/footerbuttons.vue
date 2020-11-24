@@ -277,6 +277,14 @@ export default class FooterButtons extends Vue {
       console.log('entity changed ', this.type)
       this.initializeButtons()
     }, { immediate: true })
+
+    this.$watch('isbtnUpdate', entity => {
+      this.$emit('updateBtnStateChanged', this.isbtnUpdate)
+    }, { immediate: true })
+
+    this.$watch('isResendUpdate', entity => {
+      this.$emit('resendBtnStateChanged', this.resendUpdate)
+    }, { immediate: true })
   }
 
   private entityLabel() {
@@ -694,6 +702,7 @@ export default class FooterButtons extends Vue {
       }
     }
 
+    console.log('isbtnUpdate ', this.type, this.isbtnUpdate)
     // 11.Si l'un des boutons principaux est activé, désactiver le bouton Ok
     if (this.isbtnNextEtatAction || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp || this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider) {
       this.isbtnOk = false
