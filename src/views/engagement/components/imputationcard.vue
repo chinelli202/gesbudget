@@ -411,9 +411,8 @@ export default class ImputationCard extends Vue {
     this.isCurrentUserValideurs = UserModule.matricule === this.imputation.valideur_second
     this.isCurrentUserValideurf = UserModule.matricule === this.imputation.valideur_final
 
-    this.nextEtatActionText = this.engagement.cumul_imputations_initie_ht > 0 ? 'Nouvel apurement' : "Apurer l'engagement"
-    if (this.engagement.cumul_apurements_initie_ht >= 0 &&
-          this.engagement.cumul_apurements_initie_ht <= this.engagement.cumul_apurements) {
+    this.nextEtatActionText = this.engagement.cumul_apurements_initie_ttc > 0 ? 'Nouvel apurement' : "Apurer l'engagement"
+    if (this.engagement.cumul_apurements < this.engagement.montant_ttc) {
       this.isNextEtatAction = true
     } else {
       this.isNextEtatAction = false

@@ -638,7 +638,7 @@ export default class extends Vue {
     montant_ttc: 0,
     cumul_imputations: 0,
     cumul_apurements_initie_ht: 0,
-    cumul_imputations_initie_ht: 0,
+    cumul_imputations_initie_ttc: 0,
     devise: 'XAF',
     saisisseur: '',
     saisisseur_name: '',
@@ -922,8 +922,8 @@ export default class extends Vue {
     this.isCurrentUserValideurs = UserModule.matricule === this.engagement.valideur_second
     this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
 
-    this.nextEtatActionText = this.engagement.cumul_imputations_initie_ht > 0 ? 'Nouvelle imputation' : "Imputer l'engagement"
-    if (this.engagement.cumul_imputations_initie_ht >= 0 && this.engagement.cumul_imputations_initie_ht <= this.engagement.cumul_imputations) {
+    this.nextEtatActionText = this.engagement.cumul_imputations_initie_ttc > 0 ? 'Nouvelle imputation' : "Imputer l'engagement"
+    if (this.engagement.cumul_imputations < this.engagement.montant_ttc) {
       this.isNextEtatAction = true
     } else {
       this.isNextEtatAction = false
@@ -948,7 +948,7 @@ export default class extends Vue {
 }
 
 .cascade-extra-lg{
-  width: 58.5vw;
+  width: 48.5vw;
 }
 
 .notes{
