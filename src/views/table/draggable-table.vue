@@ -1,6 +1,74 @@
 <template>
   <div class="app-container">
     <!-- Note that row-key is necessary to get a correct row order. -->
+    <el-menu
+      :default-active="activeIndex2"
+      class="el-menu-demo"
+      mode="horizontal"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b"
+      @select="handleSelect"
+    >
+      <el-menu-item index="1">
+        Général
+      </el-menu-item>
+      <el-submenu index="2">
+        <template slot="title">
+          Recettes
+        </template>
+        <el-menu-item index="2-1">
+          Charges de personnel
+        </el-menu-item>
+        <el-menu-item index="2-2">
+          Missions
+        </el-menu-item>
+        <el-menu-item index="2-4">
+          Diverses Représentations
+        </el-menu-item>
+        <el-menu-item index="2-5">
+          Charges diverses de fonctionnement
+        </el-menu-item>
+        <el-menu-item index="2-6">
+          Honoraires
+        </el-menu-item>
+        <el-menu-item index="2-7">
+          Dons - subventions
+        </el-menu-item>
+        <el-menu-item index="2-8">
+          Formation
+        </el-menu-item>
+        <el-menu-item index="2-9">
+          Imprévus
+        </el-menu-item>
+        <el-submenu index="2-4">
+          <template slot="title">
+            item quatre
+          </template>
+          <el-menu-item index="2-4-1">
+            item un
+          </el-menu-item>
+          <el-menu-item index="2-4-2">
+            item deux
+          </el-menu-item>
+          <el-menu-item index="2-4-3">
+            item trois
+          </el-menu-item>
+        </el-submenu>
+      </el-submenu>
+      <el-menu-item
+        index="3"
+        disabled
+      >
+        Dépenses
+      </el-menu-item>
+      <el-menu-item index="4">
+        <a
+          href="https://www.ele.me"
+          target="_blank"
+        >Commandes</a>
+      </el-menu-item>
+    </el-menu>
     <el-table
       ref="draggableTable"
       v-loading="listLoading"
@@ -24,81 +92,124 @@
       <el-table-column
         width="180px"
         align="center"
-        label="Date"
+        label="Prévisions"
       >
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime }}</span>
+          <span>{{ row.previsions }}</span>
         </template>
       </el-table-column>
 
       <el-table-column
         min-width="300px"
-        label="Title"
+        label="Réalisations Mois"
       >
         <template slot-scope="{row}">
-          <span>{{ row.title }}</span>
+          <span>{{ row.realisationsMois }}</span>
         </template>
       </el-table-column>
 
       <el-table-column
         width="180px"
         align="center"
-        label="Author"
+        label="Réalisations Précédentes"
       >
         <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+          <span>{{ row.realisationsPrecedentes }}</span>
         </template>
       </el-table-column>
 
       <el-table-column
         width="105px"
-        label="Importance"
+        label="Réalisations Cumulées"
       >
         <template slot-scope="{row}">
-          <svg-icon
-            v-for="n in +row.importance"
-            :key="n"
-            name="star"
-            class="icon-star"
-          />
+          <span>{{ row.realisationsCumulees }}</span>
         </template>
       </el-table-column>
 
       <el-table-column
         align="center"
-        label="Readings"
+        label="Engagements"
         width="95"
       >
         <template slot-scope="{row}">
-          <span>{{ row.pageviews }}</span>
+          <span>{{ row.engagements }}</span>
         </template>
       </el-table-column>
 
       <el-table-column
         class-name="status-col"
-        label="Status"
+        label="Execution"
         width="110"
       >
         <template slot-scope="{row}">
-          <el-tag :type="row.status | articleStatusFilter">
-            {{ row.status }}
-          </el-tag>
+          <span>{{ row.execution }}</span>
         </template>
       </el-table-column>
 
       <el-table-column
         align="center"
-        label="Drag"
+        label="Solde"
         width="80"
       >
-        <svg-icon
-          class="draggable-handler"
-          name="drag"
-          width="20"
-          height="20"
-        />
+        <template slot-scope="{row}">
+          <span>{{ row.solde }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        align="center"
+        label="Taux d'exécution"
+        width="80"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.tauxExecution }}</span>
+        </template>
       </el-table-column>
     </el-table>
+
+    <el-table
+      :data="tableData"
+      style="width: 100%;margin-bottom: 20px;"
+      row-key="id"
+      border
+      default-expand-all
+    >
+      <el-table-column
+        prop="date"
+        label="date"
+        sortable
+        width="180"
+      />
+      <el-table-column
+        prop="name"
+        label="Nom"
+        sortable
+        width="180"
+      />
+    </el-table>
+
+    <el-table
+      :data="tableData1"
+      style="width: 100%"
+      row-key="id"
+      border
+      lazy
+      :load="load"
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+    >
+      <el-table-column
+        prop="date"
+        label="Date"
+        width="180"
+      />
+      <el-table-column
+        prop="name"
+        label="Nom"
+        width="180"
+      />
+    </el-table>
+
     <!-- $t is vue-i18n global function to translate lang (lang in @/lang)  -->
     <div class="show-d">
       <el-tag style="margin-right:12px;">
@@ -114,14 +225,14 @@
 <script lang="ts">
 import Sortable from 'sortablejs'
 import { Component, Vue } from 'vue-property-decorator'
-import { getArticles } from '@/api/articles'
-import { IArticleData } from '@/api/types'
+import { getBudgetsFonctionnement } from '@/api/budgetfonctionnement'
+import { IBudgetFonctionnement } from '@/api/types'
 
 @Component({
   name: 'DraggableTable'
 })
 export default class extends Vue {
-  private list: IArticleData[] = []
+  private list: IBudgetFonctionnement[] = []
   private listLoading = true
   private total = []
   private oldList: number[] = []
@@ -139,18 +250,19 @@ export default class extends Vue {
 
   private async getList() {
     this.listLoading = true
-    const { data } = await getArticles(this.listQuery)
-    this.list = data.items
+    const { data } = await getBudgetsFonctionnement(this.listQuery)
+    this.list = data
     // Just to simulate the time of the request
-    setTimeout(() => {
-      this.listLoading = false
-    }, 0.5 * 1000)
+    // setTimeout(() => {
+    //   this.listLoading = false
+    // }, 0.5 * 1000)
     this.total = data.total
     this.oldList = this.list.map((v) => v.id)
     this.newList = this.oldList.slice()
     this.$nextTick(() => {
       this.setSort()
     })
+    this.listLoading = false
   }
 
   private setSort() {
@@ -167,6 +279,86 @@ export default class extends Vue {
         }
       }
     })
+  }
+
+  data() {
+    return {
+      tableData: [{
+        id: 1,
+        date: '2016-05-02',
+        name: 'wangxiaohu'
+      }, {
+        id: 2,
+        date: '2016-05-04',
+        name: 'wangxiaohu'
+      }, {
+        id: 3,
+        date: '2016-05-01',
+        name: 'wangxiaohu',
+        children: [{
+          id: 31,
+          date: '2016-05-01',
+          name: 'wangxiaohu'
+        }, {
+          id: 32,
+          date: '2016-05-01',
+          name: 'wangxiaohu',
+          children: [{
+            id: 731,
+            date: '2016-05-01',
+            name: 'wangxiaohu'
+          }, {
+            id: 732,
+            date: '2016-05-01',
+            name: 'wangxiaohu'
+          }]
+        }]
+      }, {
+        id: 4,
+        date: '2016-05-03',
+        name: 'wangxiaohu'
+      }],
+      tableData1: [{
+        id: 1,
+        date: '2016-05-02',
+        name: 'wangxiaohu'
+      }, {
+        id: 2,
+        date: '2016-05-04',
+        name: 'wangxiaohu'
+      }, {
+        id: 3,
+        date: '2016-05-01',
+        name: 'wangxiaohu',
+        hasChildren: true
+      }, {
+        id: 4,
+        date: '2016-05-03',
+        name: 'wangxiaohu'
+      }],
+      activeIndex: '1',
+      activeIndex2: '1'
+    }
+  }
+
+  private load(tree : any, treeNode : any, resolve : any) {
+    setTimeout(() => {
+      resolve([
+        {
+          id: 31,
+          date: '2016-05-01',
+          name: 'wangxiaohu'
+        }, {
+          id: 32,
+          date: '2016-05-01',
+          name: 'wangxiaohu'
+        }
+      ])
+    }, 1000)
+  }
+
+  private handleSelect(key : any, keyPath : any) {
+    console.log(key, keyPath)
   }
 }
 </script>

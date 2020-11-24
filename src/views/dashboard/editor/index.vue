@@ -106,5 +106,20 @@ export default class extends Vue {
     color: #333;
     display: block;
   }
+
+  .info-container {
+    position: relative;
+    margin-left: 190px;
+    height: 150px;
+    line-height: 200px;
+
+    .display_name {
+      font-size: 48px;
+      line-height: 48px;
+      color: #212121;
+      position: absolute;
+      top: 25px;
+    }
+  }
 }
 </style>

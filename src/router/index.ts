@@ -282,19 +282,89 @@ export const asyncRoutes: RouteConfig[] = [
           title: 'articleList',
           icon: 'list'
         }
-      }
+      },
+      {
+        path: 'etatsbudget',
+        component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboardbudget/index.vue'),
+        name: 'EtatsBudget',
+        meta: {
+          title: 'etatbudget',
+          icon: 'dashboard',
+          affix: true
+        }
+      },
     ]
   },
   {
-    path: '/tab',
+    path: '/etats',
     component: Layout,
+    meta: {
+      title: 'etatsBudget',
+      icon: 'tab'
+    },
     children: [
       {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "tab" */ '@/views/tab/index.vue'),
-        name: 'Tab',
+        path: 'mandat',
+        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        name: 'Mandat',
+        children: [
+          {
+            path: 'generaux',
+            component: () => import('@/views/table/etats-generaux.vue'),
+            name: 'Mandat',
+            meta: {
+              title: 'mandat',
+            }
+          },
+          {
+            path: ':entitytype/:entitykey',
+            component: () => import('@/views/table/groupe-rubrique/index.vue'),
+            name: 'element-mandat',
+            meta: {
+              title: 'elementMandat',
+              hidden: true
+            }
+          }
+        ],
         meta: {
-          title: 'tab',
+          title: 'etatsMandat',
+          icon: 'tab'
+        }
+      },
+      {
+        path: 'fonctionnement',
+        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        name: 'Fonctionnement',
+        children: [
+          {
+            path: 'generaux',
+            component: () => import('@/views/table/etats-generaux.vue'),
+            name: 'Fonctionnement',
+            meta: {
+              title: 'fonctionnement',
+            }
+          },
+          {
+            path: ':entitytype/:entitykey',
+            component: () => import('@/views/table/groupe-rubrique/index.vue'),
+            name: 'element-fonctionnement',
+            meta: {
+              title: 'elementFonctionnement',
+              hidden: true
+            }
+          },
+          {
+            path: 'navetats',
+            component: () => import('@/components/NavigateurEtats/index.vue'),
+            name: 'Navigateur Etats',
+            meta: {
+              title: 'navetats',
+              hidden: true
+            }
+          }
+        ],
+        meta: {
+          title: 'etatsFonctionnement',
           icon: 'tab'
         }
       }
