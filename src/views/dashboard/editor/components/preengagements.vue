@@ -123,7 +123,9 @@
           <el-col
             :span="10"
           >
-            <h1 style="text-align: center">Créer un engagement</h1>
+            <h1 style="text-align: center">
+              Créer un engagement
+            </h1>
           </el-col>
         </el-row>
         <el-row
@@ -158,9 +160,9 @@
                 v-model="cascade"
                 :options="chapitresOptions"
                 :props="{expandTrigger: 'hover'}"
-                @change="cascadeChange"
                 placeholder="Choisir la ligne budgétaire"
                 class="cascade-extra-lg"
+                @change="cascadeChange"
               />
             </el-col>
           </el-row>
@@ -420,6 +422,17 @@ export default class PreEngagements extends Vue {
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
   }
 
+  private resetEngagement() {
+    this.engagement = {
+      montant_ht: null,
+      montant_ttc: 0,
+      nature: '',
+      type: '',
+      devise: 'XAF',
+      ligne_id: 0
+    }
+  }
+
   private launchDialogForm() {
     this.deviseOptions = AppModule.devises
     this.typeOptions = AppModule.typesEngagement
@@ -432,11 +445,13 @@ export default class PreEngagements extends Vue {
   }
 
   private createEngagement() {
+    this.dialogFormLoading = true
     console.log('this.engagement : ', this.engagement)
     createEngagement(this.engagement).then((response) => {
       const newEngagement = response.data
       this.initiatedEngagements.push(newEngagement)
       this.initiatedEngagements.sort((a, b) => b.id - a.id)
+      this.resetEngagement()
       this.submitDisabled = true
       this.dialogFormLoading = false
       this.dialogFormVisible = false

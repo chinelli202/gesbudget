@@ -5,15 +5,14 @@
         v-for="(imputation) in engagement.imputations_labelled"
         :key="imputation.id"
         style="margin-bottom: 2em"
-        >
-          <imputation-card
-            :imputation="imputation"
-            :engagement="engagement"
-            :deviseOptions="deviseOptions"
-            :tva="tva"
-            :fallbackUrl=fallbackUrl
-          >
-          </imputation-card>
+      >
+        <imputation-card
+          :imputation="imputation"
+          :engagement="engagement"
+          :devise-options="deviseOptions"
+          :tva="tva"
+          :fallback-url="fallbackUrl"
+        />
       </div>
       <el-card shadow="always">
         <el-container>
@@ -24,7 +23,7 @@
               style="margin-bottom: 1.5em"
             >
               <el-col
-                :span="8"
+                :span="9"
                 :offset="2"
               >
                 <h1 align="center">
@@ -66,7 +65,7 @@
                 style="margin-bottom: 1.5em"
               >
                 <el-col
-                  :span="8"
+                  :span="9"
                   :offset="2"
                 >
                   <el-radio-group
@@ -78,7 +77,8 @@
                     <el-radio-button label="Fonctionnement" />
                     <el-radio-button label="Mandat" />
                   </el-radio-group>
-                  <el-input v-else
+                  <el-input
+                    v-else
                     v-model="domain"
                     :disabled="true"
                   />
@@ -738,7 +738,7 @@ export default class extends Vue {
 
   private async fbRestorePreeng(id: number, comment: string) {
     this.cardLoading = true
-    const response = await closePreeng({ id: id, comment: comment })
+    const response = await restorePreeng({ id: id, comment: comment })
     this.engagement = response.data
     this.updateViewVariables()
     this.cardLoading = false
@@ -847,11 +847,12 @@ export default class extends Vue {
       this.engagement = response.data
       this.updateViewVariables()
       this.imputerFormLoading = false
-      // this.imputerFormVisible = false
+      this.imputerFormVisible = false
       this.resetImputerForm()
     }).catch(error => {
       this.imputerFormLoading = false
-      // this.imputerFormVisible = false
+      this.imputerFormVisible = false
+      console.log('Erreur lors de l\' imputation de l\'engagement ', error)
     })
     // TODO : handle file upload
     this.updateViewVariables()
@@ -915,11 +916,11 @@ export default class extends Vue {
     this.isCurrentUserValideurs = UserModule.matricule === this.engagement.valideur_second
     this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
 
-    this.nextEtatActionText = this.engagement.cumul_imputations_initie_ht > 0 ? "Nouvelle imputation" : "Imputer l'engagement"
+    this.nextEtatActionText = this.engagement.cumul_imputations_initie_ht > 0 ? 'Nouvelle imputation' : "Imputer l'engagement"
     if (this.engagement.cumul_imputations_initie_ht >= 0 && this.engagement.cumul_imputations_initie_ht <= this.engagement.cumul_imputations) {
-      this.isNextEtatAction =  true
+      this.isNextEtatAction = true
     } else {
-      this.isNextEtatAction =  false
+      this.isNextEtatAction = false
     }
 
     // The engagement is closed

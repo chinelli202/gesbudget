@@ -173,10 +173,10 @@
           :validerp-submit="validerpSubmit"
           :validers-submit="validersSubmit"
           :validerf-submit="validerfSubmit"
-          :restore-preeng="fbRestorePreeng"
+          :restore-preeng="fbRestoreImputation"
           :options-annuler-valider="optionsAnnulerValider"
           :commentaire-submit="fbcommentaireSubmit"
-          :close-preeng="fbclosePreeng"
+          :close-preeng="fbcloseImputation"
           :send-back-submit="fbsendBackSubmit"
           :cancel-valider-submit="fbcancelValiderSubmit"
           :next-etat-action="launchImputer"
@@ -193,13 +193,17 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
-import { updateImputation, resendUpdateImputation, addComment
-        , closeImputation, restoreImputation, sendBack, validationImputation, cancelValidationImputation
-  } from '@/api/imputations'
+import FooterButtons from './footerbuttons'
+import {
+  updateImputation, resendUpdateImputation, addComment
+  , closeImputation, restoreImputation, sendBack, validationImputation
+  , apurerEngagement, cancelValidationImputation
+} from '@/api/imputations'
 
 @Component({
   name: 'ImputationCard',
   components: {
+    FooterButtons
   }
 })
 
@@ -209,7 +213,7 @@ export default class ImputationCard extends Vue {
   @Prop({ required: true }) private deviseOptions!: any
   @Prop({ required: true }) private tva!: any
   @Prop({ required: true }) private fallbackUrl!: any
-  
+
   private cardLoading = false
   private cardActive = false
   private isbtnUpdate = false
@@ -220,15 +224,22 @@ export default class ImputationCard extends Vue {
   private isCurrentUserValideurp = false
   private isCurrentUserValideurs = false
   private isCurrentUserValideurf = false
-  
+
+  private apurerFormLoading = false
+  private apurerFormVisible = false
+
+  private nextEtatActionText = "Apurer l'engagement"
+  private isNextEtatAction = false
+
   private apurement = {
     engagement_id: '',
-    reference: '',
+    reference_paiement: '',
     montant_ht: 0,
     montant_ttc: 0,
     devise: 'XAF',
     observations: '',
     statut: '',
+    next_statut: '',
     files: []
   }
 
@@ -252,6 +263,17 @@ export default class ImputationCard extends Vue {
 
   private onCancel() {
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+  }
+
+  private optionsAnnulerValider() {
+    console.log('optionsAnnulerValider')
+    this.updateViewVariables()
+  }
+
+  private async fbcommentaireSubmit(id: number, comment:string) {
+    const response = await addComment({ id: id, comment: comment })
+    this.updateViewVariables()
+    return response
   }
 
   private async updateSubmit() {
@@ -291,7 +313,7 @@ export default class ImputationCard extends Vue {
   private validerpSubmit() {
     this.validerSubmit('VALIDP')
   }
-  
+
   private validersSubmit() {
     this.validerSubmit('VALIDS')
   }
@@ -321,20 +343,28 @@ export default class ImputationCard extends Vue {
     return response
   }
 
-  private resetImputerForm() {
+  private resetApurerForm() {
     this.apurement = {
       engagement_id: '',
-      reference: '',
+      reference_paiement: '',
       montant_ht: 0,
       montant_ttc: 0,
       devise: 'XAF',
       observations: '',
       statut: '',
+      next_statut: '',
       files: []
     }
   }
 
-  private imputerEngagement() {
+  private launchImputer() {
+    this.apurement.montant_ht = this.engagement.montant_ht
+    this.apurement.montant_ttc = this.engagement.montant_ttc
+    this.apurement.devise = this.engagement.devise
+    this.apurerFormVisible = true
+  }
+
+  private apurerEngagement() {
     console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)
     this.apurerFormLoading = true
     this.imputation.engagement_id = this.engagement.code
@@ -342,14 +372,33 @@ export default class ImputationCard extends Vue {
       this.engagement = response.data
       this.updateViewVariables()
       this.apurerFormLoading = false
-      // this.imputerFormVisible = false
+      this.apurerFormVisible = false
       this.resetApurerForm()
     }).catch(error => {
       this.apurerFormLoading = false
-      // this.imputerFormVisible = false
+      this.apurerFormVisible = false
+      console.log('Erreur lors de l\'apurement de l\'engagement ', error)
     })
     // TODO : handle file upload
     this.updateViewVariables()
+  }
+
+  private async fbcloseImputation(id: number, comment: string) {
+    this.cardLoading = true
+    const response = await closeImputation({ id: id, comment: comment })
+    this.engagement = response.data
+    this.updateViewVariables()
+    this.cardLoading = false
+    return response
+  }
+
+  private async fbRestoreImputation(id: number, comment: string) {
+    this.cardLoading = true
+    const response = await restoreImputation({ id: id, comment: comment })
+    this.engagement = response.data
+    this.updateViewVariables()
+    this.cardLoading = false
+    return response
   }
 
   private updateViewVariables() {
@@ -357,6 +406,14 @@ export default class ImputationCard extends Vue {
     this.isCurrentUserValideurp = UserModule.matricule === this.imputation.valideur_first
     this.isCurrentUserValideurs = UserModule.matricule === this.imputation.valideur_second
     this.isCurrentUserValideurf = UserModule.matricule === this.imputation.valideur_final
+
+    this.nextEtatActionText = this.engagement.cumul_imputations_initie_ht > 0 ? 'Nouvel apurement' : "Apurer l'engagement"
+    if (this.engagement.cumul_apurements_initie_ht >= 0 &&
+          this.engagement.cumul_apurements_initie_ht <= this.engagement.cumul_apurements) {
+      this.isNextEtatAction = true
+    } else {
+      this.isNextEtatAction = false
+    }
 
     // If the engagement is closed then the card should be inactive
     this.cardActive = !(this.engagement.etat === AppModule.etatsEngagement.CLOT.code)

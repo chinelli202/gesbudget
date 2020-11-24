@@ -490,16 +490,18 @@ export default class FooterButtons extends Vue {
   }
 
   private activateBtnForNextAction() {
-    switch (this.entity.statut) {
-      case AppModule.statutsEngagement.SAISI.code:
-        this.isbtnValiderp = true
-        break
-      case AppModule.statutsEngagement.VALIDP.code:
-        this.isbtnValiders = true
-        break
-      case AppModule.statutsEngagement.VALIDS.code:
-        this.isbtnValiderf = true
-        break
+    const nextStatut:string[] = this.nextStatut(this.entity.statut)
+    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDP.code) !== -1) {
+      this.isbtnValiderp = true
+      return null
+    } else if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDS.code) !== -1) {
+      this.isbtnValiders = true
+      return null
+    } else if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDF.code) !== -1) {
+      this.isbtnValiderf = true
+      return null
+    } else {
+      return null
     }
   }
 
@@ -531,26 +533,36 @@ export default class FooterButtons extends Vue {
     return this.hasPermission(PermissionModule.permissionCodes.engagement[nextEtat].SAISI)
   }
 
-  private nextStatut(statut:string) {
+  private nextStatut(statut:string): string[] {
+    const next:string[] = []
     switch (statut) {
       case AppModule.statutsEngagement.SAISI.code:
-        return AppModule.statutsEngagement.VALIDP.code
+        next.push(AppModule.statutsEngagement.VALIDP.code)
+        break
       case AppModule.statutsEngagement.VALIDP.code:
-        return AppModule.statutsEngagement.VALIDS.code
+        next.push(AppModule.statutsEngagement.VALIDS.code)
+        next.push(AppModule.statutsEngagement.VALIDF.code)
+        break
       case AppModule.statutsEngagement.VALIDS.code:
-        return AppModule.statutsEngagement.VALIDF.code
+        next.push(AppModule.statutsEngagement.VALIDF.code)
+        break
       case AppModule.statutsEngagement.VALIDF.code:
-        return null
+        break
     }
+    return next
   }
 
   private userCanNextStatut() {
-    const nextStatut:string = this.nextStatut(this.entity.statut)
-    if (!nextStatut) {
+    const nextStatut:string[] = this.nextStatut(this.entity.statut)
+    if (nextStatut.length === 0) {
       return false
     }
+    let canNextStatut = false
+    nextStatut.forEach(statut => {
+      canNextStatut = canNextStatut || this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat][statut])
+    })
     // Test if the user has the permission
-    return this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat][nextStatut])
+    return canNextStatut
   }
 
   private superiorActionHasBeenPerformed() {
