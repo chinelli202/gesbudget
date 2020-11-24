@@ -5,6 +5,7 @@ export default {
     guide: 'Guide',
     engagement: 'Engagement',
     engagementList: 'Liste des engagements',
+    engagementImputer: 'Imputer un engagement',
     detailEngagement: 'Detail Engagement',
     permission: 'Permission',
     pagePermission: 'Page Permission',

@@ -12,6 +12,7 @@
           :devise-options="deviseOptions"
           :tva="tva"
           :fallback-url="fallbackUrl"
+          @engagementChanged="engagementChanged"
         />
       </div>
       <el-card shadow="always">
@@ -23,7 +24,7 @@
               style="margin-bottom: 1.5em"
             >
               <el-col
-                :span="9"
+                :span="10"
                 :offset="2"
               >
                 <h1 align="center">
@@ -65,7 +66,7 @@
                 style="margin-bottom: 1.5em"
               >
                 <el-col
-                  :span="9"
+                  :span="10"
                   :offset="2"
                 >
                   <el-radio-group
@@ -345,7 +346,7 @@
             </el-form>
             <footer-buttons
               :entity="engagement"
-              type="INIT"
+              type="engagement"
               :submit-disabled="submitUpdateDisabled"
               :fallback-url="fallbackUrl"
               :on-cancel="onCancel"
@@ -716,6 +717,11 @@ export default class extends Vue {
     this.updateViewVariables()
   }
 
+  /** Imputation card utilities */
+  private engagementChanged(newEngagement: any) {
+    this.engagement = newEngagement
+  }
+
   /** footer button utitlities functions */
   private loadHandler(event:any) {
     // this.cardLoading = event
@@ -966,7 +972,7 @@ export default class extends Vue {
   }
 
 .max-w-600{
-  max-width: 70vw;
+  max-width: 60vw;
 }
 .center{
   margin: auto;

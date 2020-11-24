@@ -94,7 +94,7 @@ export const validationImputation = (data: any) =>
 
 export const cancelValidationImputation = (data: any) =>
   request({
-    url: `/imputation/cancelValider/${data.id}`,
+    url: `/imputation/cancelvalider/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`

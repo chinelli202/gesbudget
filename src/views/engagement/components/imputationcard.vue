@@ -2,9 +2,9 @@
   <el-card shadow="always">
     <el-container>
       <el-header>
-        <h1 align="center">
+        <h2 align="center">
           Imputation {{ imputation.id }} de l'engagement {{ engagement.id }}
-        </h1>
+        </h2>
       </el-header>
       <el-main
         v-loading="cardLoading"
@@ -164,7 +164,7 @@
         </el-form>
         <footer-buttons
           :entity="imputation"
-          type="INIT"
+          type="imputation"
           :submit-disabled="submitDisabled"
           :fallback-url="fallbackUrl"
           :on-cancel="onCancel"
@@ -279,7 +279,7 @@ export default class ImputationCard extends Vue {
   private async updateSubmit() {
     this.cardLoading = true
     updateImputation(this.imputation).then((response) => {
-      this.engagement = response.data
+      this.$emit('engagementChanged', response.data)
       this.updateViewVariables()
       this.cardLoading = false
     }).catch(error => {
@@ -292,7 +292,7 @@ export default class ImputationCard extends Vue {
   private async resendUpdate() {
     this.cardLoading = true
     resendUpdateImputation(this.imputation).then((response) => {
-      this.engagement = response.data
+      this.$emit('engagementChanged', response.data)
       this.updateViewVariables()
       this.cardLoading = false
     }).catch(error => {
@@ -304,7 +304,7 @@ export default class ImputationCard extends Vue {
   private async fbsendBackSubmit(id: number, comment: string) {
     this.cardLoading = true
     const response = await sendBack({ id: id, comment: comment })
-    this.engagement = response.data
+    this.$emit('engagementChanged', response.data)
     this.updateViewVariables()
     this.cardLoading = false
     return response
@@ -325,7 +325,7 @@ export default class ImputationCard extends Vue {
   private validerSubmit(statut: string) {
     this.cardLoading = true
     validationImputation({ id: this.imputation.id, statut: statut }).then((response) => {
-      this.engagement = response.data
+      this.$emit('engagementChanged', response.data)
       this.updateViewVariables()
       this.cardLoading = false
     }).catch(error => {
@@ -336,11 +336,15 @@ export default class ImputationCard extends Vue {
 
   private async fbcancelValiderSubmit(id:number, comment:string, statut:string) {
     this.cardLoading = true
-    const response = await cancelValidationImputation({ id: id, comment: comment, statut: statut })
-    this.engagement = response.data
-    this.updateViewVariables()
-    this.cardLoading = false
-    return response
+    cancelValidationImputation({ id: id, comment: comment, statut: statut }).then((response) => {
+      this.$emit('engagementChanged', response.data)
+      this.updateViewVariables()
+      this.cardLoading = false
+      return response
+    }).catch(error => {
+      this.cardLoading = false
+      throw error
+    })
   }
 
   private resetApurerForm() {
@@ -369,7 +373,7 @@ export default class ImputationCard extends Vue {
     this.apurerFormLoading = true
     this.imputation.engagement_id = this.engagement.code
     apurerEngagement(this.imputation).then((response:any) => {
-      this.engagement = response.data
+      this.$emit('engagementChanged', response.data)
       this.updateViewVariables()
       this.apurerFormLoading = false
       this.apurerFormVisible = false
@@ -386,7 +390,7 @@ export default class ImputationCard extends Vue {
   private async fbcloseImputation(id: number, comment: string) {
     this.cardLoading = true
     const response = await closeImputation({ id: id, comment: comment })
-    this.engagement = response.data
+    this.$emit('engagementChanged', response.data)
     this.updateViewVariables()
     this.cardLoading = false
     return response
@@ -395,7 +399,7 @@ export default class ImputationCard extends Vue {
   private async fbRestoreImputation(id: number, comment: string) {
     this.cardLoading = true
     const response = await restoreImputation({ id: id, comment: comment })
-    this.engagement = response.data
+    this.$emit('engagementChanged', response.data)
     this.updateViewVariables()
     this.cardLoading = false
     return response

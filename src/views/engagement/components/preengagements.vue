@@ -10,7 +10,7 @@
       >
         <div>
           <el-button
-            v-if="canCreateEngagement"
+            v-if="canCreateEngagement && displayCreateButton"
             type="primary"
             @click="launchDialogForm"
           >
@@ -346,6 +346,7 @@ import { REPLEval } from 'repl'
 export default class PreEngagements extends Vue {
   @Prop({ required: true }) private etat!: string
   @Prop({ required: true }) private title!: string
+  @Prop({ required: true }) private displayCreateButton!: boolean
 
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
@@ -384,6 +385,7 @@ export default class PreEngagements extends Vue {
   }
 
   mounted() {
+    console.log(this.title, this.displayCreateButton)
     this.$watch('etat', etat => {
       this.getEngagements()
       this.initializeVariables()

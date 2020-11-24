@@ -169,7 +169,7 @@
             :disabled="sendCommentDisabled"
             @click="preCancelValiderSubmit"
           >
-            Annuler ma validation
+            Annuler ma validation {{ annulerValiderText }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -247,6 +247,8 @@ export default class FooterButtons extends Vue {
   private isbtnPlusDactions = false; // Display a 'Plus d'actions...' button for the user to have some actions like writing only a comment and others.
   private isbtnNextEtatAction = false; // Display 'Imputer' button for engagement imputation
 
+  private annulerValiderText = 'au 1er niveau'
+
   private plusDactionsDialogVisible = false
   private plusDactionsForm = {
     commentaire: '',
@@ -272,16 +274,17 @@ export default class FooterButtons extends Vue {
 
   mounted() {
     this.$watch('entity', entity => {
+      console.log('entity changed ', this.type)
       this.initializeButtons()
     }, { immediate: true })
   }
 
   private entityLabel() {
-    if (this.entity.etat === AppModule.etatsEngagement.INIT.code) {
+    if (this.type === "engagement") {
       return 'le pré-engagement'
-    } else if (this.entity.etat === AppModule.etatsEngagement.PEG.code) {
+    } else if (this.type === "imputation") {
       return 'l\'imputation'
-    } else if (this.entity.etat === AppModule.etatsEngagement.IMP.code) {
+    } else if (this.type === "apurement") {
       return 'l\'apurement'
     } else {
       return 'Unknown entity'
@@ -334,6 +337,8 @@ export default class FooterButtons extends Vue {
 
     // The engagement is closed
     this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code
+
+    this.annulerValiderLabel()
   }
 
   /** Pre handlers: functions used to preprocessed stuffs before executing Props function */
@@ -447,8 +452,8 @@ export default class FooterButtons extends Vue {
   }
 
   private preCancelValiderSubmit() {
-    this.$confirm('Voulez-vous vraiment annuler votre validation au 1er niveau ?'
-      , 'Annulation de validation au 1er niveau'
+    this.$confirm('Voulez-vous vraiment annuler votre validation ?'
+      , 'Annulation de validation'
       , {
         confirmButtonText: 'Oui, annuler ma validation',
         cancelButtonText: 'Retour',
@@ -456,6 +461,7 @@ export default class FooterButtons extends Vue {
       }
     ).then(_ => {
       this.footerLoading = true
+      console.log('Annuler valider statut:', this.entity.statut)
       this.cancelValiderSubmit(this.entity.id, this.plusDactionsForm.commentaire, this.entity.statut)
         .then((response:any) => {
           this.plusDactionsDialogVisible = false
@@ -474,6 +480,25 @@ export default class FooterButtons extends Vue {
   }
 
   /** Utilities functions */
+  private annulerValiderLabel() {
+    switch (this.entity.statut) {
+      case AppModule.statutsEngagement.SAISI.code:
+        this.annulerValiderText = ''
+        break
+      case AppModule.statutsEngagement.VALIDP.code:
+        this.annulerValiderText = 'au 1er niveau'
+        break
+      case AppModule.statutsEngagement.VALIDS.code:
+        this.annulerValiderText = 'au 2nd niveau'
+        break
+      case AppModule.statutsEngagement.VALIDF.code:
+        this.annulerValiderText = 'au niveau final'
+        break
+      default:
+        this.annulerValiderText = ''
+    }
+  }
+
   private userPerformedCurrentStatut() {
     switch (this.entity.statut) {
       case AppModule.statutsEngagement.SAISI.code:
@@ -519,10 +544,9 @@ export default class FooterButtons extends Vue {
       case AppModule.etatsEngagement.PEG.code:
         nextEtat = AppModule.etatsEngagement.IMP.code
         break
-      case AppModule.etatsEngagement.IMP.code:
-        nextEtat = AppModule.etatsEngagement.REA.code
-        break
-      case AppModule.etatsEngagement.REA.code:
+      case AppModule.etatsEngagement.IMP.code: // IMP is the last state where actions are possible so there is no 'nextEtat' possible
+        return false
+      case AppModule.etatsEngagement.REA.code: // No action possible when the entity is at the REA state
         return false
     }
 

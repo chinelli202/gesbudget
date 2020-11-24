@@ -78,6 +78,24 @@ export const constantRoutes: RouteConfig[] = [
     redirect: '/etats'
   },
   {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    meta: { hidden: true },
+    children: [
+      {
+        path: 'index',
+        component: () => import(/* webpackChunkName: "profile" */ '@/views/profile/index.vue'),
+        name: 'Profile',
+        meta: {
+          title: 'profile',
+          icon: 'user',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
     path: '/etats',
     component: Layout,
     redirect: '/etats/fonctionnement',
@@ -181,6 +199,15 @@ export const constantRoutes: RouteConfig[] = [
           title: 'engagementList',
           activeMenu: '/engagement/list',
           icon: 'list'
+        }
+      },
+      {
+        path: 'imputer',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/imputer.vue'),
+        name: 'EngagementImputer',
+        meta: {
+          title: 'engagementImputer',
+          icon: 'edit'
         }
       }
     ]
