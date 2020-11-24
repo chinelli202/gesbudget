@@ -4,6 +4,7 @@ export default {
     documentation: 'Documentation',
     guide: 'Guide',
     engagement: 'Engagement',
+    engagementList: 'Liste des engagements',
     detailEngagement: 'Detail Engagement',
     permission: 'Permission',
     pagePermission: 'Page Permission',
