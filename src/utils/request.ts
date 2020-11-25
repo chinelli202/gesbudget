@@ -38,7 +38,7 @@ service.interceptors.response.use(
       Message({
         message: res.message || 'Error',
         type: 'error',
-        duration: 6 * 1000
+        duration: 7 * 1000
       })
       if (res.status === 508 || res.status === 512 || res.status === 514) {
         MessageBox.confirm(
@@ -56,6 +56,13 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
+      if (res.message) {
+        Message({
+          message: res.message || 'Success',
+          type: 'success',
+          duration: 7 * 1000
+        })
+      }
       return response.data
     }
   },
@@ -63,7 +70,7 @@ service.interceptors.response.use(
     Message({
       message: error.message,
       type: 'error',
-      duration: 5 * 1000
+      duration: 7 * 1000
     })
     return Promise.reject(error)
   }

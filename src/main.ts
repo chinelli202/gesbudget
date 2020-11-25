@@ -42,6 +42,46 @@ Object.keys(filters).forEach(key => {
 
 Vue.config.productionTip = false
 
+Vue.filter('capitalizeFirstLetter', function(value: string) {
+  if (!value) return ''
+  value = value.toString()
+  return value.charAt(0).toUpperCase() + value.slice(1)
+})
+
+Vue.filter('dateFormatShort', function(value: string) {
+  if (!value) return ''
+  value = value.toString()
+  const currentDatetime = new Date(value)
+  const formattedDate = currentDatetime.getDate() +
+    '/' + (currentDatetime.getMonth() + 1) +
+    '/' + currentDatetime.getFullYear() +
+    ' ' + currentDatetime.getHours() + ':' + currentDatetime.getMinutes()
+  return formattedDate
+})
+
+Vue.filter('dateFormatLong', function(value: string) {
+  if (!value) return ''
+  const currentDatetime = new Date(value)
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  }
+  value = value.toString()
+  value = currentDatetime.toLocaleDateString('fr-FR', options)
+  return value.charAt(0).toUpperCase() + value.slice(1)
+})
+
+Vue.filter('numFormat', function(value: string) {
+  if (!value) return ''
+  value = value.toString()
+  return value.toLocaleString()
+})
+
 new Vue({
   router,
   store,

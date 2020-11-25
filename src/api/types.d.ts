@@ -16,6 +16,31 @@ export interface IArticleData {
   pageviews: number
 }
 
+
+export interface IEngagementData {
+  id: number,
+  created_at: string,
+  updated_at: string,
+  code: string,
+  libelle: string,
+  montant_ht: number,
+  montant_ttc: number,
+  devise: string,
+  nature: string,
+  type: string,
+  etat: string,
+  statut: string,
+  nb_imputations: number, 
+  cumul_imputations: number,
+  nb_apurements: number,
+  cumul_apurements: number,
+  saisisseur: string,
+  valideur_first: string, 
+  valideur_second: string,
+  valideur_final: string,
+  source: string
+}
+
 export interface IRoleData {
   key: string
   name: string

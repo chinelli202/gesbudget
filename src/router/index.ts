@@ -89,18 +89,59 @@ export const constantRoutes: RouteConfig[] = [
       }
     ]
   },
-  // {
-  //   path: '/documentation',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import(/* webpackChunkName: "documentation" */ '@/views/documentation/index.vue'),
-  //       name: 'Documentation',
-  //       meta: { title: 'documentation', icon: 'documentation', affix: true }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/engagement',
+    component: Layout,
+    redirect: '/engagement/list',
+    meta: {
+      title: 'engagement',
+      icon: 'el-icon-tickets',
+      hidden: true
+    },
+    children: [
+      {
+        path: 'detail/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/detail.vue'),
+        name: 'DetailEngagement',
+        meta: {
+          title: 'detailEngagement',
+          noCache: true,
+          activeMenu: '/engagement/list',
+          hidden: true
+        }
+      },
+      {
+        path: 'create',
+        component: () => import(/* webpackChunkName: "example-create" */ '@/views/example/create.vue'),
+        name: 'CreateArticle',
+        meta: {
+          title: 'createArticle',
+          icon: 'edit'
+        }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "example-edit" */ '@/views/example/edit.vue'),
+        name: 'EditArticle',
+        meta: {
+          title: 'editArticle',
+          noCache: true,
+          activeMenu: '/example/list',
+          hidden: true
+        }
+      },
+      {
+        path: 'list',
+        component: Layout, // () => import(/* webpackChunkName: "example-list" */ '@/views/example/list.vue'),
+        name: 'EngagementList',
+        redirect: '/dashboard',
+        meta: {
+          title: 'engagementList',
+          icon: 'list'
+        }
+      }
+    ]
+  },
   {
     path: '/guide',
     component: Layout,
