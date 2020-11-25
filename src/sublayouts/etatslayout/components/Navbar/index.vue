@@ -113,10 +113,22 @@
       <el-menu-item @click="handleNavigate">
         Aller à...
       </el-menu-item>
-      <el-menu-item @click="handleExporter">
+      <el-menu-item v-if="!isGeneraux" @click="handleExporter">
         <i class="el-icon-download"></i>
         <span>Exporter</span> 
       </el-menu-item>
+      <el-submenu v-if="isGeneraux">
+          <template slot="title">
+            Exporter
+          </template>
+          <el-menu-item 
+          v-for="map in exportMap"
+          :key="map.value"
+          @click="handleExporterGeneraux(map)"
+          >
+            {{map.label}}
+          </el-menu-item>
+      </el-submenu>
     </el-menu>
 
     <el-dialog :visible.sync="dialogTableVisible">
@@ -153,6 +165,8 @@ private listQuery = {
   size:10
 }
 
+private isGeneraux: boolean = true
+
 private navbarstyles: any = {
   backgroundColor:"",
   textColor:"",
@@ -162,10 +176,23 @@ private navbarstyles: any = {
 private depensesMap: any [] = []
 private recettesMap: any [] = []
 
-
 private maquetteTree : any = {}
-  
+private exportTree : any = {
+mandat: [{label:'Recettes', value: 'recettes', type: 'full'}
+        ,{label:'Dépenses', value: 'depenses', type: 'full'}
+        ,{label:'Rapport Mandat', value: 'rapport_mandat', type: 'domaine'}],
+fonctionnement: [{label:'Recettes', value: 'recettes', type: 'full'}
+        ,{label:'Investissement', value: 'investissement', type: 'full'}
+        ,{label:'Fonctionnement', value: 'fonctionnement', type: 'full'}
+        ,{label:'Rapport Fonctionnement', value: 'rapport_fonctionnement', type: 'domaine'}],
+}
+private exportMap: any [] = []  
   created(){
+
+    //test weither menu is generaux
+    const path = this.$router.currentRoute.path
+    this.isGeneraux = path.split("/")[3] == 'generaux';
+
     //set nav title and styling
     this.navTitle = this.domaine == 'fonctionnement'? "Fonctionnement":"Mandat"
 
@@ -178,7 +205,8 @@ private maquetteTree : any = {}
       this.navTitle = "Fonctionnement"
       const {data} = await getFonctionnementTree(this.listQuery)
       this.maquetteTree = data
-      
+      this.exportMap = this.exportTree.fonctionnement
+
       this.navbarstyles.backgroundColor = "#545c64"
       this.navbarstyles.textColor = "#fff"
       this.navbarstyles.activeTextColor = "#ffd04b"
@@ -187,6 +215,7 @@ private maquetteTree : any = {}
       this.navTitle = "Mandat"
       const {data} = await getMandatTree(this.listQuery)
       this.maquetteTree = data
+      this.exportMap = this.exportTree.mandat
     }
     let depensesOption = this.maquetteTree.depenses.chapitres
     let recettesOption = this.maquetteTree.recettes.chapitres
@@ -231,6 +260,36 @@ private maquetteTree : any = {}
           +'mois='+etatsmodule.moisPeriodeMois+'&'
           +'startmonth='+etatsmodule.debutPeriodeIntervalle+'&'
           +'endmonth='+etatsmodule.finPeriodeIntervalle
+  }
+
+  private handleExporterGeneraux(map:any){
+    //set periode and params
+    const periode = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? periodes.JOUR : 
+      (etatsmodule.periode == periodes.MOIS || etatsmodule.periode == periodes.CEMOIS)?periodes.MOIS:
+      (etatsmodule.periode == periodes.INTERVALLE)?periodes.INTERVALLE:'rapport_mensuel';
+    
+    const param = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? etatsmodule.jourPeriodeJour : 
+      etatsmodule.moisPeriodeMois
+    //test full, domaine or simple section
+    var url
+    if(map.type == 'domaine'){
+      window.location.href = 'http://localhost:8000/api/export/domaine/'+this.domaine+'?'
+          +'critere='+periode+'&'
+          +'param='+param+'&'
+          +'mois='+etatsmodule.moisPeriodeMois+'&'
+          +'startmonth='+etatsmodule.debutPeriodeIntervalle+'&'
+          +'endmonth='+etatsmodule.finPeriodeIntervalle
+    }
+    else if(map.type == 'full'){
+      
+      window.location.href = 'http://localhost:8000/api/export/section/full/'+map.value+'/'+this.domaine+'?'
+          +'critere='+periode+'&'
+          +'param='+param+'&'
+          +'mois='+etatsmodule.moisPeriodeMois+'&'
+          +'startmonth='+etatsmodule.debutPeriodeIntervalle+'&'
+          +'endmonth='+etatsmodule.finPeriodeIntervalle
+    }
+    console.log("will route to this url : ",url)
   }
 
   private handleRecettesClick(data:any){
