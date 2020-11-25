@@ -101,7 +101,7 @@ export interface ISousSectionFonctionnement {
 export interface IRecapData {
   sumrow: object
   //collection : IRecapData[]
-  //header:recapHeader
+  header:any
 }
 
 export interface IMonthRecapCollection {

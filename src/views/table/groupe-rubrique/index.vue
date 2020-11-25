@@ -106,6 +106,7 @@ export default class extends Vue {
       console.log('slizy homie has tried to change state behind my back')
       return etatsmodule.periode + ' the heck nigga'
     }
+    
     created() {
       this.getRecapData()
       this.getMonthRecapCollection()
@@ -181,7 +182,7 @@ export default class extends Vue {
       let m = moment(); 
       if(etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY){
         m = moment(etatsmodule.jourPeriodeJour)
-        this.periodeLabel = m.format('dd/MM/yyyy')
+        this.periodeLabel = m.format('D/MM/yyyy')
       }
       if(etatsmodule.periode == periodes.MOIS || etatsmodule.periode == periodes.CEMOIS){
         m.month(etatsmodule.moisPeriodeMois - 1)

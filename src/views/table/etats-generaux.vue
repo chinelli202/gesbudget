@@ -1,156 +1,19 @@
 <template>
   <div class="app-container">
-    <p>will be displaying data for {{ group.libelle }}</p>
-    <h4>Récapitulatif Fonctionnement</h4>
-    <!-- <el-table
-      :data="fonctionnementData.collection"
-
-      border
-      style="width: 100%"
-    >
-      <el-table-column
-        prop="sumrow.label"
-        label="LIBELLES"
-        width="180"
-      />
-      <el-table-column
-        prop="sumrow.prevision"
-        label="Prévisions 2020"
-      />
-      <el-table-column
-        prop="realisationsMois"
-
-        label="Réalisations du Mois en cours"
-      />
-      <el-table-column
-        prop="sumrow.realisationsMoisPrecedents"
-
-        label="Réalisations précédentes"
-      />
-      <el-table-column
-        prop="sumrow.realisations"
-
-        label="Réalisations cumulées à ce jour"
-      />
-      <el-table-column
-        prop="sumrow.execution"
-
-        label="Exécution à ce jour"
-      />
-      <el-table-column
-        prop="sumrow.solde"
-
-        label="Solde"
-      />
-      <el-table-column
-
-        label="Taux d'exécution"
-      >
-        <template slot-scope="{row}">
-          
-          <el-progress :percentage="row.sumrow.tauxExecution" />
-        </template>
-      </el-table-column>
-    </el-table> -->
-
-    <h4>Récapitulatif Investissements</h4>
-    <el-table
-      :data="tableData"
-
-      border
-      style="width: 100%"
-    >
-      <el-table-column
-        prop="id"
-        label="LIBELLES"
-        width="180"
-      />
-      <el-table-column
-        prop="name"
-        label="Prévisions 2020"
-      />
-      <el-table-column
-        prop="amount1"
-
-        label="Réalisations du en cours"
-      />
-      <el-table-column
-        prop="amount2"
-
-        label="Réalisations précédentes"
-      />
-      <el-table-column
-        prop="amount3"
-
-        label="Réalisations cumulées à ce jour"
-      />
-      <el-table-column
-        prop="amount3"
-
-        label="Exécution à ce jour"
-      />
-      <el-table-column
-        prop="amount3"
-
-        label="Solde"
-      />
-      <el-table-column
-        prop="amount3"
-
-        label="Taux d'exécution"
-      >
-        <el-progress :percentage="45" />
-      </el-table-column>
-    </el-table>
-    <h4>Récapitulatif Recettes</h4>
-    <el-table
-      :data="tableData"
-
-      border
-      style="width: 100%"
-    >
-      <el-table-column
-        prop="id"
-        label="LIBELLES"
-        width="180"
-      />
-      <el-table-column
-        prop="name"
-        label="Prévisions 2020"
-      />
-      <el-table-column
-        prop="amount1"
-
-        label="Réalisations du en cours"
-      />
-      <el-table-column
-        prop="amount2"
-
-        label="Réalisations précédentes"
-      />
-      <el-table-column
-        prop="amount3"
-
-        label="Réalisations cumulées à ce jour"
-      />
-      <el-table-column
-        prop="amount3"
-
-        label="Exécution à ce jour"
-      />
-      <el-table-column
-        prop="amount3"
-
-        label="Solde"
-      />
-      <el-table-column
-        prop="amount3"
-
-        label="Taux d'exécution"
-      >
-        <el-progress :percentage="45" />
-      </el-table-column>
-    </el-table>
+    
+    <div v-if="domaine == 'fonctionnement'">
+      <custom-table :recapData="fonctionnementData"/>
+    </div> 
+    
+    <div v-if="domaine == 'fonctionnement'">
+      <custom-table :recapData="investissementData"/>
+    </div>
+    
+    <div v-if="domaine == 'mandat'">
+      <custom-table :recapData="depenseData"/>
+    </div>
+    
+    <custom-table :recapData="recetteData"/>
   </div>
 </template>
 
@@ -159,9 +22,16 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { getRecapSousSectionFonctionnement } from '@/api/sousSectionFonctionnement'
 import { ISousSectionFonctionnement } from '@/api/types'
+import CustomTable from './groupe-rubrique/components/SummaryTable.vue'
+import { IRecapData, IMonthRecapData, IMonthRecapCollection } from '@/api/types'
+import {getSectionRecapData, defaultRecapData} from '@/api/recapData'
+import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre-etats'
 
 @Component({
-  name: 'EtatsGeneraux'
+  name: 'EtatsGeneraux',
+  components:{
+    CustomTable,
+  }
 })
 
 export default class extends Vue {
@@ -171,23 +41,32 @@ private listQuery = {
   limit: 10
 }
 
+private domaine:string ="fonctionnement"
+
 private listLoading = true
-private fonctionnementData = {}
-private investissementData = {}
-private recetteData = {}
+private fonctionnementData: IRecapData = defaultRecapData
+private investissementData: IRecapData = defaultRecapData
+private depenseData: IRecapData = defaultRecapData
+private recetteData: IRecapData = defaultRecapData
 
 created() {
-  // this.getFonctionnementData()
-  // this.getInvestissementData()
-  // this.getRecetteData()
+  const path = this.$router.currentRoute.path
+  this.domaine = path.split("/")[2]
+  this.getRecetteData()
+  if(this.domaine == 'fonctionnement'){
+     this.getFonctionnementData()
+     this.getInvestissementData()   
+  }
+  else{
+    this.getDepenseData()
+  }
 }
 
 private async getFonctionnementData() {
-  // const id = this.$route.params && this.$route.params.id
-  // simulate database query
-  this.listLoading = true
-  const groupename = this.$route.params && this.$route.params.groupename
-  const { data } = await getRecapSousSectionFonctionnement()
+   this.listLoading = true
+  let queryParams = this.getQueryParams()
+  //const groupename = this.$route.params && this.$route.params.groupename
+  const { data } = await getSectionRecapData('fonctionnement', this.domaine, queryParams)
   this.fonctionnementData = data
   setTimeout(() => {
     this.listLoading = false
@@ -195,48 +74,50 @@ private async getFonctionnementData() {
 }
 
 private async getInvestissementData() {
-  // TODO
+  this.listLoading = true
+  let queryParams = this.getQueryParams()
+  //const groupename = this.$route.params && this.$route.params.groupename
+  const { data } = await getSectionRecapData('investissement', this.domaine, queryParams)
+  this.investissementData = data
+  setTimeout(() => {
+    this.listLoading = false
+  }, 0.5 * 3000)
 }
 
 private async getRecetteData() {
-  // TODO
+  this.listLoading = true
+  let queryParams = this.getQueryParams()
+  //const groupename = this.$route.params && this.$route.params.groupename
+  const { data } = await getSectionRecapData('recettes', this.domaine, queryParams)
+  this.recetteData = data
+  setTimeout(() => {
+    this.listLoading = false
+  }, 0.5 * 3000)
 }
 
-data() {
-  return {
-    tableData: [{
-      id: '12987122',
-      name: 'Tom',
-      amount1: '234',
-      amount2: '3.2',
-      amount3: 10
-    }, {
-      id: '12987123',
-      name: 'Tom',
-      amount1: '165',
-      amount2: '4.43',
-      amount3: 12
-    }, {
-      id: '12987124',
-      name: 'Tom',
-      amount1: '324',
-      amount2: '1.9',
-      amount3: 9
-    }, {
-      id: '12987125',
-      name: 'Tom',
-      amount1: '621',
-      amount2: '2.2',
-      amount3: 17
-    }, {
-      id: '12987126',
-      name: 'Tom',
-      amount1: '539',
-      amount2: '4.1',
-      amount3: 15
-    }]
-  }
+private async getDepenseData() {
+  this.listLoading = true
+  let queryParams = this.getQueryParams()
+  //const groupename = this.$route.params && this.$route.params.groupename
+  const { data } = await getSectionRecapData('depenses', this.domaine, queryParams)
+  this.depenseData = data
+  setTimeout(() => {
+    this.listLoading = false
+  }, 0.5 * 3000)
 }
+
+private getQueryParams(){
+      var period = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? periodes.JOUR : 
+      (etatsmodule.periode == periodes.MOIS || etatsmodule.periode == periodes.CEMOIS)?periodes.MOIS:
+      (etatsmodule.periode == periodes.INTERVALLE)?periodes.INTERVALLE:'rapport_mensuel';
+    
+    var param = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? etatsmodule.jourPeriodeJour : 
+      etatsmodule.moisPeriodeMois
+
+      var startmonth = etatsmodule.debutPeriodeIntervalle
+      var endmonth = etatsmodule.finPeriodeIntervalle
+      return {'critere':period, param:param, startmonth:startmonth, endmonth:endmonth}
+    }
 }
 
 </script>
