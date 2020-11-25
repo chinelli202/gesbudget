@@ -604,7 +604,9 @@ import { PermissionModule } from '@/store/modules/permission'
 @Component({
   name: 'DetailEngagement',
   components: {
-    FooterButtons, ImputationCard
+    FooterButtons
+    , ImputationCard
+    , ApurementCard
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {

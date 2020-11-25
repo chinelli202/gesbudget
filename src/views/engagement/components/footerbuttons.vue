@@ -16,7 +16,7 @@
           v-if="isbtnUpdate"
           type="primary"
           :disabled="submitDisabled"
-          @click="updateSubmit"
+          @click="update"
         >
           Mettre à jour
         </el-button>
@@ -57,7 +57,7 @@
           Valider au niveau final
         </el-button>
         <el-button
-          v-if="isbtnNextEtatAction"
+          v-if="isNextEtatAction && isbtnNextEtatAction"
           type="primary"
           @click="nextEtatAction"
         >
@@ -180,9 +180,8 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import {
-  detailEngagement
-  , updateEngagement, validationpPreeng, validationPreeng, cancelValidationPreeng, cancelValidationpPreeng, validationsPreeng
-  , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
+  detailEngagement, validationPreeng, cancelValidationPreeng
+  , resendUpdateEngagement, addComment, sendBack
 } from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
@@ -203,15 +202,15 @@ export default class FooterButtons extends Vue {
   @Prop() private isNextEtatAction!: any
 
   @Prop() private onCancel!: any
-  @Prop() private updateSubmit!: any
+  @Prop() private update!: any
   @Prop() private resendUpdate!: any
   @Prop() private validerpSubmit!: any
   @Prop() private validersSubmit!: any
   @Prop() private validerfSubmit!: any
-  @Prop() private restorePreeng!: any
+  @Prop() private restore!: any
   @Prop() private optionsAnnulerValider!: any
   @Prop() private commentaireSubmit!: any
-  @Prop() private closePreeng!: any
+  @Prop() private close!: any
   @Prop() private sendBackSubmit!: any
   @Prop() private cancelValiderSubmit!: any
   @Prop() private nextEtatAction!: any
@@ -390,7 +389,7 @@ export default class FooterButtons extends Vue {
       }
     ).then(_ => {
       this.footerLoading = true
-      this.closePreeng(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
+      this.close(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
         this.plusDactionsDialogVisible = false
         this.plusDactionsForm.commentaire = ''
         this.plusDactionsForm.used = true
@@ -416,7 +415,7 @@ export default class FooterButtons extends Vue {
       }
     ).then(_ => {
       this.footerLoading = true
-      this.restorePreeng(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
+      this.restore(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
         this.plusDactionsDialogVisible = false
         this.plusDactionsForm.commentaire = ''
         this.plusDactionsForm.used = true
@@ -553,7 +552,7 @@ export default class FooterButtons extends Vue {
         break
       case AppModule.etatsEngagement.IMP.code: // IMP is the last state where actions are possible so there is no 'nextEtat' possible
         return false
-      case AppModule.etatsEngagement.REA.code: // No action possible when the entity is at the REA state
+      case AppModule.etatsEngagement.APUR.code: // No action possible when the entity is at the APUR state
         return false
     }
 
@@ -643,7 +642,6 @@ export default class FooterButtons extends Vue {
 
     // 5.The entity is at final statut and the user has the permission to perform NextEtat
     if (this.statutIsFinal() && this.userCanNextEtat() && this.isNextEtatAction) {
-      console.log('isNextEtatAction ', this.isNextEtatAction)
       this.isbtnNextEtatAction = true
     }
 

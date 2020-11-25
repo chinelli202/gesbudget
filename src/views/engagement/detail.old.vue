@@ -1275,9 +1275,9 @@ export default class extends Vue {
     } else if (this.engagement.etat === AppModule.etatsEngagement.IMP.code) {
       // TODO
       console.log('The engagement is etat IMP')
-    } else if (this.engagement.etat === AppModule.etatsEngagement.REA.code) {
+    } else if (this.engagement.etat === AppModule.etatsEngagement.APUR.code) {
       // TODO
-      console.log('The engagement is etat REA')
+      console.log('The engagement is etat APUR')
     } else {
       console.log('we dont know this ', this.engagement.etat)
     }

@@ -78,7 +78,6 @@ Vue.filter('dateFormatLong', function(value: string) {
 
 Vue.filter('numFormat', function(value: string) {
   if (!value) return ''
-  value = value.toString()
   return value.toLocaleString()
 })
 

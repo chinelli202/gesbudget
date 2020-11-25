@@ -184,20 +184,18 @@
           :submit-disabled="submitDisabled"
           :fallback-url="fallbackUrl"
           :on-cancel="onCancel"
-          :update-submit="updateSubmit"
+          :update="updateSubmit"
           :resend-update="resendUpdate"
           :validerp-submit="validerpSubmit"
           :validers-submit="validersSubmit"
           :validerf-submit="validerfSubmit"
-          :restore-preeng="fbRestoreApurement"
+          :restore="fbRestoreApurement"
           :options-annuler-valider="optionsAnnulerValider"
           :commentaire-submit="fbcommentaireSubmit"
-          :close-preeng="fbcloseApurement"
+          :close="fbcloseApurement"
           :send-back-submit="fbsendBackSubmit"
           :cancel-valider-submit="fbcancelValiderSubmit"
-          :next-etat-action="launchImputer"
-          :next-etat-action-text="nextEtatActionText"
-          :is-next-etat-action="isNextEtatAction"
+          :is-next-etat-action="false"
           @footerload="loadHandler($event)"
           @updateBtnStateChanged="isbtnUpdate = $event"
           @resendBtnStateChanged="isResendUpdate = $event"
@@ -216,7 +214,7 @@ import {
   updateApurement, resendUpdateApurement, addComment
   , closeApurement, restoreApurement, sendBack, validationApurement
   , apurerEngagement, cancelValidationApurement
-} from '@/api/apurement'
+} from '@/api/apurements'
 
 @Component({
   name: 'ApurementCard',

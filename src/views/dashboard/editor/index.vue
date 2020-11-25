@@ -53,7 +53,7 @@ export default class extends Vue {
     'Initiés': {code: 'INIT', title: 'Pré engagements initiés'},
     'Engagés': {code: 'PEG', title: 'Liste des engagements'},
     'Imputés': {code: 'IMP', title: 'Engagements imputés'},
-    'Apurés': {code: 'REA', title: 'Engagements apurés'},
+    'Apurés': {code: 'APUR', title: 'Engagements apurés'},
     'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés'}
   }
 

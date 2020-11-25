@@ -178,18 +178,18 @@
             :submit-disabled="submitDisabled"
             :fallback-url="fallbackUrl"
             :on-cancel="onCancel"
-            :update-submit="updateSubmit"
+            :update="updateSubmit"
             :resend-update="resendUpdate"
             :validerp-submit="validerpSubmit"
             :validers-submit="validersSubmit"
             :validerf-submit="validerfSubmit"
-            :restore-preeng="fbRestoreImputation"
+            :restore="fbRestoreImputation"
             :options-annuler-valider="optionsAnnulerValider"
             :commentaire-submit="fbcommentaireSubmit"
-            :close-preeng="fbcloseImputation"
+            :close="fbcloseImputation"
             :send-back-submit="fbsendBackSubmit"
             :cancel-valider-submit="fbcancelValiderSubmit"
-            :next-etat-action="launchImputer"
+            :next-etat-action="launchApurer"
             :next-etat-action-text="nextEtatActionText"
             :is-next-etat-action="isNextEtatAction"
             @footerload="loadHandler($event)"
@@ -244,11 +244,11 @@
               :span="3"
               :offset="2"
             >
-              <strong>Reference</strong>
+              <strong>Reference paiement</strong>
             </el-col>
             <el-col :span="17">
               <el-input
-                v-model="apurement.reference"
+                v-model="apurement.reference_paiement"
                 @input="apurerFormAttributeChange"
               />
             </el-col>
@@ -426,8 +426,9 @@ import FooterButtons from './footerbuttons'
 import {
   updateImputation, resendUpdateImputation, addComment
   , closeImputation, restoreImputation, sendBack, validationImputation
-  , apurerEngagement, cancelValidationImputation
+  , cancelValidationImputation
 } from '@/api/imputations'
+import { apurerEngagement } from '@/api/apurements'
 
 @Component({
   name: 'ImputationCard',
@@ -603,10 +604,10 @@ export default class ImputationCard extends Vue {
   }
 
   private apurerEngagement() {
-    console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)
+    console.log('Imputation de lengagement avec fichiers ' + this.apurement.files)
     this.apurerFormLoading = true
-    this.imputation.engagement_id = this.engagement.code
-    apurerEngagement(this.imputation).then((response:any) => {
+    this.apurement.engagement_id = this.engagement.code
+    apurerEngagement(this.apurement).then((response:any) => {
       this.$emit('engagementChanged', response.data)
       this.updateViewVariables()
       this.apurerFormLoading = false

@@ -81,7 +81,7 @@ export default {
     profile: 'Profile'
   },
   navbar: {
-    logOut: 'Log Out',
+    logOut: 'Se déconnecter',
     dashboard: 'Dashboard',
     github: 'Github',
     theme: 'Theme',

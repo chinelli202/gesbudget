@@ -12,16 +12,6 @@ export const imputerEngagement = (data: any) =>
     data
   })
 
-export const apurerEngagement = (data: any) =>
-  request({
-    url: `/apurer/create/`,
-    method: 'post',
-    headers: {
-      Authorization: `Bearer ${getToken()}`
-    },
-    data
-  })
-
 export const updateImputation = (data: any) =>
   request({
     url: `/imputation/update/${data.id}`,

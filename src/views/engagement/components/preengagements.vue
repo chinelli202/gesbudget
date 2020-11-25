@@ -33,9 +33,9 @@
       />
       <el-table-column
         fixed
-        prop="created_at"
+        prop="updated_at"
         :formatter="dateFormatter"
-        label="Date"
+        label="Mis à jour le"
         width="130"
       />
       <el-table-column
@@ -424,7 +424,9 @@ export default class PreEngagements extends Vue {
   private async getEngagements() {
     this.listLoading = true
     const { data } = await getEngagements({ etat: this.etat })
-    this.initiatedEngagements = data
+    this.initiatedEngagements = data.sort((a: any, b: any) => {
+      return a.updated_at > b.updated_at ? -1 : 1
+    })
     this.listLoading = false
   }
 
