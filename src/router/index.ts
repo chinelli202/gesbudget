@@ -177,7 +177,7 @@ export const constantRoutes: RouteConfig[] = [
     redirect: '/engagement/list',
     meta: {
       title: 'engagement',
-      icon: 'list'
+      icon: 'form'
     },
     children: [
       {
@@ -217,6 +217,28 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'engagementApurer',
           icon: 'edit'
+        }
+      }
+    ]
+  },
+  {
+    path: '/consulter',
+    component: Layout,
+    redirect: '/consulter/list/',
+    name: 'consulter',
+    meta: {
+      title: 'consulter',
+      icon: 'search'
+    },
+    children : [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/consulter.vue'),
+        //redirect: '/consulter/list/',
+        name: 'consulterList',
+        meta: {
+          title: 'consulterList',
+          icon: 'search'
         }
       }
     ]

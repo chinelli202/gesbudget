@@ -2,8 +2,10 @@ export default {
   route: {
     dashboard: 'Dashboard',
     documentation: 'Documentation',
+    consulter: 'Exectution Budget',
+    consulterList: 'Consulter',
     guide: 'Guide',
-    engagement: 'Engagement',
+    engagement: 'Execution Budget',
     engagementList: 'Liste des engagements',
     engagementImputer: 'Imputer un engagement',
     engagementApurer: 'Apurer un engagement',
