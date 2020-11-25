@@ -38,11 +38,11 @@
               style="margin-bottom: 1.5em"
             >
               <el-col
-                :span="10"
+                :span="12"
                 :offset="2"
               >
                 <h1 align="center">
-                  Detail Engagement - {{ engagement.id }}
+                  Engagement - {{ engagement.id }}
                 </h1>
               </el-col>
             </el-row>
@@ -364,15 +364,15 @@
               :submit-disabled="submitUpdateDisabled"
               :fallback-url="fallbackUrl"
               :on-cancel="onCancel"
-              :update-submit="updateSubmit"
+              :update="updateSubmit"
               :resend-update="resendUpdate"
               :validerp-submit="validerpSubmit"
               :validers-submit="validersSubmit"
               :validerf-submit="validerfSubmit"
-              :restore-preeng="fbRestorePreeng"
+              :restore="fbRestorePreeng"
               :options-annuler-valider="optionsAnnulerValider"
               :commentaire-submit="fbcommentaireSubmit"
-              :close-preeng="fbclosePreeng"
+              :close="fbclosePreeng"
               :send-back-submit="fbsendBackSubmit"
               :cancel-valider-submit="fbcancelValiderSubmit"
               :next-etat-action="launchImputer"
@@ -752,6 +752,7 @@ export default class extends Vue {
 
   private async fbclosePreeng(id: number, comment: string) {
     this.cardLoading = true
+    console.log("cloturer engagement")
     const response = await closePreeng({ id: id, comment: comment })
     this.engagement = response.data
     this.updateViewVariables()
@@ -989,7 +990,7 @@ export default class extends Vue {
   }
 
 .max-w-600{
-  max-width: 60vw;
+  max-width: 70vw;
 }
 .center{
   margin: auto;

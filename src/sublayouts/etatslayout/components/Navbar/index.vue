@@ -273,7 +273,7 @@ private exportMap: any [] = []
     //test full, domaine or simple section
     var url
     if(map.type == 'domaine'){
-      window.location.href = 'http://localhost:8000/api/export/domaine/'+this.domaine+'?'
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/domaine/'+this.domaine+'?'//'http://192.:8000/api/export/domaine/'+this.domaine+'?'
           +'critere='+periode+'&'
           +'param='+param+'&'
           +'mois='+etatsmodule.moisPeriodeMois+'&'

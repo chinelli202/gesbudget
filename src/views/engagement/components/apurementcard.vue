@@ -3,7 +3,7 @@
     <el-container>
       <el-header>
         <h2 align="center">
-          Apurement {{ apurement.id }} de l'engagement {{ engagement.id }}
+          Apurement {{ apurement.id }} (Eng:{{ engagement.id }})
         </h2>
       </el-header>
       <el-main

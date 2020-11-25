@@ -409,7 +409,7 @@ export default class PreEngagements extends Vue {
   }
 
   numFormatter(value: any, row: any, column: any) {
-    return column.toLocaleString()
+    return column ? column.toLocaleString() : column
   }
 
   dateFormatter(value: any, row: any, column: any) {

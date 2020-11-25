@@ -225,7 +225,7 @@
               :span="4"
             >
               <span class="span-label">
-                <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
+                <strong> TVA {{ tva ? tva.toLocaleString('fr-FR') : '' }}%</strong>
               </span>
             </el-col>
             <el-col :span="12">
@@ -409,7 +409,8 @@ export default class PreEngagements extends Vue {
   }
 
   numFormatter(value: any, row: any, column: any) {
-    return column.toLocaleString()
+    console.log("column ", column ? "1": "2")
+    return column ? column.toLocaleString() : column
   }
 
   dateFormatter(value: any, row: any, column: any) {

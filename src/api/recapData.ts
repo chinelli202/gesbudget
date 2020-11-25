@@ -4,7 +4,15 @@ import { IMonthRecapCollection, IMonthRecapData, IRecapData } from './types'
 export const defaultRecapData: IRecapData = {
     sumrow: {},
     //collection: [],
-    header:{}
+    header:{previsionLabel:'Prévision',
+            realisationsMoisLabel:'Réalisations',
+            realisationsMoisPrecedentsLabel:'RéalisationsMoisPrécédents',
+            realisationsLabel:'Réalisations Cumulées',
+            engagementsLabel:'Engagements',
+            executionLabel:'Exécution',
+            soldeLabel:'Solde',
+            tauxExecutionLabel:'Taux d\'Execution',          
+  }
   }
   
   export const defaultMonthRecapData: IMonthRecapData = {

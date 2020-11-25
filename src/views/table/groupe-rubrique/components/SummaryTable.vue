@@ -24,7 +24,11 @@
       <el-table-column
         prop="libelle"
         :label="recapData.header.labelLabel"
-        width="180"
+        width="280"
+      />
+      <el-table-column
+        prop="prevision"
+        :label="recapData.header.previsionsLabel"
       />
       <el-table-column v-if="isPeriodeJour"
         prop="realisationsMois"
@@ -39,7 +43,7 @@
       <el-table-column label-class-name="wrapper"
       
         prop="realisations"
-        :label="headerPrevision"
+        :label="recapData.header.realisationsLabel"
       >
       <template slot-scope="{row}">
           

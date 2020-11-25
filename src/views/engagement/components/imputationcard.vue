@@ -4,7 +4,7 @@
       <el-container>
         <el-header>
           <h2 align="center">
-            Imputation {{ imputation.id }} de l'engagement {{ engagement.id }}
+            Imputation {{ imputation.id }} (Eng:{{ engagement.id }})
           </h2>
         </el-header>
         <el-main

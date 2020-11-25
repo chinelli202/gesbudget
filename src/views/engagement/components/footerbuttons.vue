@@ -588,6 +588,12 @@ export default class FooterButtons extends Vue {
       return false
     }
     let canNextStatut = false
+    console.log('PermissionModule.permissionCodes.engagement ', this.entity.etat,  PermissionModule.permissionCodes.engagement)
+
+    if(this.entity.etat === AppModule.etatsEngagement.CLOT.code) {
+      return false
+    }
+    
     nextStatut.forEach(statut => {
       canNextStatut = canNextStatut || this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat][statut])
     })
