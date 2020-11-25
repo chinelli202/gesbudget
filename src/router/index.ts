@@ -209,6 +209,15 @@ export const constantRoutes: RouteConfig[] = [
           title: 'engagementImputer',
           icon: 'edit'
         }
+      },
+      {
+        path: 'apurer',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/apurer.vue'),
+        name: 'EngagementApurer',
+        meta: {
+          title: 'engagementApurer',
+          icon: 'edit'
+        }
       }
     ]
   }

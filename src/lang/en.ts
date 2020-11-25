@@ -6,6 +6,7 @@ export default {
     engagement: 'Engagement',
     engagementList: 'Liste des engagements',
     engagementImputer: 'Imputer un engagement',
+    engagementApurer: 'Apurer un engagement',
     detailEngagement: 'Detail Engagement',
     permission: 'Permission',
     pagePermission: 'Page Permission',

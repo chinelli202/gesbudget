@@ -2,19 +2,9 @@ import request from '@/utils/request'
 import { getToken } from '@/utils/cookies'
 
 
-export const imputerEngagement = (data: any) =>
-  request({
-    url: `/imputation/create/`,
-    method: 'post',
-    headers: {
-      Authorization: `Bearer ${getToken()}`
-    },
-    data
-  })
-
 export const apurerEngagement = (data: any) =>
   request({
-    url: `/apurer/create/`,
+    url: `/apurement/create/`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -22,9 +12,9 @@ export const apurerEngagement = (data: any) =>
     data
   })
 
-export const updateImputation = (data: any) =>
+export const updateApurement = (data: any) =>
   request({
-    url: `/imputation/update/${data.id}`,
+    url: `/apurement/update/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -32,9 +22,9 @@ export const updateImputation = (data: any) =>
     data
   })
 
-export const resendUpdateImputation = (data: any) =>
+export const resendUpdateApurement = (data: any) =>
   request({
-    url: `/imputation/resend/${data.id}`,
+    url: `/apurement/resend/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -44,7 +34,7 @@ export const resendUpdateImputation = (data: any) =>
 
 export const addComment = (data: any) =>
   request({
-    url: `/imputation/addcomment/${data.id}`,
+    url: `/apurement/addcomment/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -52,9 +42,9 @@ export const addComment = (data: any) =>
     data
   })
 
-export const closeImputation = (data: any) =>
+export const closeApurement = (data: any) =>
   request({
-    url: `/imputation/close/${data.id}`,
+    url: `/apurement/close/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -62,9 +52,9 @@ export const closeImputation = (data: any) =>
     data
   })
 
-export const restoreImputation = (data: any) =>
+export const restoreApurement = (data: any) =>
   request({
-    url: `/imputation/restore/${data.id}`,
+    url: `/apurement/restore/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -74,7 +64,7 @@ export const restoreImputation = (data: any) =>
 
 export const sendBack = (data: any) =>
   request({
-    url: `/imputation/sendback/${data.id}`,
+    url: `/apurement/sendback/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -82,9 +72,9 @@ export const sendBack = (data: any) =>
     data
   })
 
-export const validationImputation = (data: any) =>
+export const validationApurement = (data: any) =>
   request({
-    url: `/imputation/valider/${data.id}`,
+    url: `/apurement/valider/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -92,9 +82,9 @@ export const validationImputation = (data: any) =>
     data
   })
 
-export const cancelValidationImputation = (data: any) =>
+export const cancelValidationApurement = (data: any) =>
   request({
-    url: `/imputation/cancelValider/${data.id}`,
+    url: `/apurement/cancelvalider/${data.id}`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`

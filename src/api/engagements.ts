@@ -115,7 +115,7 @@ export const sendBack = (data: any) =>
     data
   })
 
-export const validationpPreeng = (data: any) =>
+export const validationPreeng = (data: any) =>
   request({
     url: `/engagement/valider/${data.id}`,
     method: 'post',
@@ -125,7 +125,7 @@ export const validationpPreeng = (data: any) =>
     data
   })
 
-export const cancelValidationpPreeng = (data: any) =>
+export const cancelValidationPreeng = (data: any) =>
   request({
     url: `/engagement/cancelvalider/${data.id}`,
     method: 'post',

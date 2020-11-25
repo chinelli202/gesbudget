@@ -2,6 +2,20 @@
   <div class="clearfix">
     <div class="app-container max-w-600 center">
       <div
+        v-for="(apurement) in engagement.apurements_labelled"
+        :key="apurement.id"
+        style="margin-bottom: 2em"
+      >
+        <apurement-card
+          :apurement="apurement"
+          :engagement="engagement"
+          :devise-options="deviseOptions"
+          :tva="tva"
+          :fallback-url="fallbackUrl"
+          @engagementChanged="engagementChanged"
+        />
+      </div>
+      <div
         v-for="(imputation) in engagement.imputations_labelled"
         :key="imputation.id"
         style="margin-bottom: 2em"
@@ -576,12 +590,13 @@
 import { Component, Vue } from 'vue-property-decorator'
 import {
   detailEngagement
-  , updateEngagement, validationpPreeng, validationPreeng, cancelValidationPreeng, cancelValidationpPreeng, validationsPreeng
+  , updateEngagement, validationPreeng, cancelValidationPreeng
   , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
 } from '@/api/engagements'
 import { imputerEngagement } from '@/api/imputations'
 import FooterButtons from './components/footerbuttons'
 import ImputationCard from './components/imputationcard'
+import ApurementCard from './components/apurementcard'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
