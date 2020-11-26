@@ -65,6 +65,8 @@ class FiltreEtats extends VuexModule implements IFiltreEtats {
     const { mois } = payload
     this.periode = periodes.MOIS
     this.moisPeriodeMois = mois
+    this.debutPeriodeIntervalle = mois
+    this.finPeriodeIntervalle = mois
   }
 
   @Mutation

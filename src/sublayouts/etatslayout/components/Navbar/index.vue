@@ -254,7 +254,7 @@ private exportMap: any [] = []
     const param = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? etatsmodule.jourPeriodeJour : 
       etatsmodule.moisPeriodeMois
 
-    window.location.href = 'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
+    window.location.href = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
           +'critere='+periode+'&'
           +'param='+param+'&'
           +'mois='+etatsmodule.moisPeriodeMois+'&'
@@ -282,7 +282,7 @@ private exportMap: any [] = []
     }
     else if(map.type == 'full'){
       
-      window.location.href = 'http://localhost:8000/api/export/section/full/'+map.value+'/'+this.domaine+'?'
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/section/full/'+map.value+'/'+this.domaine+'?'//'http://localhost:8000/api/export/section/full/'+map.value+'/'+this.domaine+'?'
           +'critere='+periode+'&'
           +'param='+param+'&'
           +'mois='+etatsmodule.moisPeriodeMois+'&'

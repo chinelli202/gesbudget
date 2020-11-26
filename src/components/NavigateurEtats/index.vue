@@ -18,7 +18,7 @@
       <el-row class="dialog-row">
 
         <el-cascader
-        class="cascader"
+        class="cascader dialog-row"
           size="medium"
           v-model="selectedId"
           :options="cascadeOptions"
@@ -238,7 +238,7 @@ label {
 }
 
 .cascader {
-  width: 450px
+  min-width: 50%
 }
 
 .dialog-row {

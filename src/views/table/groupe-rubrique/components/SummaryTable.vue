@@ -24,26 +24,30 @@
       <el-table-column
         prop="libelle"
         :label="recapData.header.labelLabel"
-        width="280"
+        width="200"
       />
       <el-table-column
         prop="prevision"
         :label="recapData.header.previsionsLabel"
+        :formatter="formatColumn"
       />
       <el-table-column v-if="isPeriodeJour"
         prop="realisationsMois"
 
         :label="recapData.header.realisationsMoisLabel"
+        :formatter="formatColumn"
       />
       <el-table-column v-if="isPeriodeJour"
         prop="realisationsMoisPrecedents"
 
         :label="recapData.header.realisationsMoisPrecedentsLabel"
+        :formatter="formatColumn"
       />
       <el-table-column label-class-name="wrapper"
       
         prop="realisations"
         :label="recapData.header.realisationsLabel"
+        :formatter="formatColumn"     
       >
       <template slot-scope="{row}">
           
@@ -54,16 +58,19 @@
         prop="engagements"
 
         :label="recapData.header.engagementsLabel"
+        :formatter="formatColumn"
       />  
       <el-table-column
         prop="execution"
 
         :label="recapData.header.executionLabel"
+        :formatter="formatColumn"
       />
       <el-table-column
         prop="solde" v-if="isPeriodeJour"
 
         :label="recapData.header.soldeLabel"
+        :formatter="formatColumn"
       />
       <el-table-column
         prop="tauxExecution"
@@ -209,7 +216,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
       const section = name.split(" - ")[0]
       const domaine = name.split(" - ")[1]
       
-      window.location.href = 'http://localhost:8000/api/export/section/'+section+'/'+domaine+'?' //window.location.href
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/section/'+section+'/'+domaine+'?'//'http://localhost:8000/api/export/section/'+section+'/'+domaine+'?'
             +'critere='+periode+'&'
             +'param='+param+'&'
             +'mois='+etatsmodule.moisPeriodeMois+'&'
@@ -219,7 +226,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
     else{
       const entitytype = this.$route.params && this.$route.params.entitytype
       const entitykey = this.$route.params && this.$route.params.entitykey
-      window.location.href = 'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
             +'critere='+periode+'&'
             +'param='+param+'&'
             +'mois='+etatsmodule.moisPeriodeMois+'&'
@@ -228,6 +235,10 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
     }
 
     console.log("will route to : ", url)
+  }
+
+  private formatColumn(value: any, row: any, column: any){
+    return column.toLocaleString("fr-FR");
   }
 }
 

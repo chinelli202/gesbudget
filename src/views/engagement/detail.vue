@@ -38,7 +38,7 @@
               style="margin-bottom: 1.5em"
             >
               <el-col
-                :span="12"
+                :span="10"
                 :offset="2"
               >
                 <h1 align="center">

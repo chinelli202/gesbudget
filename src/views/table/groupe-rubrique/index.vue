@@ -141,32 +141,39 @@ export default class extends Vue {
 
         console.log("mois : ", months)
 
-        var executions = this.monthsRecapCollection.months.map((monthrow)=>{
+        var executions = this.monthsRecapCollection.months.map((monthrow, index)=>{
           var sumExecutions = 0
-          this.monthsRecapCollection.months.forEach((monthdata)=>{
-            if(monthdata.mois <= monthrow.mois){
-              sumExecutions += monthdata.execution
-            }
-          })
+          for(var i = 0; i <= index; i++){
+            sumExecutions += this.monthsRecapCollection.months[i].execution
+          }
+          
           return sumExecutions
         })
 
-        console.log("executions : ", executions)
-
-        var engagements = this.monthsRecapCollection.months.map((monthrow)=>{
+        var engagements = this.monthsRecapCollection.months.map((monthrow, index)=>{
           var sumEngagements = 0
-          this.monthsRecapCollection.months.forEach((monthdata)=>{
-            if(monthdata.mois <= monthrow.mois){
-              sumEngagements += monthdata.engagements
-            }
-          })
+          for(var i = 0; i <= index; i++){
+            sumEngagements += this.monthsRecapCollection.months[i].engagements
+          }
+          
           return sumEngagements
         })
 
         console.log("engagements : ", engagements)
 
-        this.lineChartData = {months: months, executions: executions, engagements: engagements}
+        // var engagements = this.monthsRecapCollection.months.map((monthrow)=>{
+        //   var sumEngagements = 0
+        //   this.monthsRecapCollection.months.forEach((monthdata)=>{
+        //     if(monthdata.mois <= monthrow.mois){
+        //       sumEngagements += monthdata.engagements
+        //     }
+        //   })
+        //   return sumEngagements
+        // })
 
+        console.log("engagements : ", engagements)
+
+        this.lineChartData = {months: months, executions: executions, engagements: engagements}
       })
     }
 
