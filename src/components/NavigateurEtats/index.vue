@@ -2,7 +2,7 @@
   <div>
     <el-card class="box-card" shadow="hover">
       <div class="dialog-row">
-        <el-radio-group v-model="choixSection" @change="handleSectionChange">
+        <el-radio-group v-model="choixSection" @change="handleSectionChanged">
           <el-radio :label="100" border>Dépenses</el-radio>
           <el-radio :label="200" border>Recettes</el-radio>
         </el-radio-group>

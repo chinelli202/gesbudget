@@ -215,7 +215,6 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
       const name = this.recapData.header.name;
       const section = name.split(" - ")[0]
       const domaine = name.split(" - ")[1]
-      
       window.location.href = process.env.VUE_APP_BASE_API+'/export/section/'+section+'/'+domaine+'?'//'http://localhost:8000/api/export/section/'+section+'/'+domaine+'?'
             +'critere='+periode+'&'
             +'param='+param+'&'
@@ -226,7 +225,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
     else{
       const entitytype = this.$route.params && this.$route.params.entitytype
       const entitykey = this.$route.params && this.$route.params.entitykey
-      window.location.href = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
+      url = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
             +'critere='+periode+'&'
             +'param='+param+'&'
             +'mois='+etatsmodule.moisPeriodeMois+'&'
