@@ -597,8 +597,6 @@ export default class FooterButtons extends Vue {
       this.isbtnValiderf = true
       return null
     }
-
-    console.log("next action", this.isbtnValiderp, this.isbtnValiders, this.isbtnValiderf = true)
   }
 
   private statutIsFinal() {
