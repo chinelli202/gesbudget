@@ -56,7 +56,7 @@
         <el-button
           v-if="isbtnValiderf && !isbtnValiderCombined"
           type="primary"
-          @click="validerfSubmit"
+          @click="preValiderF"
         >
           Valider au niveau final
         </el-button>
@@ -490,6 +490,22 @@ export default class FooterButtons extends Vue {
       })
   }
 
+  private preValiderF() {
+    this.$confirm('L\'opération que vous voulez effectuez ne pourra pas être annulée plus tard. Êtes vous sûr(e) de vouloir valider au niveau final ?'
+        , 'Validation finale'
+        , {
+          confirmButtonText: 'Oui, Valider au niveau final',
+          cancelButtonText: 'Annuler',
+          type: 'warning'
+        }
+      ).then(_ => {
+        this.validerfSubmit.call()
+      })
+        .catch(error => {
+          console.log('Erreur lors de la confirmation de la validation finale', error)
+        })
+  }
+
   private handleCommandValider(command: any) {
     console.log('commande ', command)
     if (command === 'validerp') {
@@ -497,7 +513,7 @@ export default class FooterButtons extends Vue {
     } else if (command === 'validers') {
       this.validersSubmit.call()
     } else if (command === 'validerf') {
-      this.validerfSubmit.call()
+      this.preValiderF()
     }
   }
 
@@ -581,6 +597,8 @@ export default class FooterButtons extends Vue {
       this.isbtnValiderf = true
       return null
     }
+
+    console.log("next action", this.isbtnValiderp, this.isbtnValiders, this.isbtnValiderf = true)
   }
 
   private statutIsFinal() {
