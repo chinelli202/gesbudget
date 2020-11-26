@@ -338,12 +338,12 @@ import { getBudgetStructure } from '@/api/variables'
 import { REPLEval } from 'repl'
 
 @Component({
-  name: 'PreEngagements',
+  name: 'EngagementsList',
   components: {
   }
 })
 
-export default class PreEngagements extends Vue {
+export default class EngagementsList extends Vue {
   @Prop({ required: true }) private etat!: string
   @Prop({ required: true }) private title!: string
   @Prop({ required: true }) private displayCreateButton!: boolean

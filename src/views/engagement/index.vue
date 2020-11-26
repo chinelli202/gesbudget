@@ -17,14 +17,14 @@
               @change="etatChange"
             >
               <el-radio-button label="Initiés"/>
-              <el-radio-button label="Engagés"/>
+              <el-radio-button label="Pré Engagés"/>
               <el-radio-button label="Imputés"/>
               <el-radio-button label="Apurés"/>
               <el-radio-button label="Clôturés"/>
             </el-radio-group>
           </el-col>
         </el-row>
-        <PreEngagements
+        <EngagementsList
           :etat="etat"
           :title="title"
           :displayCreateButton="true"
@@ -38,12 +38,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
-import PreEngagements from './components/preengagements'
+import EngagementsList from './components/engagementslist'
 
 @Component({
   name: 'DashboardEditor',
   components: {
-    PreEngagements
+    EngagementsList
   }
 })
 export default class extends Vue {
@@ -52,7 +52,7 @@ export default class extends Vue {
   private title = 'Pré engagements initiés'
   private etatsLibelle: Record<string, any> = {
     'Initiés': {code: 'INIT', title: 'Pré engagements initiés'},
-    'Engagés': {code: 'PEG', title: 'Liste des engagements'},
+    'Pré Engagés': {code: 'PEG', title: 'Liste des Pré engagements'},
     'Imputés': {code: 'IMP', title: 'Engagements imputés'},
     'Apurés': {code: 'APUR', title: 'Engagements apurés'},
     'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés'}

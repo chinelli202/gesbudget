@@ -29,7 +29,7 @@
         fixed
         prop="id"
         label="ID"
-        width="50"
+        width="70"
       />
       <el-table-column
         fixed
@@ -45,6 +45,20 @@
         width="170"
       />
       <el-table-column
+        prop="statut"
+        label="Statut"
+        width="110"
+      >
+        <template slot-scope="scope">
+          <el-tag
+            :type="tageffect[scope.row.etat][scope.row.greatest_statut].type"
+            :effect="tageffect[scope.row.etat][scope.row.greatest_statut].effect"
+            disable-transitions>
+            {{scope.row.etat}}_{{scope.row.statut}}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="libelle"
         label="Libellé"
         width="250"
@@ -53,11 +67,6 @@
         prop="ligne_libelle"
         label="Ligne Budgétaire"
         width="300"
-      />
-      <el-table-column
-        prop="statut"
-        label="Statut"
-        width="75"
       />
       <el-table-column
         prop="montant_ht"
@@ -84,11 +93,6 @@
       <el-table-column
         prop="type"
         label="Type"
-        width="75"
-      />
-      <el-table-column
-        prop="etat"
-        label="Etat"
         width="75"
       />
       <el-table-column
@@ -338,15 +342,27 @@ import { getBudgetStructure } from '@/api/variables'
 import { REPLEval } from 'repl'
 
 @Component({
-  name: 'PreEngagements',
+  name: 'EngagementsList',
   components: {
   }
 })
 
-export default class PreEngagements extends Vue {
-  @Prop({ required: true }) private etat!: string
+export default class EngagementsList extends Vue {
   @Prop({ required: true }) private title!: string
   @Prop({ required: true }) private displayCreateButton!: boolean
+  @Prop({ default: false }) private displayFilter!: boolean
+  @Prop() private icon!: string
+  
+  @Prop() private periode!: any[]
+  @Prop() private libelle!: string
+  @Prop() private ligne!: string
+  @Prop() private rubrique!: string
+  @Prop() private chapitre!: string
+  @Prop() private etat!: string
+  @Prop() private statut!: string
+  @Prop() private nature!: string
+  @Prop() private type!: string
+  @Prop() private saisipar!: string
 
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
@@ -376,6 +392,38 @@ export default class PreEngagements extends Vue {
     type: '',
     devise: 'XAF',
     ligne_id: 0
+  }
+  private tageffect = {
+    INIT : {
+      SAISI : {type: 'info', effect: 'plain'},
+      VALIDP : {type: 'info', effect: 'plain'},
+      VALIDS : {type: 'info', effect: 'light'},
+      VALIDF : {type: 'info', effect: 'dark'}
+    },
+    PEG : {
+      SAISI : {type: 'info', effect: 'plain'},
+      VALIDP : {type: 'warning', effect: 'plain'},
+      VALIDS : {type: 'warning', effect: 'light'},
+      VALIDF : {type: 'warning', effect: 'dark'}
+    },
+    IMP : {
+      SAISI : {type: 'info', effect: 'plain'},
+      VALIDP : {type: '', effect: 'plain'},
+      VALIDS : {type: '', effect: 'light'},
+      VALIDF : {type: '', effect: 'dark'}
+    },
+    APUR : {
+      SAISI : {type: 'info', effect: 'plain'},
+      VALIDP : {type: 'success', effect: 'plain'},
+      VALIDS : {type: 'success', effect: 'light'},
+      VALIDF : {type: 'success', effect: 'dark'}
+    },
+    CLOT : {
+      SAISI : {type: 'danger', effect: ''},
+      VALIDP : {type: 'danger', effect: ''},
+      VALIDS : {type: 'danger', effect: ''},
+      VALIDF : {type: 'danger', effect: ''}
+    }
   }
 
   created() {

@@ -228,8 +228,7 @@ export const constantRoutes: RouteConfig[] = [
     name: 'consulter',
     meta: {
       title: 'consulter',
-      icon: 'search',
-      hidden: true
+      icon: 'search'
     },
     children : [
       {
