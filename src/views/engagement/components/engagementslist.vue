@@ -33,7 +33,7 @@
       />
       <el-table-column
         fixed
-        prop="updated_at"
+        prop="latest_edited_at"
         :formatter="dateFormatter"
         label="Mis à jour le"
         width="130"
@@ -51,11 +51,11 @@
       >
         <template slot-scope="scope">
           <el-tag
-            :type="tageffect[scope.row.etat][scope.row.greatest_statut].type"
-            :effect="tageffect[scope.row.etat][scope.row.greatest_statut].effect"
+            :type="scope.row.next_statut ? 'warning' : tageffect[scope.row.etat][scope.row.lowest_statut].type"
+            :effect="tageffect[scope.row.etat][scope.row.lowest_statut].effect"
             disable-transitions
           >
-            {{ scope.row.etat }}_{{ scope.row.greatest_statut }}
+            {{ scope.row.etat }}_{{ scope.row.lowest_statut }}
           </el-tag>
         </template>
       </el-table-column>
@@ -404,21 +404,22 @@ export default class EngagementsList extends Vue {
       VALIDF: { type: 'info', effect: 'dark' }
     },
     PEG: {
-      NEW: { type: 'info', effect: 'plain' },
-      SAISI: { type: 'info', effect: 'plain' },
-      VALIDP: { type: 'warning', effect: 'plain' },
-      VALIDS: { type: 'warning', effect: 'light' },
-      VALIDF: { type: 'warning', effect: 'dark' }
-    },
-    IMP: {
-      NEW: { type: 'info', effect: 'plain' },
-      SAISI: { type: 'info', effect: 'plain' },
+      NEW: { type: '', effect: 'plain' },
+      SAISI: { type: '', effect: 'plain' },
       VALIDP: { type: '', effect: 'plain' },
       VALIDS: { type: '', effect: 'light' },
       VALIDF: { type: '', effect: 'dark' }
     },
+    IMP: {
+      NEW: { type: 'success', effect: 'plain' },
+      SAISI: { type: 'success', effect: 'plain' },
+      VALIDP: { type: 'success', effect: 'plain' },
+      VALIDS: { type: 'success', effect: 'light' },
+      VALIDF: { type: 'success', effect: 'dark' }
+    },
     APUR: {
-      SAISI: { type: 'info', effect: 'plain' },
+      NEW: { type: 'success', effect: 'plain' },
+      SAISI: { type: 'success', effect: 'plain' },
       VALIDP: { type: 'success', effect: 'plain' },
       VALIDS: { type: 'success', effect: 'light' },
       VALIDF: { type: 'success', effect: 'dark' }
@@ -478,7 +479,7 @@ export default class EngagementsList extends Vue {
     this.listLoading = true
     const { data } = await getEngagements({ etat: this.etat })
     this.initiatedEngagements = data.sort((a: any, b: any) => {
-      return a.updated_at > b.updated_at ? -1 : 1
+      return a.latest_edited_at > b.latest_edited_at ? -1 : 1
     })
     this.listLoading = false
   }
