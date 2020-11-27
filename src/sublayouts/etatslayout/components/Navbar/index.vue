@@ -23,8 +23,8 @@
         Général
       </el-menu-item> 
       <el-submenu 
-      v-if="domaine == 'fonctionnement'"
-      index="2">
+        v-if="domaine == 'fonctionnement'"
+        index="2">
         <template slot="title">
           Dépenses
         </template>
@@ -37,6 +37,23 @@
         <!-- <el-menu-item index="2-2">
           Missions
         </el-menu-item> -->
+
+        <el-submenu v-for="ssection in ssectionFonctionnementMap"
+            :key="ssection.id"
+            :index="ssection.id"
+            >
+          <template slot="title">
+            {{ssection.label}}
+          </template>
+          <el-menu-item v-for="element in ssection.collection"
+          :key="element.id"
+          :index="element.id"
+          @click="handleMenuItemClicked(element)">
+            {{element.label}}
+          </el-menu-item>
+        </el-submenu>
+
+
         <el-submenu index="2-4">
           <template slot="title">
             Fonctionnement
@@ -104,8 +121,8 @@
           <el-menu-item 
           v-for="chapitre in recettesMap"
           :key="chapitre.value"
-          :index="chapitre.value"
-          @click="handleRecettesClick"
+          :index="chapitre.index"
+          @click="handleRecettesClick(chapitre)"
           >
             {{chapitre.label}}
           </el-menu-item>
@@ -142,7 +159,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import NavigateurEtats from '@/components/NavigateurEtats/index.vue'
 import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre-etats'
-import {getFonctionnementTree, getMandatTree} from '@/api/maquetteTree'
+import {getFonctionnementTree, getMandatTree, getSectionsFonctionnementTree} from '@/api/maquetteTree'
   
 
   @Component({
@@ -175,6 +192,7 @@ private navbarstyles: any = {
 
 private depensesMap: any [] = []
 private recettesMap: any [] = []
+private ssectionFonctionnementMap : any [] = []
 
 private maquetteTree : any = {}
 private exportTree : any = {
@@ -221,12 +239,13 @@ private exportMap: any [] = []
     let recettesOption = this.maquetteTree.recettes.chapitres
 
     this.depensesMap= depensesOption.map((chapitre : any)=>{
-      let mappedChapitre = {label: chapitre.label, value: chapitre.id}
+      let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:chapitre.type}
       return mappedChapitre
     })
+    console.log("this is the depense map, ", this.depensesMap)
 
     this.recettesMap= recettesOption.map((chapitre : any)=>{
-      let mappedChapitre = {label: chapitre.label, value: chapitre.id}
+      let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:chapitre.type}
       return mappedChapitre
     })
   }
@@ -292,17 +311,27 @@ private exportMap: any [] = []
     console.log("will route to this url : ",url)
   }
 
-  private handleRecettesClick(data:any){
-    console.log("this is the index of the clicked item", data.index)
+  private handleRecettesClick(el:any){
+    console.log("this is the index of the clicked item, ", el.value)
   }
 
   private handleDepensesClick(data:any){
-    console.log("this is the index of the clicked item", data.index)
+    console.log("this is the index of the clicked item")
+    //will be routed to chapitre subsection with given id
+    var routename
+    if(this.domaine == 'fonctionnement')
+    routename = 'element-fonctionnement'
+    if(this.domaine == 'mandat')
+    routename = 'element-mandat'
+      
+      // console.log("at this point, the component will navigate to : " + this.chosenEntity + " with the index : " + this.chosenEntityId) 
+      // var url = "/tab/custom/fonctionnement/" + this.chosenEntity + "/" + this.chosenEntityId;
+    //  this.$router.push(url);
+    //this.$router.push({ name: routename, params: { entitytype: 'chapitre', entitykey: String(data) } })
   }
 
   private handleAllerButtonClick(){
     this.dialogTableVisible = false
-
   }
 
   private handleExitDialogEventRecieved(){

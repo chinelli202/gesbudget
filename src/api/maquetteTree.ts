@@ -14,3 +14,10 @@ import { IGroupeFonctionnement } from './types'
       method: 'get',
       params
     })
+
+    export const getSectionsFonctionnementTree = (params:any) =>
+    request({
+      url: '/maquettes/fonctionnement/sections',
+      method: 'get',
+      params
+    })
