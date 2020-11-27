@@ -53,8 +53,9 @@
           <el-tag
             :type="tageffect[scope.row.etat][scope.row.greatest_statut].type"
             :effect="tageffect[scope.row.etat][scope.row.greatest_statut].effect"
-            disable-transitions>
-            {{scope.row.etat}}_{{scope.row.statut}}
+            disable-transitions
+          >
+            {{ scope.row.etat }}_{{ scope.row.greatest_statut }}
           </el-tag>
         </template>
       </el-table-column>
@@ -352,7 +353,7 @@ export default class EngagementsList extends Vue {
   @Prop({ required: true }) private displayCreateButton!: boolean
   @Prop({ default: false }) private displayFilter!: boolean
   @Prop() private icon!: string
-  
+
   @Prop() private periode!: any[]
   @Prop() private libelle!: string
   @Prop() private ligne!: string
@@ -393,36 +394,40 @@ export default class EngagementsList extends Vue {
     devise: 'XAF',
     ligne_id: 0
   }
+
   private tageffect = {
-    INIT : {
-      SAISI : {type: 'info', effect: 'plain'},
-      VALIDP : {type: 'info', effect: 'plain'},
-      VALIDS : {type: 'info', effect: 'light'},
-      VALIDF : {type: 'info', effect: 'dark'}
+    INIT: {
+      NEW: { type: 'info', effect: 'plain' },
+      SAISI: { type: 'info', effect: 'plain' },
+      VALIDP: { type: 'info', effect: 'plain' },
+      VALIDS: { type: 'info', effect: 'light' },
+      VALIDF: { type: 'info', effect: 'dark' }
     },
-    PEG : {
-      SAISI : {type: 'info', effect: 'plain'},
-      VALIDP : {type: 'warning', effect: 'plain'},
-      VALIDS : {type: 'warning', effect: 'light'},
-      VALIDF : {type: 'warning', effect: 'dark'}
+    PEG: {
+      NEW: { type: 'info', effect: 'plain' },
+      SAISI: { type: 'info', effect: 'plain' },
+      VALIDP: { type: 'warning', effect: 'plain' },
+      VALIDS: { type: 'warning', effect: 'light' },
+      VALIDF: { type: 'warning', effect: 'dark' }
     },
-    IMP : {
-      SAISI : {type: 'info', effect: 'plain'},
-      VALIDP : {type: '', effect: 'plain'},
-      VALIDS : {type: '', effect: 'light'},
-      VALIDF : {type: '', effect: 'dark'}
+    IMP: {
+      NEW: { type: 'info', effect: 'plain' },
+      SAISI: { type: 'info', effect: 'plain' },
+      VALIDP: { type: '', effect: 'plain' },
+      VALIDS: { type: '', effect: 'light' },
+      VALIDF: { type: '', effect: 'dark' }
     },
-    APUR : {
-      SAISI : {type: 'info', effect: 'plain'},
-      VALIDP : {type: 'success', effect: 'plain'},
-      VALIDS : {type: 'success', effect: 'light'},
-      VALIDF : {type: 'success', effect: 'dark'}
+    APUR: {
+      SAISI: { type: 'info', effect: 'plain' },
+      VALIDP: { type: 'success', effect: 'plain' },
+      VALIDS: { type: 'success', effect: 'light' },
+      VALIDF: { type: 'success', effect: 'dark' }
     },
-    CLOT : {
-      SAISI : {type: 'danger', effect: ''},
-      VALIDP : {type: 'danger', effect: ''},
-      VALIDS : {type: 'danger', effect: ''},
-      VALIDF : {type: 'danger', effect: ''}
+    CLOT: {
+      SAISI: { type: 'danger', effect: '' },
+      VALIDP: { type: 'danger', effect: '' },
+      VALIDS: { type: 'danger', effect: '' },
+      VALIDF: { type: 'danger', effect: '' }
     }
   }
 
