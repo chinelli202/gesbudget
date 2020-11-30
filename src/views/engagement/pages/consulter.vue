@@ -3,32 +3,68 @@
     <div class="clearfix">
       <div class="app-container">
         <el-row :gutter="10" style="margin-bottom: 1em">
-          <el-col :span="8" :offset="4">
+          <el-col :span="8" :offset="6">
             <el-input v-model="libelle" placeholder="Rechercher par libelle">  
             </el-input>
           </el-col>
-          <el-col :span="5">
-            <el-select v-model="value1" style="width: 15.5vw" multiple placeholder="Statut de l'engagement">
+          <el-col :span="4">
+            <el-select v-model="etat" style="width: 14vw" multiple placeholder="Etat de l'engagement">
               <el-option
-                v-for="item in optionSelect"
+                v-for="item in etatSelect"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                <span style="float: left">{{ item.label }}</span>
+                <span style="float: right; margin-right: 3em; color: rgb(132, 146, 166); font-size: 13px;">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="5">
+            <el-cascader
+              style="width: 20vw"
+              placeholder="Ligne budgétaire"
+              :options="options"
+              :props="{ checkStrictly: true, expandTrigger: 'hover'}"
+              clearable>
+            </el-cascader>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10">
+          <el-col :span="4" :offset="6">
+            <el-select v-model="value1" style="width: 14.5vw" multiple placeholder="Engagements ayant été...">
+              <el-option
+                v-for="item in statutSelect"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
               </el-option>
             </el-select>
           </el-col>
-        </el-row>
-        <el-row :gutter="10">
-          <el-col :span="8" :offset="4">
-            <el-cascader
-            style="width: 20vw"
-            :options="options"
-            :props="{ checkStrictly: true, expandTrigger: 'hover'}"
-            clearable></el-cascader>
+          <el-col :span="4">
+            <el-select v-model="etat" style="width: 14.5vw" multiple placeholder="Choisir un utilisateur">
+              <el-option
+                v-for="item in etatSelect"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="4">
+            <el-select v-model="Statut" style="width: 14vw" multiple placeholder="Statut de l'engagement">
+              <el-option
+                v-for="item in statutSelect"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                  <span style="float: left">{{ item.label }}</span>
+                  <span style="float: right; margin-right: 3em; color: rgb(132, 146, 166); font-size: 13px;">{{ item.value }}</span>
+              </el-option>
+            </el-select>
           </el-col>
           <el-col :span="5">
             <el-date-picker
-              v-model="value2"
+              v-model="monthrange"
               type="monthrange"
               align="right"
               unlink-panels
@@ -41,8 +77,8 @@
         </el-row>
         
         <EngagementsList
-          :etat="etat"
-          :title="title"
+          :etat="etatString"
+          :tableHeight="'72vh'"
           :displayCreateButton="false"
         />
       </div>
@@ -63,8 +99,10 @@ import EngagementsList from '../components/engagementslist'
   }
 })
 export default class extends Vue {
-  private etat = ''
+  private etat: string[] = []
+  private libelle = ''
   private title = 'Consulter les engagements'
+  private monthrange = []
 
   created() {
   }
@@ -79,6 +117,10 @@ export default class extends Vue {
 
   get roles() {
     return UserModule.roles
+  }
+
+  get etatString() {
+    return this.etat.join(',')
   }
 
   private options = [{
@@ -276,22 +318,44 @@ export default class extends Vue {
             label: 'Design Documentation'
           }]
         }]
-    private optionSelect = [{
-          value: 'Option1',
-          label: 'Option1'
-        }, {
-          value: 'Option2',
-          label: 'Option2'
-        }, {
-          value: 'Option3',
-          label: 'Option3'
-        }, {
-          value: 'Option4',
-          label: 'Option4'
-        }, {
-          value: 'Option5',
-          label: 'Option5'
-        }]
+
+  private etatSelect = [{
+        value: 'INIT',
+        label: 'Initiés'
+      },
+      {
+        value: 'PEG',
+        label: 'Engagés'
+      },
+      {
+        value: 'IMP',
+        label: 'Imputés'
+      },
+      {
+        value: 'APUR',
+        label: 'Apurés'
+      },
+      {
+        value: 'CLOT',
+        label: 'Clôturés'
+      }]
+
+  private statutSelect = [{
+        value: 'SAISI',
+        label: 'Saisi'
+      },
+      {
+        value: 'VALIDP',
+        label: 'Validés au 1er niveau'
+      },
+      {
+        value: 'VALIDS',
+        label: 'Validés au 2nd niveau'
+      },
+      {
+        value: 'VALIDF',
+        label: 'Validés au niveau final'
+      }]
 }
 </script>
 

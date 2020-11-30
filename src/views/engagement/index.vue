@@ -2,32 +2,11 @@
   <div class="dashboard-editor-container">
     <div class="clearfix">
       <div class="app-container">
-        <el-row
-          type="flex"
-          justify="center"
-          style="margin-bottom: 1.5em"
-        >
-          <el-col
-            :span="8"
-            :offset="2"
-          >
-            <el-radio-group
-              v-model="etatLibelle"
-              size="small"
-              @change="etatChange"
-            >
-              <el-radio-button label="Initiés"/>
-              <el-radio-button label="Pré Engagés"/>
-              <el-radio-button label="Imputés"/>
-              <el-radio-button label="Apurés"/>
-              <el-radio-button label="Clôturés"/>
-            </el-radio-group>
-          </el-col>
-        </el-row>
         <EngagementsList
           :etat="etat"
           :title="title"
           :displayCreateButton="true"
+          :displayEtatRadio="true"
         />
       </div>
     </div>
@@ -50,13 +29,6 @@ export default class extends Vue {
   private etat = 'INIT'
   private etatLibelle = 'Initiés'
   private title = 'Pré engagements initiés'
-  private etatsLibelle: Record<string, any> = {
-    'Initiés': {code: 'INIT', title: 'Pré engagements initiés'},
-    'Pré Engagés': {code: 'PEG', title: 'Liste des Pré engagements'},
-    'Imputés': {code: 'IMP', title: 'Engagements imputés'},
-    'Apurés': {code: 'APUR', title: 'Engagements apurés'},
-    'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés'}
-  }
 
   created() {
   }
@@ -74,8 +46,6 @@ export default class extends Vue {
   }
 
   private etatChange() {
-    this.etat = this.etatsLibelle[this.etatLibelle].code
-    this.title = this.etatsLibelle[this.etatLibelle].title
   }
 }
 </script>

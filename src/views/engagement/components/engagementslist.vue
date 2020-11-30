@@ -1,12 +1,34 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="10">
-        <h1>{{ title }}</h1>
+      <el-col :span="8">
+        <h1 
+          v-if="title"
+          style="margin-top: 0px">
+          {{ title }}
+        </h1>
+        <span v-else>
+          .
+        </span>
       </el-col>
-      <el-col
-        :span="4"
-        :offset="9"
+      <el-col :span="12">
+        <el-radio-group
+          v-if="displayEtatRadio"
+          v-model="etatLibelle"
+          size="small"
+          @change="etatChange"
+        >
+          <el-radio-button label="Initiés"/>
+          <el-radio-button label="Pré Engagés"/>
+          <el-radio-button label="Imputés"/>
+          <el-radio-button label="Apurés"/>
+          <el-radio-button label="Clôturés"/>
+        </el-radio-group>
+        <span v-else>
+          .
+        </span>
+      </el-col>
+      <el-col :span="4"
       >
         <div>
           <el-button
@@ -22,7 +44,7 @@
     <el-table
       v-loading="listLoading"
       :data="initiatedEngagements"
-      height="700"
+      :height="tableHeight ? tableHeight: '78vh'"
       style="width: 100%"
     >
       <el-table-column
@@ -51,11 +73,11 @@
       >
         <template slot-scope="scope">
           <el-tag
-            :type="scope.row.next_statut ? 'warning' : tageffect[scope.row.etat][scope.row.lowest_statut].type"
-            :effect="tageffect[scope.row.etat][scope.row.lowest_statut].effect"
+            :type="scope.row.next_statut ? 'warning' : tageffect[scope.row.etat][scope.row.latest_statut].type"
+            :effect="tageffect[scope.row.etat][scope.row.latest_statut].effect"
             disable-transitions
           >
-            {{ scope.row.etat }}_{{ scope.row.lowest_statut }}
+            {{ scope.row.etat }}_{{ scope.row.latest_statut }}
           </el-tag>
         </template>
       </el-table-column>
@@ -117,6 +139,14 @@
         </template>
       </el-table-column>
     </el-table>
+    <pagination
+      v-show="paginationTotal>0"
+      :total="paginationTotal"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      style="padding: 5px 16px 0px"
+      @pagination="getEngagements"
+    />
     <el-dialog
       v-loading="dialogFormLoading"
       :visible.sync="dialogFormVisible"
@@ -341,18 +371,22 @@ import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
 import { getBudgetStructure } from '@/api/variables'
 import { REPLEval } from 'repl'
+import Pagination from '@/components/Pagination/index.vue'
 
 @Component({
   name: 'EngagementsList',
   components: {
+    Pagination
   }
 })
 
 export default class EngagementsList extends Vue {
-  @Prop({ required: true }) private title!: string
+  @Prop() private title!: string
   @Prop({ required: true }) private displayCreateButton!: boolean
+  @Prop() private displayEtatRadio!: boolean
   @Prop({ default: false }) private displayFilter!: boolean
   @Prop() private icon!: string
+  @Prop() private tableHeight!: string
 
   @Prop() private periode!: any[]
   @Prop() private libelle!: string
@@ -363,11 +397,43 @@ export default class EngagementsList extends Vue {
   @Prop() private statut!: string
   @Prop() private nature!: string
   @Prop() private type!: string
-  @Prop() private saisipar!: string
+  @Prop() private saisisseur!: string
+  @Prop() private valideur_first!: string
+  @Prop() private valideur_second!: string
+  @Prop() private valideur_final!: string
 
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
   private canCreateEngagement = true
+  private paginationTotal = 0
+  private listQuery: Record<string,any> = {
+    page: 1,
+    limit: 30
+  }
+
+  /** Radio Button variables */
+  private etatLibelle = 'Initiés'
+  private libelleEtat: Record<string, any> = {
+    'INIT' : {libelle: 'Initiés'},
+    'PEG' : {libelle: 'Pré Engagés'},
+    'IMP' : {libelle: 'Imputés'},
+    'APUR' : {libelle: 'Apurés'},
+    'CLOT' : {libelle: 'Clôturés'},
+  }
+
+  private etatsLibelle: Record<string, any> = {
+    'Initiés': {code: 'INIT', title: 'Pré engagements initiés'},
+    'Pré Engagés': {code: 'PEG', title: 'Liste des Pré engagements'},
+    'Imputés': {code: 'IMP', title: 'Engagements imputés'},
+    'Apurés': {code: 'APUR', title: 'Engagements apurés'},
+    'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés'}
+  }
+
+  private etatChange() {
+    this.etat = this.etatsLibelle[this.etatLibelle].code
+    this.title = this.etatsLibelle[this.etatLibelle].title
+    // this.$router.push({ name: 'EngagementList', params: { etat: this.etat } })
+  }
 
   /** Cascader variables */
   private domain = 'Fonctionnement'
@@ -436,11 +502,12 @@ export default class EngagementsList extends Vue {
     this.getEngagements()
     this.initializeVariables()
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+    console.log('tableHeigh', this.tableHeight)
   }
 
   mounted() {
-    console.log(this.title, this.displayCreateButton)
     this.$watch('etat', etat => {
+      console.log('etat ', etat, '-', this.etat, '-')
       this.getEngagements()
       this.initializeVariables()
     }, { immediate: true })
@@ -477,10 +544,27 @@ export default class EngagementsList extends Vue {
 
   private async getEngagements() {
     this.listLoading = true
-    const { data } = await getEngagements({ etat: this.etat })
-    this.initiatedEngagements = data.sort((a: any, b: any) => {
-      return a.latest_edited_at > b.latest_edited_at ? -1 : 1
-    })
+    
+    this.listQuery.periode = this.periode
+    this.listQuery.libelle = this.libelle
+    this.listQuery.ligne = this.ligne
+    this.listQuery.rubrique = this.rubrique
+    this.listQuery.chapitre = this.chapitre
+    this.listQuery.etat = this.etat
+    this.listQuery.statut = this.statut
+    this.listQuery.nature = this.nature
+    this.listQuery.type = this.type
+    this.listQuery.saisisseur = this.saisisseur
+    this.listQuery.valideur_first = this.valideur_first
+    this.listQuery.valideur_second = this.valideur_second
+    this.listQuery.valideur_final = this.valideur_final
+    
+    console.log('listQuery ', this.listQuery)
+
+    const response = await getEngagements(this.listQuery)
+    this.paginationTotal = response.total
+    console.log('paginationTotal ', this.paginationTotal)
+    this.initiatedEngagements = response.data
     this.listLoading = false
   }
 
