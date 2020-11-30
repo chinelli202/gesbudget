@@ -370,7 +370,6 @@ import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
 import { getBudgetStructure } from '@/api/variables'
-import { REPLEval } from 'repl'
 import Pagination from '@/components/Pagination/index.vue'
 
 @Component({
@@ -398,9 +397,9 @@ export default class EngagementsList extends Vue {
   @Prop() private nature!: string
   @Prop() private type!: string
   @Prop() private saisisseur!: string
-  @Prop() private valideur_first!: string
-  @Prop() private valideur_second!: string
-  @Prop() private valideur_final!: string
+  @Prop() private valideurFirst!: string
+  @Prop() private valideurSecond!: string
+  @Prop() private valideurFinal!: string
 
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
@@ -555,9 +554,9 @@ export default class EngagementsList extends Vue {
     this.listQuery.nature = this.nature
     this.listQuery.type = this.type
     this.listQuery.saisisseur = this.saisisseur
-    this.listQuery.valideur_first = this.valideur_first
-    this.listQuery.valideur_second = this.valideur_second
-    this.listQuery.valideur_final = this.valideur_final
+    this.listQuery.valideurFirst = this.valideurFirst
+    this.listQuery.valideurSecond = this.valideurSecond
+    this.listQuery.valideurFinal = this.valideurFinal
     
     console.log('listQuery ', this.listQuery)
 

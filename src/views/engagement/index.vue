@@ -30,9 +30,6 @@ export default class extends Vue {
   private etatLibelle = 'Initiés'
   private title = 'Pré engagements initiés'
 
-  created() {
-  }
-
   get name() {
     return UserModule.name
   }
@@ -43,9 +40,6 @@ export default class extends Vue {
 
   get roles() {
     return UserModule.roles
-  }
-
-  private etatChange() {
   }
 }
 </script>

@@ -104,9 +104,6 @@ export default class extends Vue {
   private title = 'Consulter les engagements'
   private monthrange = []
 
-  created() {
-  }
-
   get name() {
     return UserModule.name
   }
