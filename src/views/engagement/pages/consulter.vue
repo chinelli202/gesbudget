@@ -3,9 +3,38 @@
     <div class="clearfix">
       <div class="app-container">
         <el-row :gutter="10" style="margin-bottom: 1em">
-          <el-col :span="8" :offset="6">
-            <el-input v-model="libelle" placeholder="Rechercher par libelle">  
-            </el-input>
+          <el-col
+            :span="3" 
+            :offset="3"
+          >
+            <el-select v-model="domain"
+              placeholder="Domaine"
+              @change="domainChanged"
+            >
+              <el-option
+                key="Fonctionnement"
+                label="Fonctionnement"
+                value="Fonctionnement"
+              />
+              <el-option
+                key="Mandat"
+                label="Mandat"
+                value="Mandat"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="8">
+            <el-cascader
+              v-model="lignesBudgetaire"
+              style="width: 28.4vw"
+              placeholder="Ligne budgétaire"
+              :options="chapitresOptions"
+              :props="{ multiple: true, expandTrigger: 'hover'}"
+              collapse-tags
+              clearable
+              @change="ligneChanged"
+              >
+            </el-cascader>
           </el-col>
           <el-col :span="4">
             <el-select v-model="etat" style="width: 14vw" multiple placeholder="Etat de l'engagement">
@@ -19,19 +48,18 @@
               </el-option>
             </el-select>
           </el-col>
+
           <el-col :span="5">
-            <el-cascader
-              style="width: 20vw"
-              placeholder="Ligne budgétaire"
-              :options="options"
-              :props="{ checkStrictly: true, expandTrigger: 'hover'}"
-              clearable>
-            </el-cascader>
+            <el-input
+              width="18vw"
+              v-model="libelle"
+              placeholder="Rechercher par libelle">  
+            </el-input>
           </el-col>
         </el-row>
         <el-row :gutter="10">
           <el-col :span="4" :offset="6">
-            <el-select v-model="value1" style="width: 14.5vw" multiple placeholder="Engagements ayant été...">
+            <el-select v-model="actionType" style="width: 14vw" multiple placeholder="Engagements ayant été...">
               <el-option
                 v-for="item in statutSelect"
                 :key="item.value"
@@ -41,7 +69,7 @@
             </el-select>
           </el-col>
           <el-col :span="4">
-            <el-select v-model="etat" style="width: 14.5vw" multiple placeholder="Choisir un utilisateur">
+            <el-select v-model="etat" style="width: 14vw" multiple placeholder="Choisir un utilisateur">
               <el-option
                 v-for="item in etatSelect"
                 :key="item.value"
@@ -51,7 +79,7 @@
             </el-select>
           </el-col>
           <el-col :span="4">
-            <el-select v-model="Statut" style="width: 14vw" multiple placeholder="Statut de l'engagement">
+            <el-select v-model="statut" style="width: 14vw" multiple placeholder="Statut de l'engagement">
               <el-option
                 v-for="item in statutSelect"
                 :key="item.value"
@@ -78,6 +106,10 @@
         
         <EngagementsList
           :etat="etatString"
+          :showTitle = "false"
+          :lignes = lignes
+          :rubriques = rubriques
+          :chapitres = chapitres
           :tableHeight="'72vh'"
           :displayCreateButton="false"
         />
@@ -90,6 +122,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
+import { AppModule } from '@/store/modules/app'
 import EngagementsList from '../components/engagementslist'
 
 @Component({
@@ -100,9 +133,42 @@ import EngagementsList from '../components/engagementslist'
 })
 export default class extends Vue {
   private etat: string[] = []
+  private statut: string[] = []
   private libelle = ''
   private title = 'Consulter les engagements'
+  private actionType = ''
   private monthrange = []
+  private lignesBudgetaire = []
+  private chapitres = ''
+  private rubriques = ''
+  private lignes = ''
+  private domain = 'Fonctionnement'
+  private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
+
+  created() {
+    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+  }
+
+  private ligneChanged() {
+    console.log("ligneBudgetaire ", this.lignesBudgetaire)
+    this.chapitres = [...new Set(this.lignesBudgetaire.map((el) => {
+      return el[0]
+    }))].join(',')
+
+    this.rubriques = [...new Set(this.lignesBudgetaire.map((el) => {
+      return el[1]
+    }))].join(',')
+
+    this.lignes = [...new Set(this.lignesBudgetaire.map((el) => {
+      return el[2]
+    }))].join(',')
+    console.log("detail ligneBudgetaire ", this.chapitres, this.rubriques, this.lignes)
+  }
+
+  private domainChanged() {
+    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+    console.log("New domain ", this.domain)
+  }
 
   get name() {
     return UserModule.name
@@ -119,202 +185,6 @@ export default class extends Vue {
   get etatString() {
     return this.etat.join(',')
   }
-
-  private options = [{
-          value: 'guide',
-          label: 'Guide',
-          children: [{
-            value: 'disciplines',
-            label: 'Disciplines',
-            children: [{
-              value: 'consistency',
-              label: 'Consistency'
-            }, {
-              value: 'feedback',
-              label: 'Feedback'
-            }, {
-              value: 'efficiency',
-              label: 'Efficiency'
-            }, {
-              value: 'controllability',
-              label: 'Controllability'
-            }]
-          }, {
-            value: 'navigation',
-            label: 'Navigation',
-            children: [{
-              value: 'side nav',
-              label: 'Side Navigation'
-            }, {
-              value: 'top nav',
-              label: 'Top Navigation'
-            }]
-          }]
-        }, {
-          value: 'component',
-          label: 'Component',
-          children: [{
-            value: 'basic',
-            label: 'Basic',
-            children: [{
-              value: 'layout',
-              label: 'Layout'
-            }, {
-              value: 'color',
-              label: 'Color'
-            }, {
-              value: 'typography',
-              label: 'Typography'
-            }, {
-              value: 'icon',
-              label: 'Icon'
-            }, {
-              value: 'button',
-              label: 'Button'
-            }]
-          }, {
-            value: 'form',
-            label: 'Form',
-            children: [{
-              value: 'radio',
-              label: 'Radio'
-            }, {
-              value: 'checkbox',
-              label: 'Checkbox'
-            }, {
-              value: 'input',
-              label: 'Input'
-            }, {
-              value: 'input-number',
-              label: 'InputNumber'
-            }, {
-              value: 'select',
-              label: 'Select'
-            }, {
-              value: 'cascader',
-              label: 'Cascader'
-            }, {
-              value: 'switch',
-              label: 'Switch'
-            }, {
-              value: 'slider',
-              label: 'Slider'
-            }, {
-              value: 'time-picker',
-              label: 'TimePicker'
-            }, {
-              value: 'date-picker',
-              label: 'DatePicker'
-            }, {
-              value: 'datetime-picker',
-              label: 'DateTimePicker'
-            }, {
-              value: 'upload',
-              label: 'Upload'
-            }, {
-              value: 'rate',
-              label: 'Rate'
-            }, {
-              value: 'form',
-              label: 'Form'
-            }]
-          }, {
-            value: 'data',
-            label: 'Data',
-            children: [{
-              value: 'table',
-              label: 'Table'
-            }, {
-              value: 'tag',
-              label: 'Tag'
-            }, {
-              value: 'progress',
-              label: 'Progress'
-            }, {
-              value: 'tree',
-              label: 'Tree'
-            }, {
-              value: 'pagination',
-              label: 'Pagination'
-            }, {
-              value: 'badge',
-              label: 'Badge'
-            }]
-          }, {
-            value: 'notice',
-            label: 'Notice',
-            children: [{
-              value: 'alert',
-              label: 'Alert'
-            }, {
-              value: 'loading',
-              label: 'Loading'
-            }, {
-              value: 'message',
-              label: 'Message'
-            }, {
-              value: 'message-box',
-              label: 'MessageBox'
-            }, {
-              value: 'notification',
-              label: 'Notification'
-            }]
-          }, {
-            value: 'navigation',
-            label: 'Navigation',
-            children: [{
-              value: 'menu',
-              label: 'NavMenu'
-            }, {
-              value: 'tabs',
-              label: 'Tabs'
-            }, {
-              value: 'breadcrumb',
-              label: 'Breadcrumb'
-            }, {
-              value: 'dropdown',
-              label: 'Dropdown'
-            }, {
-              value: 'steps',
-              label: 'Steps'
-            }]
-          }, {
-            value: 'others',
-            label: 'Others',
-            children: [{
-              value: 'dialog',
-              label: 'Dialog'
-            }, {
-              value: 'tooltip',
-              label: 'Tooltip'
-            }, {
-              value: 'popover',
-              label: 'Popover'
-            }, {
-              value: 'card',
-              label: 'Card'
-            }, {
-              value: 'carousel',
-              label: 'Carousel'
-            }, {
-              value: 'collapse',
-              label: 'Collapse'
-            }]
-          }]
-        }, {
-          value: 'resource',
-          label: 'Resource',
-          children: [{
-            value: 'axure',
-            label: 'Axure Components'
-          }, {
-            value: 'sketch',
-            label: 'Sketch Templates'
-          }, {
-            value: 'docs',
-            label: 'Design Documentation'
-          }]
-        }]
 
   private etatSelect = [{
         value: 'INIT',
@@ -353,6 +223,32 @@ export default class extends Vue {
         value: 'VALIDF',
         label: 'Validés au niveau final'
       }]
+  
+  pickerOptions = {
+    disabledDate(time: any) {
+      return time.getTime() > Date.now();
+    },
+    shortcuts: [{
+      text: 'Aujourd\'hui',
+      onClick(picker: any) {
+        picker.$emit('pick', new Date());
+      }
+    }, {
+      text: 'Hier',
+      onClick(picker: any) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24);
+        picker.$emit('pick', date);
+      }
+    }, {
+      text: 'Il y a une semaine',
+      onClick(picker: any) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+        picker.$emit('pick', date);
+      }
+    }]
+  }
 }
 </script>
 

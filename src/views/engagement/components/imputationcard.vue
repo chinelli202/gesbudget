@@ -53,6 +53,7 @@
                       v-model="imputation.devise"
                       placeholder="Devise"
                       :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                      @change="formAttributeChange"
                     >
                       <el-option
                         v-for="(obj) in deviseOptions"

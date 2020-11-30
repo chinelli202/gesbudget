@@ -3,9 +3,9 @@
     <el-row>
       <el-col :span="8">
         <h1 
-          v-if="title"
+          v-if="showTitle"
           style="margin-top: 0px">
-          {{ title }}
+          {{ etatsLibelle[etatLibelle].title }}
         </h1>
         <span v-else>
           .
@@ -381,17 +381,18 @@ import Pagination from '@/components/Pagination/index.vue'
 
 export default class EngagementsList extends Vue {
   @Prop() private title!: string
-  @Prop({ required: true }) private displayCreateButton!: boolean
+  @Prop({ default : true }) private showTitle!: boolean
   @Prop() private displayEtatRadio!: boolean
+  @Prop({ required: true }) private displayCreateButton!: boolean
   @Prop({ default: false }) private displayFilter!: boolean
   @Prop() private icon!: string
   @Prop() private tableHeight!: string
 
   @Prop() private periode!: any[]
   @Prop() private libelle!: string
-  @Prop() private ligne!: string
-  @Prop() private rubrique!: string
-  @Prop() private chapitre!: string
+  @Prop() private lignes!: string
+  @Prop() private rubriques!: string
+  @Prop() private chapitres!: string
   @Prop() private etat!: string
   @Prop() private statut!: string
   @Prop() private nature!: string
@@ -411,7 +412,7 @@ export default class EngagementsList extends Vue {
   }
 
   /** Radio Button variables */
-  private etatLibelle = 'Initiés'
+  private etatLibelle = ''
   private libelleEtat: Record<string, any> = {
     'INIT' : {libelle: 'Initiés'},
     'PEG' : {libelle: 'Pré Engagés'},
@@ -426,12 +427,6 @@ export default class EngagementsList extends Vue {
     'Imputés': {code: 'IMP', title: 'Engagements imputés'},
     'Apurés': {code: 'APUR', title: 'Engagements apurés'},
     'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés'}
-  }
-
-  private etatChange() {
-    this.etat = this.etatsLibelle[this.etatLibelle].code
-    this.title = this.etatsLibelle[this.etatLibelle].title
-    // this.$router.push({ name: 'EngagementList', params: { etat: this.etat } })
   }
 
   /** Cascader variables */
@@ -457,7 +452,9 @@ export default class EngagementsList extends Vue {
     nature: '',
     type: '',
     devise: 'XAF',
-    ligne_id: 0
+    ligne_id: 0,
+    rubrique_id: 0,
+    chapitre_id: 0
   }
 
   private tageffect = {
@@ -498,6 +495,7 @@ export default class EngagementsList extends Vue {
   }
 
   created() {
+    console.log('etatLibelle ', this.etatLibelle)
     this.getEngagements()
     this.initializeVariables()
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
@@ -506,10 +504,22 @@ export default class EngagementsList extends Vue {
 
   mounted() {
     this.$watch('etat', etat => {
-      console.log('etat ', etat, '-', this.etat, '-')
+      this.etatLibelle = etat ? this.libelleEtat[etat].libelle : ''
+      console.log('etat ', etat, '-', this.etat, '-', this.etatLibelle)
       this.getEngagements()
       this.initializeVariables()
     }, { immediate: true })
+
+    this.$watch('lignes', lignes => {
+      this.getEngagements()
+      this.initializeVariables()
+    }, { immediate: true })
+  }
+
+  private etatChange() {
+    // this.etat = this.etatsLibelle[this.etatLibelle].code
+    // this.title = this.etatsLibelle[this.etatLibelle].title
+    // this.$router.push({ name: 'EngagementList', params: { etat: this.etat } })
   }
 
   private initializeVariables() {
@@ -546,10 +556,10 @@ export default class EngagementsList extends Vue {
     
     this.listQuery.periode = this.periode
     this.listQuery.libelle = this.libelle
-    this.listQuery.ligne = this.ligne
-    this.listQuery.rubrique = this.rubrique
-    this.listQuery.chapitre = this.chapitre
-    this.listQuery.etat = this.etat
+    this.listQuery.lignes = this.lignes
+    this.listQuery.rubriques = this.rubriques
+    this.listQuery.chapitres = this.chapitres
+    this.listQuery.etat = this.etatLibelle ? this.etatsLibelle[this.etatLibelle].code : null
     this.listQuery.statut = this.statut
     this.listQuery.nature = this.nature
     this.listQuery.type = this.type
@@ -575,6 +585,8 @@ export default class EngagementsList extends Vue {
     console.log(this.cascade)
     this.formAttributeChange()
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
+    this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
+    this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
   }
 
   private resetEngagement() {
@@ -584,7 +596,9 @@ export default class EngagementsList extends Vue {
       nature: '',
       type: '',
       devise: 'XAF',
-      ligne_id: 0
+      ligne_id: 0,
+      rubrique_id: 0,
+      chapitre_id: 0
     }
   }
 
