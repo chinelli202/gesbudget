@@ -376,7 +376,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Watch} from 'vue-property-decorator'
 import { getEngagements, createEngagement } from '@/api/engagements'
 import { IEngagementData } from '@/api/types'
 import { AppModule } from '@/store/modules/app'
@@ -504,48 +504,20 @@ export default class EngagementsList extends Vue {
     console.log('tableHeigh', this.tableHeight)
   }
 
+  @Watch('etat')
+  @Watch('statut')
+  @Watch('lignes')
+  @Watch('saisisseurs')
+  @Watch('valideursP')
+  @Watch('valideursS')
+  @Watch('valideursF')
+  private updateView(newVal: any) {
+    console.log(newVal)
+    this.getEngagements()
+    this.initializeVariables()
+  }
+
   mounted() {
-    this.$watch('etat', etat => {
-      console.log('etat ', this.etat)
-      this.getEngagements()
-      this.initializeVariables()
-    }, { immediate: true })
-
-    this.$watch('statut', statut => {
-      console.log('statut ', this.statut)
-      this.getEngagements()
-      this.initializeVariables()
-    }, { immediate: true })
-
-    this.$watch('lignes', lignes => {
-      console.log('lignes ', this.lignes)
-      this.getEngagements()
-      this.initializeVariables()
-    }, { immediate: true })
-
-    this.$watch('saisisseurs', saisisseurs => {
-      console.log('saisisseurs ', this.saisisseurs)
-      this.getEngagements()
-      this.initializeVariables()
-    }, { immediate: true })
-
-    this.$watch('valideursP', valideursP => {
-      console.log('valideursP ', this.valideursP)
-      this.getEngagements()
-      this.initializeVariables()
-    }, { immediate: true })
-
-    this.$watch('valideursS', valideursS => {
-      console.log('valideursS ', this.valideursS)
-      this.getEngagements()
-      this.initializeVariables()
-    }, { immediate: true })
-
-    this.$watch('valideursF', valideursF => {
-      console.log('valideursF ', this.valideursF)
-      this.getEngagements()
-      this.initializeVariables()
-    }, { immediate: true })
   }
 
   private initializeVariables() {
