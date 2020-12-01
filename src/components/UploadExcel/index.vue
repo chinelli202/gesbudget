@@ -13,7 +13,7 @@
       @dragover="handleDragover"
       @dragenter="handleDragover"
     >
-      Drop excel file here or
+      {{filename}}
       <el-button
         :loading="loading"
         style="margin-left:16px;"
@@ -44,6 +44,8 @@ export default class extends Vue {
     results: null
   }
 
+  private filename:string  = "Drop excel file here or"
+
   private generateData(header: any, results: any) {
     this.excelData.header = header
     this.excelData.results = results
@@ -61,7 +63,7 @@ export default class extends Vue {
       return
     }
     const rawFile = files[0] // only use files[0]
-
+    this.filename = rawFile.name
     if (!this.isExcel(rawFile)) {
       this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
       return false
@@ -104,19 +106,19 @@ export default class extends Vue {
   }
 
   private readerData(rawFile: File) {
-    this.loading = true
-    const reader = new FileReader()
-    reader.onload = e => {
-      const data = (e.target as FileReader).result
-      const workbook = XLSX.read(data, { type: 'array' })
-      const firstSheetName = workbook.SheetNames[0]
-      const worksheet = workbook.Sheets[firstSheetName]
-      const header = this.getHeaderRow(worksheet)
-      const results = XLSX.utils.sheet_to_json(worksheet)
-      this.generateData(header, results)
-      this.loading = false
-    }
-    reader.readAsArrayBuffer(rawFile)
+    // this.loading = true
+    // const reader = new FileReader()
+    // reader.onload = e => {
+    //   const data = (e.target as FileReader).result
+    //   const workbook = XLSX.read(data, { type: 'array' })
+    //   const firstSheetName = workbook.SheetNames[0]
+    //   const worksheet = workbook.Sheets[firstSheetName]
+    //   const header = this.getHeaderRow(worksheet)
+    //   const results = XLSX.utils.sheet_to_json(worksheet)
+    //   this.generateData(header, results)
+    //   this.loading = false
+    // }
+    // reader.readAsArrayBuffer(rawFile)
   }
 
   private getHeaderRow(sheet: { [key: string ]: any }) {
