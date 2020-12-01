@@ -5,7 +5,7 @@
       justify="space-between"
       style="margin: 0.5em 0px"
     >
-      <el-col :span="8">
+      <el-col :span="10">
         <h1 
           v-if="showTitle"
           style="margin-top: 0px">
@@ -15,7 +15,7 @@
           .
         </span>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="10">
         
       </el-col>
       <el-col

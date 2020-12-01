@@ -192,6 +192,16 @@ export const constantRoutes: RouteConfig[] = [
         }
       },
       {
+        path: 'dashboard',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/dashboard.vue'),
+        //redirect: '/consulter/list/',
+        name: 'engagementDashboard',
+        meta: {
+          title: 'engagementDashboard',
+          icon: 'component'
+        }
+      },
+      {
         path: 'list',
         component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/index.vue'),
         name: 'EngagementList',
@@ -217,6 +227,15 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'engagementApurer',
           icon: 'edit'
+        }
+      },
+      {
+        path: 'corbeille',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/corbeille.vue'),
+        name: 'corbeille',
+        meta: {
+          title: 'corbeille',
+          icon: 'bug'
         }
       }
     ]

@@ -48,13 +48,15 @@ class Permission extends VuexModule implements IPermissionState {
         VALIDP: 'validerp-imputation',
         VALIDS: 'validers-imputation',
         VALIDF: 'validerf-imputation',
+        CLOT: 'cloturer-imputation'
       },
       IMP: { //actions possibles lorsque l'engagement est à l'état Imputé
         SAISI: 'saisir-apurement', // APUR
         VALIDP: 'validerp-apurement',
         VALIDS: 'validers-apurement',
         VALIDF: 'validerf-apurement',
-        REG: 'regulariser-imputation'
+        REG: 'regulariser-imputation',
+        CLOT: 'cloturer-apurement'
       }
     }
   }

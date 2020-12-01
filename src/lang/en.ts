@@ -5,6 +5,8 @@ export default {
     consulter: 'Exectution Budget',
     consulterList: 'Consulter',
     guide: 'Guide',
+    corbeille: 'Corbeille',
+    engagementDashboard: 'Dashboard',
     engagement: 'Execution Budget',
     engagementList: 'Liste des engagements',
     engagementImputer: 'Imputer un engagement',
