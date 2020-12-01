@@ -32,6 +32,7 @@
               :props="{ multiple: true, expandTrigger: 'hover'}"
               collapse-tags
               clearable
+              filterable
               @change="ligneChanged"
               >
             </el-cascader>
@@ -51,6 +52,7 @@
 
           <el-col :span="5">
             <el-input
+              v-if="false"
               width="18vw"
               v-model="libelle"
               placeholder="Rechercher par libelle">  
@@ -59,9 +61,15 @@
         </el-row>
         <el-row :gutter="10">
           <el-col :span="4" :offset="6">
-            <el-select v-model="actionType" style="width: 14vw" multiple placeholder="Engagements ayant été...">
+            <el-select
+              v-model="operationType"
+              style="width: 14vw"
+              placeholder="Engagements ayant été..."
+              @change="operationTypeChanged"
+              clearable
+            >
               <el-option
-                v-for="item in statutSelect"
+                v-for="item in operationSelect"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -69,12 +77,18 @@
             </el-select>
           </el-col>
           <el-col :span="4">
-            <el-select v-model="etat" style="width: 14vw" multiple placeholder="Choisir un utilisateur">
+            <el-select
+              v-model="operateurSelect"
+              style="width: 14vw"
+              multiple
+              placeholder="Choisir un utilisateur"
+              @change="operationTypeChanged"
+            >
               <el-option
-                v-for="item in etatSelect"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="item in usersList"
+                :key="item.matricule"
+                :label="item.name"
+                :value="item.matricule">
               </el-option>
             </el-select>
           </el-col>
@@ -92,6 +106,7 @@
           </el-col>
           <el-col :span="5">
             <el-date-picker
+              v-if="false"
               v-model="monthrange"
               type="monthrange"
               align="right"
@@ -106,10 +121,13 @@
         
         <EngagementsList
           :etat="etatString"
+          :statut="statutString"
           :showTitle = "false"
           :lignes = lignes
-          :rubriques = rubriques
-          :chapitres = chapitres
+          :saisisseurs = "operateurs.SAISI"
+          :valideursP = "operateurs.VALIDP"
+          :valideursS = "operateurs.VALIDS"
+          :valideursF = "operateurs.VALIDF"
           :tableHeight="'72vh'"
           :displayCreateButton="false"
         />
@@ -123,6 +141,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
+import { getUsers } from '@/api/users'
 import EngagementsList from '../components/engagementslist'
 
 @Component({
@@ -134,40 +153,52 @@ import EngagementsList from '../components/engagementslist'
 export default class extends Vue {
   private etat: string[] = []
   private statut: string[] = []
+  private operationType: string = ''
+  private operateurSelect: string[] = []
+  private usersList: string[] = []
+  private operateurs: Record<string, any> = {
+    SAISI: '',
+    VALIDP: '',
+    VALIDS: '',
+    VALIDF: ''
+  }
+  private saisisseurs: string[] = []
+  private valideursP: string[] = []
+  private valideursS: string[] = []
+  private valideursF: string[] = []
+
   private libelle = ''
   private title = 'Consulter les engagements'
   private actionType = ''
   private monthrange = []
   private lignesBudgetaire = []
-  private chapitres = ''
-  private rubriques = ''
   private lignes = ''
   private domain = 'Fonctionnement'
   private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
 
   created() {
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+    getUsers({}).then((response) => {
+      this.usersList = response.data
+    }).catch((error) => {
+      console.log('error when getting users', error)
+    })
   }
 
   private ligneChanged() {
-    console.log("ligneBudgetaire ", this.lignesBudgetaire)
-    this.chapitres = [...new Set(this.lignesBudgetaire.map((el) => {
-      return el[0]
-    }))].join(',')
-
-    this.rubriques = [...new Set(this.lignesBudgetaire.map((el) => {
-      return el[1]
-    }))].join(',')
-
     this.lignes = [...new Set(this.lignesBudgetaire.map((el) => {
       return el[2]
     }))].join(',')
-    console.log("detail ligneBudgetaire ", this.chapitres, this.rubriques, this.lignes)
   }
 
   private domainChanged() {
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
     console.log("New domain ", this.domain)
+  }
+
+  private operationTypeChanged() {
+    this.operateurs[this.operationType] = this.operateurSelect.join(',')
+    console.log('operationTypeChanged ', this.operateurs)
   }
 
   get name() {
@@ -184,6 +215,10 @@ export default class extends Vue {
 
   get etatString() {
     return this.etat.join(',')
+  }
+
+  get statutString() {
+    return this.statut.join(',')
   }
 
   private etatSelect = [{
@@ -223,6 +258,25 @@ export default class extends Vue {
         value: 'VALIDF',
         label: 'Validés au niveau final'
       }]
+  
+  private operationSelect = [
+    {
+      value: 'SAISI',
+      label: 'Saisi par...'
+    },
+    {
+      value: 'VALIDP',
+      label: 'Validés au 1er niveau par ...'
+    },
+    {
+      value: 'VALIDS',
+      label: 'Validés au 2nd niveau par ...'
+    },
+    {
+      value: 'VALIDF',
+      label: 'Validés au niveau final par ...'
+    }
+  ]
   
   pickerOptions = {
     disabledDate(time: any) {

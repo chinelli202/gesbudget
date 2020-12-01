@@ -1,44 +1,57 @@
 <template>
   <div>
-    <el-row>
+    <el-row
+      type="flex"
+      justify="space-between"
+      style="margin: 0.5em 0px"
+    >
       <el-col :span="8">
         <h1 
           v-if="showTitle"
           style="margin-top: 0px">
-          {{ etatsLibelle[etatLibelle].title }}
+          {{ libelleEtat[etat].title }}
         </h1>
         <span v-else>
           .
         </span>
       </el-col>
       <el-col :span="12">
-        <el-radio-group
-          v-if="displayEtatRadio"
-          v-model="etatLibelle"
-          size="small"
-          @change="etatChange"
-        >
-          <el-radio-button label="Initiés"/>
-          <el-radio-button label="Pré Engagés"/>
-          <el-radio-button label="Imputés"/>
-          <el-radio-button label="Apurés"/>
-          <el-radio-button label="Clôturés"/>
-        </el-radio-group>
-        <span v-else>
-          .
-        </span>
+        
       </el-col>
-      <el-col :span="4"
+      <el-col
+        v-if="canCreateEngagement && displayCreateButton"
+        :span="9"
+        :offset="7"
       >
-        <div>
+        <el-button-group>
+      
           <el-button
-            v-if="canCreateEngagement && displayCreateButton"
+            :disabled="!canCreateEngagement || !displayCreateButton"
             type="primary"
+            icon="el-icon-edit"
             @click="launchDialogForm"
           >
             Créer un engagement
           </el-button>
-        </div>
+          <el-button
+            @click="console.log('Exporter')"
+          >
+            Exporter la liste <i class="el-icon-download el-icon-right"></i>
+          </el-button>
+        </el-button-group>
+      </el-col>
+      <el-col
+        v-else
+        :span="4"
+        :offset="9"
+      >
+        <el-button-group>
+          <el-button
+            @click="console.log('Exporter')"
+          >
+            Exporter la liste <i class="el-icon-download el-icon-right"></i>
+          </el-button>
+        </el-button-group>
       </el-col>
     </el-row>
     <el-table
@@ -397,10 +410,10 @@ export default class EngagementsList extends Vue {
   @Prop() private statut!: string
   @Prop() private nature!: string
   @Prop() private type!: string
-  @Prop() private saisisseur!: string
-  @Prop() private valideurFirst!: string
-  @Prop() private valideurSecond!: string
-  @Prop() private valideurFinal!: string
+  @Prop() private saisisseurs!: string
+  @Prop() private valideursP!: string
+  @Prop() private valideursS!: string
+  @Prop() private valideursF!: string
 
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
@@ -411,22 +424,12 @@ export default class EngagementsList extends Vue {
     limit: 30
   }
 
-  /** Radio Button variables */
-  private etatLibelle = ''
   private libelleEtat: Record<string, any> = {
-    'INIT' : {libelle: 'Initiés'},
-    'PEG' : {libelle: 'Pré Engagés'},
-    'IMP' : {libelle: 'Imputés'},
-    'APUR' : {libelle: 'Apurés'},
-    'CLOT' : {libelle: 'Clôturés'},
-  }
-
-  private etatsLibelle: Record<string, any> = {
-    'Initiés': {code: 'INIT', title: 'Pré engagements initiés'},
-    'Pré Engagés': {code: 'PEG', title: 'Liste des Pré engagements'},
-    'Imputés': {code: 'IMP', title: 'Engagements imputés'},
-    'Apurés': {code: 'APUR', title: 'Engagements apurés'},
-    'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés'}
+    'INIT' : {libelle: 'Initiés', title: 'Pré engagements initiés'},
+    'PEG' : {libelle: 'Pré Engagés', title: 'Liste des Pré engagements'},
+    'IMP' : {libelle: 'Imputés', title: 'Engagements imputés'},
+    'APUR' : {libelle: 'Apurés', title: 'Engagements apurés'},
+    'CLOT' : {libelle: 'Clôturés', title: 'Pré engagements clôturés'},
   }
 
   /** Cascader variables */
@@ -495,7 +498,6 @@ export default class EngagementsList extends Vue {
   }
 
   created() {
-    console.log('etatLibelle ', this.etatLibelle)
     this.getEngagements()
     this.initializeVariables()
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
@@ -504,22 +506,46 @@ export default class EngagementsList extends Vue {
 
   mounted() {
     this.$watch('etat', etat => {
-      this.etatLibelle = etat ? this.libelleEtat[etat].libelle : ''
-      console.log('etat ', etat, '-', this.etat, '-', this.etatLibelle)
+      console.log('etat ', this.etat)
+      this.getEngagements()
+      this.initializeVariables()
+    }, { immediate: true })
+
+    this.$watch('statut', statut => {
+      console.log('statut ', this.statut)
       this.getEngagements()
       this.initializeVariables()
     }, { immediate: true })
 
     this.$watch('lignes', lignes => {
+      console.log('lignes ', this.lignes)
       this.getEngagements()
       this.initializeVariables()
     }, { immediate: true })
-  }
 
-  private etatChange() {
-    // this.etat = this.etatsLibelle[this.etatLibelle].code
-    // this.title = this.etatsLibelle[this.etatLibelle].title
-    // this.$router.push({ name: 'EngagementList', params: { etat: this.etat } })
+    this.$watch('saisisseurs', saisisseurs => {
+      console.log('saisisseurs ', this.saisisseurs)
+      this.getEngagements()
+      this.initializeVariables()
+    }, { immediate: true })
+
+    this.$watch('valideursP', valideursP => {
+      console.log('valideursP ', this.valideursP)
+      this.getEngagements()
+      this.initializeVariables()
+    }, { immediate: true })
+
+    this.$watch('valideursS', valideursS => {
+      console.log('valideursS ', this.valideursS)
+      this.getEngagements()
+      this.initializeVariables()
+    }, { immediate: true })
+
+    this.$watch('valideursF', valideursF => {
+      console.log('valideursF ', this.valideursF)
+      this.getEngagements()
+      this.initializeVariables()
+    }, { immediate: true })
   }
 
   private initializeVariables() {
@@ -554,19 +580,71 @@ export default class EngagementsList extends Vue {
   private async getEngagements() {
     this.listLoading = true
     
-    this.listQuery.periode = this.periode
-    this.listQuery.libelle = this.libelle
-    this.listQuery.lignes = this.lignes
-    this.listQuery.rubriques = this.rubriques
-    this.listQuery.chapitres = this.chapitres
-    this.listQuery.etat = this.etatLibelle ? this.etatsLibelle[this.etatLibelle].code : null
-    this.listQuery.statut = this.statut
-    this.listQuery.nature = this.nature
-    this.listQuery.type = this.type
-    this.listQuery.saisisseur = this.saisisseur
-    this.listQuery.valideurFirst = this.valideurFirst
-    this.listQuery.valideurSecond = this.valideurSecond
-    this.listQuery.valideurFinal = this.valideurFinal
+    if (this.periode) {
+      this.listQuery.periode = this.periode
+    } else {
+      delete this.listQuery.periode
+    }
+    if (this.libelle) {
+      this.listQuery.libelle = this.libelle
+    } else {
+      delete this.listQuery.libelle
+    }
+    if (this.lignes) {
+      this.listQuery.lignes = this.lignes
+    } else {
+      delete this.listQuery.lignes
+    }
+    if (this.rubriques) {
+      this.listQuery.rubriques = this.rubriques
+    } else {
+      delete this.listQuery.rubriques
+    }
+    if (this.chapitres) {
+      this.listQuery.chapitres = this.chapitres
+    } else {
+      delete this.listQuery.chapitres
+    }
+    if (this.etat) {
+      this.listQuery.etat = this.etat
+    } else {
+      delete this.listQuery.etat
+    }
+    if (this.statut) {
+      this.listQuery.statut = this.statut
+    } else {
+      delete this.listQuery.statut
+    }
+    if (this.nature) {
+      this.listQuery.nature = this.nature
+    } else {
+      delete this.listQuery.nature
+    }
+    if (this.type) {
+      this.listQuery.type = this.type
+    } else {
+      delete this.listQuery.type
+    }
+    if (this.saisisseurs) {
+      this.listQuery.saisisseurs = this.saisisseurs
+    } else {
+      delete this.listQuery.saisisseurs
+    }
+    if (this.valideursP) {
+      this.listQuery.valideurs_first = this.valideursP
+    } else {
+      delete this.listQuery.valideurs_first
+    }
+    if (this.valideursS) {
+      this.listQuery.valideurs_second = this.valideursS
+    } else {
+      delete this.listQuery.valideurs_second
+    }
+    if (this.valideursF) {
+      this.listQuery.valideurs_final = this.valideursF
+    } else {
+      delete this.listQuery.valideurs_final
+    }
     
     console.log('listQuery ', this.listQuery)
 
