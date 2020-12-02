@@ -17,7 +17,7 @@
       :data="recapData.collection"
 
       border
-      
+      :summary-method="getSummaries"
       show-summary
       style="width: 100%"
     >
@@ -97,6 +97,7 @@
         </template>
       </el-table-column>
     </el-table>
+    
   </div>
 </template>
 
@@ -190,7 +191,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
               } else {
                 return prev;
               }
-            }, 0) + ' FCFA';
+            }, 0).toLocaleString("fr-FR") + ' FCFA';
           } else {
             sums[index] = 'N/A';
           }

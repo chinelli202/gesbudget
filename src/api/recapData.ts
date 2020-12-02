@@ -12,7 +12,7 @@ export const defaultRecapData: IRecapData = {
             executionLabel:'Exécution',
             soldeLabel:'Solde',
             tauxExecutionLabel:'Taux d\'Execution',          
-  }
+    }
   }
   
   export const defaultMonthRecapData: IMonthRecapData = {

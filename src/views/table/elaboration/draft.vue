@@ -50,6 +50,8 @@
                     :on-success="handleSuccess"
                     :before-upload="beforeUpload" 
                 />
+                <p>Aperçu</p>
+               
             </el-card>
         </el-row>
         <el-row v-if="active == 2" style="margin: 10px auto;">
