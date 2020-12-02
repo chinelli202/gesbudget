@@ -6,7 +6,7 @@ export default {
     consulterList: 'Consulter',
     guide: 'Guide',
     corbeille: 'Corbeille',
-    engagementDashboard: 'Dashboard',
+    engagementHome: 'Accueil',
     engagement: 'Execution Budget',
     engagementList: 'Liste des engagements',
     engagementImputer: 'Imputer un engagement',

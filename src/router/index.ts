@@ -192,12 +192,12 @@ export const constantRoutes: RouteConfig[] = [
         }
       },
       {
-        path: 'dashboard',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/dashboard.vue'),
+        path: 'home',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/home.vue'),
         //redirect: '/consulter/list/',
-        name: 'engagementDashboard',
+        name: 'engagementHome',
         meta: {
-          title: 'engagementDashboard',
+          title: 'engagementHome',
           icon: 'component'
         }
       },

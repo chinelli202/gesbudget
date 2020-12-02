@@ -37,26 +37,26 @@ class Permission extends VuexModule implements IPermissionState {
   public permissionCodes: Record<string, any> = {
     engagement: {
       INIT: { //actions possibles lorsque l'engagement est à l'état Initial
-        SAISI: 'saisir-pre-engagement',
-        VALIDP: 'validerp-pre-engagement',
-        VALIDS: 'validers-pre-engagement',
-        VALIDF: 'validerf-pre-engagement',
-        CLOT: 'cloturer-pre-engagement'
+        SAISI:  'ENG_INIT_SAISI',
+        VALIDP: 'ENG_INIT_VALID',
+        VALIDS: 'ENG_INIT_VALIDS',
+        VALIDF: 'ENG_INIT_VALIDF',
+        CLOT:   'ENG_INIT_CLOT'
       },
       PEG: { //actions possibles lorsque l'engagement est à l'état pré-engagé
-        SAISI: 'saisir-imputation', // IMP
-        VALIDP: 'validerp-imputation',
-        VALIDS: 'validers-imputation',
-        VALIDF: 'validerf-imputation',
-        CLOT: 'cloturer-imputation'
+        SAISI:  'ENG_PEG_SAISI', // IMP
+        VALIDP: 'ENG_PEG_VALIDP',
+        VALIDS: 'ENG_PEG_VALIDS',
+        VALIDF: 'ENG_PEG_VALIDF',
+        CLOT:   'ENG_PEG_CLOT'
       },
       IMP: { //actions possibles lorsque l'engagement est à l'état Imputé
-        SAISI: 'saisir-apurement', // APUR
-        VALIDP: 'validerp-apurement',
-        VALIDS: 'validers-apurement',
-        VALIDF: 'validerf-apurement',
-        REG: 'regulariser-imputation',
-        CLOT: 'cloturer-apurement'
+        SAISI:  'ENG_IMP_SAISI', // APUR
+        VALIDP: 'ENG_IMP_VALIDP',
+        VALIDS: 'ENG_IMP_VALIDS',
+        VALIDF: 'ENG_IMP_VALIDF',
+        REG:    'ENG_IMP_REG',
+        CLOT:   'ENG_IMP_REG'
       }
     }
   }
