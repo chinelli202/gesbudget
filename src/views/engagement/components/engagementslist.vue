@@ -294,7 +294,7 @@
             <el-col :span="12">
               <el-input
                 v-model="engagement.montant_ttc"
-                :disabled="true"
+                
               />
             </el-col>
           </el-row>
@@ -646,12 +646,12 @@ export default class EngagementsList extends Vue {
 
   private cascadeChange() {
     this.formAttributeChange()
-    getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
-      this.soldeLigne = response.data.solde_restant
-    })
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
     this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
     this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
+    getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
+      this.soldeLigne = response.data.solde_restant
+    })
   }
 
   private resetEngagement() {

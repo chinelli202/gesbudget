@@ -376,7 +376,7 @@ export default class FooterButtons extends Vue {
 
     // The engagement is closed
     this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code
-
+    console.log('evaluateVariables ', this.isCurrentUserValideurp)
     this.annulerValiderLabel()
   }
 
@@ -566,6 +566,7 @@ export default class FooterButtons extends Vue {
   }
 
   private userPerformedCurrentStatut() {
+    console.log('userPerformedCurrentStatut ',this.isCurrentUserSaisisseur, this.isCurrentUserValideurp )
     switch (this.entity.statut) {
       case AppModule.statutsEngagement.SAISI.code:
         return this.isCurrentUserSaisisseur

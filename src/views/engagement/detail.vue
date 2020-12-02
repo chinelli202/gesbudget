@@ -161,7 +161,7 @@
                   <el-col :span="20">
                     <el-input
                       v-model="engagement.montant_ttc"
-                      :disabled="true"
+                      :disabled="!toEdit"
                     />
                   </el-col>
                 </el-row>
