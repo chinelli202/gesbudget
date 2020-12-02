@@ -731,6 +731,8 @@ export default class extends Vue {
     console.log(this.cascade)
     this.formAttributeChange()
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
+    this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
+    this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
     this.updateViewVariables()
   }
 

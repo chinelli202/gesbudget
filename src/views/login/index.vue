@@ -141,7 +141,7 @@ export default class extends Vue {
   }
 
   private loginForm = {
-    email: 'user@app.com',
+    email: 'user1@app.com',
     password: '12345'
   }
 

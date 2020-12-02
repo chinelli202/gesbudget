@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { getToken } from '@/utils/cookies'
 
 // Login function
 export const login = (data: any) =>
@@ -27,14 +28,17 @@ export const getUserInfo = (data: any) =>
     }
   })
 
-// TO EDIT
 export const getUsers = (params: any) =>
   request({
-    url: '/users',
+    url: '/users/list',
     method: 'get',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
     params
   })
 
+// TO EDIT
 export const getUserByName = (username: string) =>
   request({
     url: `/users/${username}`,

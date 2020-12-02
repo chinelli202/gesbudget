@@ -6,6 +6,7 @@
           :etat="etat"
           :title="title"
           :displayCreateButton="false"
+          :display-export-button="false"
         />
       </div>
     </div>
@@ -19,14 +20,14 @@ import { UserModule } from '@/store/modules/user'
 import EngagementsList from '../components/engagementslist'
 
 @Component({
-  name: 'DashboardEditor',
+  name: 'Corbeille',
   components: {
     EngagementsList
   }
 })
 export default class extends Vue {
-  private etat = 'PEG'
-  private title = 'Imputer un engagement'
+  private etat = 'CLOT'
+  private title = 'Préengagements supprimés'
 
   created() {
   }

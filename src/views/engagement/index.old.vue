@@ -5,7 +5,8 @@
         <EngagementsList
           :etat="etat"
           :title="title"
-          :displayCreateButton="false"
+          :displayCreateButton="true"
+          :displayEtatRadio="true"
         />
       </div>
     </div>
@@ -16,7 +17,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
-import EngagementsList from '../components/engagementslist'
+import EngagementsList from './components/engagementslist'
 
 @Component({
   name: 'DashboardEditor',
@@ -25,11 +26,9 @@ import EngagementsList from '../components/engagementslist'
   }
 })
 export default class extends Vue {
-  private etat = 'PEG'
-  private title = 'Imputer un engagement'
-
-  created() {
-  }
+  private etat = 'INIT'
+  private etatLibelle = 'Initiés'
+  private title = 'Pré engagements initiés'
 
   get name() {
     return UserModule.name
