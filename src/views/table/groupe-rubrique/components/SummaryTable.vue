@@ -182,6 +182,10 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
             sums[index] = 'Total';
             return;
           }
+          if(column.property == 'tauxExecution'){
+            sums[index] = this.recapData['tauxExecution'] + ' %'
+            return;
+          }
           const values = data.map((item:any) => Number(item[column.property]));
           if (!values.every((value:any) => isNaN(value))) {
             sums[index] = values.reduce((prev:any, curr:any) => {
@@ -238,6 +242,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
   }
 
   private formatColumn(value: any, row: any, column: any){
+    console.log("displaying values. row : ",row)
     return column.toLocaleString("fr-FR");
   }
 }

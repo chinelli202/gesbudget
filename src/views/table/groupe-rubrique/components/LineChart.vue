@@ -84,11 +84,11 @@ export default class extends mixins(ResizeMixin) {
           data: ['Executions', 'Engagements']
         },
         series: [{
-          name: 'expected',
+          name: 'executions',
           itemStyle: {
-            color: '#FF005A',
+            color: '#3888fa',
             lineStyle: {
-              color: '#FF005A',
+              color: '#3888fa', //FF005A
               width: 2
             }
           },
@@ -99,17 +99,17 @@ export default class extends mixins(ResizeMixin) {
           animationEasing: 'cubicInOut'
         },
         {
-          name: 'actual',
+          name: 'engagements',
           smooth: true,
           type: 'line',
           itemStyle: {
-            color: '#3888fa',
+            color: '#FF005A',
             lineStyle: {
-              color: '#3888fa',
+              color: '#FF005A', //3888fa
               width: 2
             },
             areaStyle: {
-              color: '#f3f8ff'
+              color: '#FF005A'
             }
           },
           data: chartData.engagements,
