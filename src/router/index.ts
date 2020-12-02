@@ -75,7 +75,7 @@ export const constantRoutes: RouteConfig[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/etats'
+    redirect: '/home'
   },
   {
     path: '/profile',
@@ -95,6 +95,94 @@ export const constantRoutes: RouteConfig[] = [
       }
     ]
   },
+  {
+    path: '/home',
+    component: Layout,
+    redirect: '/home/dashboard/',
+    name: 'engagementHome',
+    meta: {
+      title: 'engagementHome',
+      icon: 'component'
+    },
+    children : [
+      {
+        path: 'dashboard',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/home.vue'),
+        //redirect: '/consulter/list/',
+        name: 'engagementHomeDashboard',
+        meta: {
+          title: 'engagementHomeDashboard',
+          icon: 'component'
+        }
+      }
+    ]
+  },
+  {
+    path: '/engagement',
+    component: Layout,
+    redirect: '/engagement/list',
+    name: 'engagement',
+    meta: {
+      title: 'engagement',
+      icon: 'list'
+    },
+    children : [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/index.vue'),
+        name: 'EngagementList',
+        meta: {
+          title: 'engagementList',
+          activeMenu: '/engagement/list',
+          icon: 'search'
+        }
+      }
+    ]
+  },
+  {
+    path: '/detail',
+    component: Layout,
+    redirect: '/detail/engagement',
+    name: 'engagementDetail',
+    meta: {
+      title: 'engagementDetail',
+      icon: 'form',
+      hidden: true
+    },
+    children : [
+      {
+        path: 'engagement/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/detail.vue'),
+        name: 'engagementDetailView',
+        meta: {
+          title: 'engagementDetailView',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/corbeille',
+    component: Layout,
+    redirect: '/corbeille/list',
+    name: 'corbeille',
+    meta: {
+      title: 'corbeille',
+      icon: 'list'
+    },
+    children : [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/corbeille.vue'),
+        name: 'corbeilleList',
+        meta: {
+          title: 'corbeilleList',
+          icon: 'bug'
+        }
+      }
+    ]
+  },
+  
   {
     path: '/etats',
     component: Layout,
@@ -167,97 +255,6 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsMandat',
           icon: 'tab'
-        }
-      }
-    ]
-  },
-  {
-    path: '/engagement',
-    component: Layout,
-    redirect: '/engagement/list',
-    meta: {
-      title: 'engagement',
-      icon: 'form'
-    },
-    children: [
-      {
-        path: 'detail/:id(\\d+)',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/detail.vue'),
-        name: 'DetailEngagement',
-        meta: {
-          title: 'detailEngagement',
-          noCache: true,
-          activeMenu: '/engagement/list',
-          hidden: true
-        }
-      },
-      {
-        path: 'home',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/home.vue'),
-        //redirect: '/consulter/list/',
-        name: 'engagementHome',
-        meta: {
-          title: 'engagementHome',
-          icon: 'component'
-        }
-      },
-      {
-        path: 'list',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/index.vue'),
-        name: 'EngagementList',
-        meta: {
-          title: 'engagementList',
-          activeMenu: '/engagement/list',
-          icon: 'list'
-        }
-      },
-      {
-        path: 'imputer',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/imputer.vue'),
-        name: 'EngagementImputer',
-        meta: {
-          title: 'engagementImputer',
-          icon: 'edit'
-        }
-      },
-      {
-        path: 'apurer',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/apurer.vue'),
-        name: 'EngagementApurer',
-        meta: {
-          title: 'engagementApurer',
-          icon: 'edit'
-        }
-      },
-      {
-        path: 'corbeille',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/corbeille.vue'),
-        name: 'corbeille',
-        meta: {
-          title: 'corbeille',
-          icon: 'bug'
-        }
-      }
-    ]
-  },
-  {
-    path: '/consulter',
-    component: Layout,
-    redirect: '/consulter/list/',
-    name: 'consulter',
-    meta: {
-      title: 'consulter',
-      icon: 'search'
-    },
-    children : [
-      {
-        path: 'list',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/consulter.vue'),
-        //redirect: '/consulter/list/',
-        name: 'consulterList',
-        meta: {
-          title: 'consulterList',
-          icon: 'search'
         }
       }
     ]

@@ -5,11 +5,11 @@
       justify="space-between"
       style="margin: 0.5em 0px"
     >
-      <el-col :span="10">
+      <el-col :span="13">
         <h1 
           v-if="showTitle"
           style="margin-top: 0px">
-          {{ libelleEtat[etat].title }}
+          {{ title ? title : libelleEtat[etat].title }}
         </h1>
         <span v-else>
           .
@@ -21,7 +21,7 @@
       <el-col
         v-if="canCreateEngagement && displayCreateButton"
         :span="9"
-        :offset="7"
+        :offset="4"
       >
         <el-button-group>
       
@@ -34,6 +34,7 @@
             Créer un engagement
           </el-button>
           <el-button
+            v-if="displayExportButton"
             @click="console.log('Exporter')"
           >
             Exporter la liste <i class="el-icon-download el-icon-right"></i>
@@ -43,10 +44,11 @@
       <el-col
         v-else
         :span="4"
-        :offset="9"
+        :offset="6"
       >
         <el-button-group>
           <el-button
+            v-if="displayExportButton"
             @click="console.log('Exporter')"
           >
             Exporter la liste <i class="el-icon-download el-icon-right"></i>
@@ -397,6 +399,7 @@ export default class EngagementsList extends Vue {
   @Prop({ default : true }) private showTitle!: boolean
   @Prop() private displayEtatRadio!: boolean
   @Prop({ required: true }) private displayCreateButton!: boolean
+  @Prop({ default: true }) private displayExportButton!: boolean
   @Prop({ default: false }) private displayFilter!: boolean
   @Prop() private icon!: string
   @Prop() private tableHeight!: string
@@ -501,7 +504,6 @@ export default class EngagementsList extends Vue {
     this.getEngagements()
     this.initializeVariables()
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
-    console.log('tableHeigh', this.tableHeight)
   }
 
   @Watch('etat')
@@ -512,7 +514,6 @@ export default class EngagementsList extends Vue {
   @Watch('valideursS')
   @Watch('valideursF')
   private updateView(newVal: any) {
-    console.log(newVal)
     this.getEngagements()
     this.initializeVariables()
   }
@@ -529,7 +530,7 @@ export default class EngagementsList extends Vue {
   }
 
   detail(value: any, engagement: any) {
-    this.$router.push({ name: 'DetailEngagement', params: { id: engagement.id } })
+    this.$router.push({ name: 'engagementDetailView', params: { id: engagement.id } })
   }
 
   deleteRow(index: any, rows: any) {
@@ -583,7 +584,7 @@ export default class EngagementsList extends Vue {
       delete this.listQuery.etat
     }
     if (this.statut) {
-      this.listQuery.statut = this.statut
+      this.listQuery.latest_statut = this.statut
     } else {
       delete this.listQuery.statut
     }
@@ -617,12 +618,9 @@ export default class EngagementsList extends Vue {
     } else {
       delete this.listQuery.valideurs_final
     }
-    
-    console.log('listQuery ', this.listQuery)
 
     const response = await getEngagements(this.listQuery)
     this.paginationTotal = response.total
-    console.log('paginationTotal ', this.paginationTotal)
     this.initiatedEngagements = response.data
     this.listLoading = false
   }
@@ -632,7 +630,6 @@ export default class EngagementsList extends Vue {
   }
 
   private cascadeChange() {
-    console.log(this.cascade)
     this.formAttributeChange()
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
     this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
@@ -665,7 +662,6 @@ export default class EngagementsList extends Vue {
 
   private createEngagement() {
     this.dialogFormLoading = true
-    console.log('this.engagement : ', this.engagement)
     createEngagement(this.engagement).then((response) => {
       const newEngagement = response.data
       this.initiatedEngagements.push(newEngagement)

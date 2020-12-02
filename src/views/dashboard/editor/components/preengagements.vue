@@ -401,7 +401,7 @@ export default class EngagementsList extends Vue {
   }
 
   detail(value: any, engagement: any) {
-    this.$router.push({ name: 'DetailEngagement', params: { id: engagement.id } })
+    this.$router.push({ name: 'engagementDetailView', params: { id: engagement.id } })
   }
 
   deleteRow(index: any, rows: any) {

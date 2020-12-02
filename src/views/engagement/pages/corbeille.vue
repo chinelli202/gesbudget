@@ -6,6 +6,7 @@
           :etat="etat"
           :title="title"
           :displayCreateButton="false"
+          :display-export-button="false"
         />
       </div>
     </div>
@@ -26,7 +27,7 @@ import EngagementsList from '../components/engagementslist'
 })
 export default class extends Vue {
   private etat = 'CLOT'
-  private title = 'Imputer un engagement'
+  private title = 'Préengagements supprimés'
 
   created() {
   }

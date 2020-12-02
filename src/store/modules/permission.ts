@@ -38,7 +38,7 @@ class Permission extends VuexModule implements IPermissionState {
     engagement: {
       INIT: { //actions possibles lorsque l'engagement est à l'état Initial
         SAISI:  'ENG_INIT_SAISI',
-        VALIDP: 'ENG_INIT_VALID',
+        VALIDP: 'ENG_INIT_VALIDP',
         VALIDS: 'ENG_INIT_VALIDS',
         VALIDF: 'ENG_INIT_VALIDF',
         CLOT:   'ENG_INIT_CLOT'
