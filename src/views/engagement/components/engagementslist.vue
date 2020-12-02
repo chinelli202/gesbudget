@@ -218,6 +218,19 @@
             </el-col>
           </el-row>
         </el-form-item>
+        <el-form-item>
+          <el-row :gutter="10">
+            <el-col
+              :span="3"
+              :offset="2"
+            >
+              <strong>Solde ligne</strong>
+            </el-col>
+            <el-col :span="17">
+              <strong>{{ soldeLigne | numFormat }}</strong>
+            </el-col>
+          </el-row>
+        </el-form-item>
         <el-row :gutter="10">
           <el-col
             :span="20"
@@ -380,6 +393,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch} from 'vue-property-decorator'
 import { getEngagements, createEngagement } from '@/api/engagements'
+import { getSoldeLigne } from '@/api/lignes'
 import { IEngagementData } from '@/api/types'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
@@ -418,6 +432,7 @@ export default class EngagementsList extends Vue {
   @Prop() private valideursS!: string
   @Prop() private valideursF!: string
 
+  private soldeLigne = 0
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
   private canCreateEngagement = true
@@ -631,6 +646,9 @@ export default class EngagementsList extends Vue {
 
   private cascadeChange() {
     this.formAttributeChange()
+    getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
+      this.soldeLigne = response.data.solde_restant
+    })
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
     this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
     this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
