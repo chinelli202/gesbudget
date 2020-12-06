@@ -58,7 +58,7 @@
           <div v-else>
             <el-menu-item v-for="chapitre in section.chapitres"
             :key="chapitre.id"
-           
+            :index="chapitre.id"
             @click="handleMenuItemClicked(chapitre)">
             {{chapitre.label}}
           </el-menu-item>
@@ -121,7 +121,7 @@
             v-for="chapitre in depensesMap"
             :key="chapitre.value"
             :index="chapitre.value"
-            @click="handleDepensesClick"
+            @click="handleMenuItemClicked(chapitre)"
             >
             {{chapitre.label}}
           </el-menu-item>
@@ -134,7 +134,7 @@
           v-for="chapitre in recettesMap"
           :key="chapitre.value"
           :index="chapitre.index"
-          @click="handleRecettesClick(chapitre)"
+          @click="handleMenuItemClicked(chapitre)"
           >
             {{chapitre.label}}
           </el-menu-item>
@@ -161,7 +161,7 @@
     </el-menu>
 
     <el-dialog :visible.sync="dialogTableVisible">
-       <navigateur-etats :maquetteTree="maquetteTree" @exit-navigateur-dialog="handleExitDialogEventRecieved"/>
+       <navigateur-etats :maquetteTree="maquetteTree" :domaine="domaine" @exit-navigateur-dialog="handleExitDialogEventRecieved"/>
     </el-dialog>
   </div>
 </template>
@@ -252,12 +252,12 @@ private exportMap: any [] = []
     if(this.domaine == 'fonctionnement'){
       let depensesOption = this.maquetteTree.depenses
       this.depensesMap= depensesOption.sections.map((section : any)=>{
-        let mappedSection = {label: section.section, value: section.section, groupes:section.groupes.map((groupe)=>{
+        let mappedSection = {label: section.section, value: section.section, groupes:section.groupes.map((groupe:any)=>{
           //make custom names
-          //let urlname = groupe.label.replace(" ", "+")
-          let sectiongroup = {label: groupe.label, groupname:groupe.label, type:'groupe'}
+          let urlname = groupe.label.split(" ").join("+")
+          let sectiongroup = {label: groupe.label, value:urlname, type:'groupe'}
           return sectiongroup
-        }), chapitres:section.chapitres.map((chapitre)=>{
+        }), chapitres:section.chapitres.map((chapitre:any)=>{
           let mappedChapitre = {label: chapitre.label, value: chapitre.id, type:'chapitre'}
           return mappedChapitre
         })}
@@ -269,7 +269,7 @@ private exportMap: any [] = []
     else{
       let depensesOption = this.maquetteTree.depenses.chapitres
       this.depensesMap= depensesOption.map((chapitre : any)=>{
-        let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:chapitre.type}
+        let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:'chapitre'}
         return mappedChapitre
       })
       console.log("this is the depense map, ", this.depensesMap)
@@ -278,7 +278,7 @@ private exportMap: any [] = []
     
 
     this.recettesMap= recettesOption.map((chapitre : any)=>{
-      let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:chapitre.type}
+      let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:'chapitre'}
       return mappedChapitre
     })
   }
@@ -348,7 +348,7 @@ private exportMap: any [] = []
     console.log("this is the index of the clicked item, ", el.value)
   }
 
-  private handleDepensesClick(data:any){
+  private handleMenuItemClicked(data:any){
     console.log("this is the index of the clicked item")
     //will be routed to chapitre subsection with given id
     var routename
@@ -360,8 +360,8 @@ private exportMap: any [] = []
       // console.log("at this point, the component will navigate to : " + this.chosenEntity + " with the index : " + this.chosenEntityId) 
       // var url = "/tab/custom/fonctionnement/" + this.chosenEntity + "/" + this.chosenEntityId;
     //  this.$router.push(url);
-    //this.$router.push({ name: routename, params: { entitytype: 'chapitre', entitykey: String(data) } })
-    console.log("will use element of type : "+data.type+", with key : " + data.key)
+    this.$router.push({ name: routename, params: { entitytype: data.type, entitykey: data.value } })
+    //console.log("will use element of type : "+data.type+", with key : " + data.value)
   }
 
   private handleAllerButtonClick(){

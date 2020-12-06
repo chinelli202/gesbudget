@@ -17,7 +17,7 @@
       :data="recapData.collection"
 
       border
-      
+      :summary-method="getSummaries"
       show-summary
       style="width: 100%"
     >
@@ -97,6 +97,7 @@
         </template>
       </el-table-column>
     </el-table>
+    
   </div>
 </template>
 
@@ -181,6 +182,10 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
             sums[index] = 'Total';
             return;
           }
+          if(column.property == 'tauxExecution'){
+            sums[index] = this.recapData['tauxExecution'] + ' %'
+            return;
+          }
           const values = data.map((item:any) => Number(item[column.property]));
           if (!values.every((value:any) => isNaN(value))) {
             sums[index] = values.reduce((prev:any, curr:any) => {
@@ -190,7 +195,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
               } else {
                 return prev;
               }
-            }, 0) + ' FCFA';
+            }, 0).toLocaleString("fr-FR") + ' FCFA';
           } else {
             sums[index] = 'N/A';
           }
@@ -225,7 +230,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
     else{
       const entitytype = this.$route.params && this.$route.params.entitytype
       const entitykey = this.$route.params && this.$route.params.entitykey
-      url = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
             +'critere='+periode+'&'
             +'param='+param+'&'
             +'mois='+etatsmodule.moisPeriodeMois+'&'
@@ -233,10 +238,11 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
             +'endmonth='+etatsmodule.finPeriodeIntervalle
     }
 
-    console.log("will route to : ", url)
+    //console.log("will route to : ", url)
   }
 
   private formatColumn(value: any, row: any, column: any){
+    console.log("displaying values. row : ",row)
     return column.toLocaleString("fr-FR");
   }
 }

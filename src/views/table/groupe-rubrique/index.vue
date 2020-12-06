@@ -29,7 +29,74 @@
       </el-col> -->
     </el-row>
     <!-- Summary Table -->
-    <summary-table :recapData="recapData"/>
+    <summary-table v-if="recapData.type && recapData.type!= 'ligne'" :recapData="recapData"/>
+    <h3 v-if="recapData.type == 'ligne'" class="box-card">Récapitulatif</h3>
+    <el-card v-if="recapData.type == 'ligne'" class="box-card">
+      <el-row>
+        <el-col span="8">
+          <span style="font-weight: bold;">{{recapData.header.previsionsLabel}}</span>
+        </el-col>
+        <el-col span="8">
+          <span>{{recapData.prevision.toLocaleString("fr-FR")}}</span>
+        </el-col>
+      </el-row>
+      <el-divider></el-divider>
+      <el-row>
+        <el-col span="8">
+          <span style="font-weight: bold;">{{recapData.header.realisationsMoisLabel}}</span>
+        </el-col>
+        <el-col span="8">
+          <span>{{recapData.realisationsMois.toLocaleString("fr-FR")}}</span>
+        </el-col>
+      </el-row>
+      <el-divider></el-divider>
+      <el-row>
+        <el-col span="8">
+          <span style="font-weight: bold;">{{recapData.header.realisationsMoisPrecedentsLabel}}</span>
+        </el-col>
+        <el-col span="8">
+          <span>{{recapData.realisationsMoisPrecedents.toLocaleString("fr-FR")}}</span>
+        </el-col>
+      </el-row>
+      <el-divider></el-divider>
+      <el-row>
+        <el-col span="8">
+          <span style="font-weight: bold;">{{recapData.header.realisationsLabel}}</span> 
+        </el-col>
+        <el-col span="8">
+          <span>{{recapData.realisations.toLocaleString("fr-FR")}}</span>
+        </el-col>
+      </el-row>
+      <el-divider></el-divider>
+      <el-row>
+        <el-col span="8">
+          <span style="font-weight: bold;">{{recapData.header.engagementsLabel}}</span>
+        </el-col>
+        <el-col span="8">
+          <span>{{recapData.engagements.toLocaleString("fr-FR")}}</span>
+        </el-col>
+      </el-row>
+      <el-divider></el-divider>
+      <el-row>
+        <el-col span="8">
+          <span style="font-weight: bold; color:#61A0A8">{{recapData.header.soldeLabel}}</span>
+        </el-col>
+        <el-col span="8">
+          <span style="font-weight: bold;  color:#61A0A8">{{recapData.solde.toLocaleString("fr-FR")}}</span>
+        </el-col>
+      </el-row>
+      <el-divider></el-divider>
+      <el-row>
+        <el-col span="8">
+          <span style="font-weight: bold;">{{recapData.header.tauxExecutionLabel}}</span>
+        </el-col>
+        <el-col span="8">
+          <el-progress :percentage="recapData.tauxExecution" />
+        </el-col>
+      </el-row>
+      <el-divider></el-divider>
+    </el-card>
+  
   </div>
 </template>
 
@@ -62,7 +129,7 @@ const lineChartData: ILineChartData = {
         SummaryTable,
         FiltreEtats
       }
-    })
+    }) //97 160 168
 
 export default class extends Vue {
     private lineChartData = lineChartData
@@ -228,3 +295,26 @@ export default class extends Vue {
 }
 
 </script>
+
+<style>
+.box-card {
+    width: 100%;
+    margin:20px auto;
+  }
+.text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+</style>

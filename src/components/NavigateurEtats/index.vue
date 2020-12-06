@@ -43,6 +43,7 @@
 })
 
     export default class extends Vue {
+      @Prop({ default: 'fonctionnement' }) private domaine!: string
       @Prop() private maquetteTree!: any
       private groupeoptions: any = {}
       private chapitreOptions: any [] = []
@@ -64,6 +65,12 @@
       private lignesCascadeOptions: any [] = []
       private chapitresCascadeOptions: any [] = []
       private rubriquesCascadeOptions: any [] = []
+      private lignesDepensesCascadeOptions: any [] = []
+      private chapitresDepensesCascadeOptions: any [] = []
+      private rubriquesDepensesCascadeOptions: any [] = []
+      private lignesRecettesCascadeOptions: any [] = []
+      private chapitresRecettesCascadeOptions: any [] = []
+      private rubriquesRecettesCascadeOptions: any [] = []
       private groupesCascadeOptions: any [] = [
         {label: "Charges de personnel", value: 10, groupname: "SALAIRE+DE+PERSONNEL"},
         {label: "missions ", value: 11, groupname: "MISSIONS"},
@@ -91,10 +98,22 @@
 
         this.depensesTree = this.maquetteTree.depenses
         this.recettesTree = this.maquetteTree.recettes
-        let depensesOption = this.maquetteTree.depenses.chapitres
+        
+        //if domaine is fonctionnement, then the depenses options are loaded a little bit differently
+
+        //let depensesOption = this.maquetteTree.depenses.chapitres
+        let depensesOption
+        if(this.domaine == 'fonctionnement'){
+          depensesOption =this.depensesTree.sections[0].chapitres.concat(this.depensesTree.sections[1].chapitres)
+        }
+
+        else {
+          depensesOption = this.maquetteTree.depenses.chapitres
+        }
+        
         let recettesOption = this.maquetteTree.recettes.chapitres
 
-        this.lignesCascadeOptions = depensesOption.map((chapitre : any)=>{
+        this.lignesDepensesCascadeOptions = depensesOption.map((chapitre : any)=>{
         //add properties
           let mappedChapitre = {label: chapitre.label, value: chapitre.id, children: chapitre.rubriques.map((rubrique : any)=>{
             let mappedRubrique = {label: rubrique.label, value: rubrique.id, children: rubrique.lignes.map((ligne : any)=>{
@@ -106,7 +125,19 @@
           return mappedChapitre
         })
 
-        this.rubriquesCascadeOptions = depensesOption.map((chapitre : any)=>{
+        this.lignesRecettesCascadeOptions = recettesOption.map((chapitre : any)=>{
+        //add properties
+          let mappedChapitre = {label: chapitre.label, value: chapitre.id, children: chapitre.rubriques.map((rubrique : any)=>{
+            let mappedRubrique = {label: rubrique.label, value: rubrique.id, children: rubrique.lignes.map((ligne : any)=>{
+              let mappedLigne = {label: ligne.label, value: ligne.id}
+              return mappedLigne
+            })}
+            return mappedRubrique
+          })}
+          return mappedChapitre
+        })
+
+        this.rubriquesDepensesCascadeOptions = depensesOption.map((chapitre : any)=>{
         //add properties
           let mappedChapitre = {label: chapitre.label, value: chapitre.id, children: chapitre.rubriques.map((rubrique : any)=>{
             let mappedRubrique = {label: rubrique.label, value: rubrique.id}
@@ -115,15 +146,32 @@
           return mappedChapitre
         })
 
-        this.chapitresCascadeOptions = depensesOption.map((chapitre : any)=>{
+        this.rubriquesRecettesCascadeOptions = recettesOption.map((chapitre : any)=>{
+        //add properties
+          let mappedChapitre = {label: chapitre.label, value: chapitre.id, children: chapitre.rubriques.map((rubrique : any)=>{
+            let mappedRubrique = {label: rubrique.label, value: rubrique.id}
+            return mappedRubrique
+          })}
+          return mappedChapitre
+        })
+
+        this.chapitresDepensesCascadeOptions = depensesOption.map((chapitre : any)=>{
           let mappedChapitre = {label: chapitre.label, value: chapitre.id}
           return mappedChapitre
         })
 
+        this.chapitresRecettesCascadeOptions = recettesOption.map((chapitre : any)=>{
+          let mappedChapitre = {label: chapitre.label, value: chapitre.id}
+          return mappedChapitre
+        })
+
+        //by convention, we set all the maps to point to depenses maps
+        this.chapitresCascadeOptions = this.chapitresDepensesCascadeOptions
+        this.rubriquesCascadeOptions = this.rubriquesDepensesCascadeOptions
+        this.lignesCascadeOptions = this.lignesDepensesCascadeOptions
         this.cascadeOptions = this.chapitresCascadeOptions
       }
 
-      private handleSectionChanged(){}
       private handleChapitreItemChanged(selectedItem:any){
         this.rubriqueOptions = this.chapitreOptions.filter((chapitre)=>{
           return chapitre.id == this.selectedChapitre
@@ -155,8 +203,20 @@
         }
       }
 
-      private handleSectionChange(selected:number){
-
+      private handleSectionChanged(selected:number){
+        if(selected == 100){ //depenses
+          this.chapitresCascadeOptions = this.chapitresDepensesCascadeOptions
+          this.rubriquesCascadeOptions = this.rubriquesDepensesCascadeOptions
+          this.lignesCascadeOptions = this.lignesDepensesCascadeOptions
+        } 
+        else {//recettes
+          this.chapitresCascadeOptions = this.chapitresRecettesCascadeOptions
+          this.rubriquesCascadeOptions = this.rubriquesRecettesCascadeOptions
+          this.lignesCascadeOptions = this.lignesRecettesCascadeOptions
+        }
+        this.selectedId = 10
+        this.cascadeOptions = this.chapitresCascadeOptions
+        console.log("changed sections")
       }
 
        private handleAllerButtonClick(){
@@ -174,6 +234,7 @@
       }
 
       private handleRubriqueItemChanged(selectedItem:any){
+        
         this.chosenEntityId = selectedItem
       }
       private handleLigneChanged(){}

@@ -12,7 +12,17 @@ export const defaultRecapData: IRecapData = {
             executionLabel:'Exécution',
             soldeLabel:'Solde',
             tauxExecutionLabel:'Taux d\'Execution',          
-  }
+    },
+    libelle: 'Défaut',
+    id: 1,
+    previsions: 0,
+    realisationsMois: 0,
+    realisationsPrecedentes: 0,
+    realisationsCumulees: 0,
+    engagements: 0,
+    execution: 0,
+    solde: 0,
+    tauxExecution: 0
   }
   
   export const defaultMonthRecapData: IMonthRecapData = {
