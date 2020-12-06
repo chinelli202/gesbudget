@@ -24,7 +24,7 @@
       </el-menu-item> 
       <el-submenu 
         v-if="domaine == 'fonctionnement'"
-        index="2">
+        index="1445">
         <template slot="title">
           Dépenses
         </template>
@@ -38,23 +38,35 @@
           Missions
         </el-menu-item> -->
 
-        <el-submenu v-for="ssection in ssectionFonctionnementMap"
-            :key="ssection.id"
-            :index="ssection.id"
+        <el-submenu v-for="(section, index) in depensesMap"
+            :key="section.label"
+            :index="1445-index"
             >
           <template slot="title">
-            {{ssection.label}}
+            {{section.label}}
           </template>
-          <el-menu-item v-for="element in ssection.collection"
-          :key="element.id"
-          :index="element.id"
-          @click="handleMenuItemClicked(element)">
-            {{element.label}}
+          <div v-if="section.groupes && section.groupes.length > 0">
+            <el-menu-item v-for="(element, index) in section.groupes"
+              :key="154449-index"
+              :label="element.label"
+              @click="handleMenuItemClicked(element)">
+              <template slot="title">
+                {{element.label}}
+              </template>
+            </el-menu-item>
+          </div>
+          <div v-else>
+            <el-menu-item v-for="chapitre in section.chapitres"
+            :key="chapitre.id"
+           
+            @click="handleMenuItemClicked(chapitre)">
+            {{chapitre.label}}
           </el-menu-item>
+          </div>
         </el-submenu>
 
 
-        <el-submenu index="2-4">
+        <!-- <el-submenu index="2-4">
           <template slot="title">
             Fonctionnement
           </template>
@@ -96,8 +108,8 @@
           <el-menu-item index="2-5-3">
             Investissements  Financiers
           </el-menu-item>
-        </el-submenu>
-      </el-submenu>
+        </el-submenu>-->
+      </el-submenu> 
       <el-submenu 
       
       v-else
@@ -106,11 +118,11 @@
             Depenses
           </template>
           <el-menu-item 
-          v-for="chapitre in depensesMap"
-          :key="chapitre.value"
-          :index="chapitre.value"
-          @click="handleDepensesClick"
-          >
+            v-for="chapitre in depensesMap"
+            :key="chapitre.value"
+            :index="chapitre.value"
+            @click="handleDepensesClick"
+            >
             {{chapitre.label}}
           </el-menu-item>
       </el-submenu>
@@ -139,18 +151,17 @@
             Exporter
           </template>
           <el-menu-item 
-          v-for="map in exportMap"
-          :key="map.value"
-          @click="handleExporterGeneraux(map)"
-          >
-            {{map.label}}
+            v-for="map in exportMap"
+            :key="map.value"
+            @click="handleExporterGeneraux(map)"
+            >
+              {{map.label}}
           </el-menu-item>
       </el-submenu>
     </el-menu>
 
     <el-dialog :visible.sync="dialogTableVisible">
        <navigateur-etats :maquetteTree="maquetteTree" @exit-navigateur-dialog="handleExitDialogEventRecieved"/>
-       
     </el-dialog>
   </div>
 </template>
@@ -221,7 +232,7 @@ private exportMap: any [] = []
   private async paramNavTree(){
     if(this.domaine=='fonctionnement'){
       this.navTitle = "Fonctionnement"
-      const {data} = await getFonctionnementTree(this.listQuery)
+      const {data} = await getSectionsFonctionnementTree(this.listQuery)
       this.maquetteTree = data
       this.exportMap = this.exportTree.fonctionnement
 
@@ -235,14 +246,36 @@ private exportMap: any [] = []
       this.maquetteTree = data
       this.exportMap = this.exportTree.mandat
     }
-    let depensesOption = this.maquetteTree.depenses.chapitres
+    //let depensesOption = this.maquetteTree.depenses.chapitres
     let recettesOption = this.maquetteTree.recettes.chapitres
 
-    this.depensesMap= depensesOption.map((chapitre : any)=>{
-      let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:chapitre.type}
-      return mappedChapitre
-    })
-    console.log("this is the depense map, ", this.depensesMap)
+    if(this.domaine == 'fonctionnement'){
+      let depensesOption = this.maquetteTree.depenses
+      this.depensesMap= depensesOption.sections.map((section : any)=>{
+        let mappedSection = {label: section.section, value: section.section, groupes:section.groupes.map((groupe)=>{
+          //make custom names
+          //let urlname = groupe.label.replace(" ", "+")
+          let sectiongroup = {label: groupe.label, groupname:groupe.label, type:'groupe'}
+          return sectiongroup
+        }), chapitres:section.chapitres.map((chapitre)=>{
+          let mappedChapitre = {label: chapitre.label, value: chapitre.id, type:'chapitre'}
+          return mappedChapitre
+        })}
+        return mappedSection
+      })
+      
+      console.log("this is the depense map, ", this.depensesMap)
+    }
+    else{
+      let depensesOption = this.maquetteTree.depenses.chapitres
+      this.depensesMap= depensesOption.map((chapitre : any)=>{
+        let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:chapitre.type}
+        return mappedChapitre
+      })
+      console.log("this is the depense map, ", this.depensesMap)
+    }
+
+    
 
     this.recettesMap= recettesOption.map((chapitre : any)=>{
       let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:chapitre.type}
@@ -328,6 +361,7 @@ private exportMap: any [] = []
       // var url = "/tab/custom/fonctionnement/" + this.chosenEntity + "/" + this.chosenEntityId;
     //  this.$router.push(url);
     //this.$router.push({ name: routename, params: { entitytype: 'chapitre', entitykey: String(data) } })
+    console.log("will use element of type : "+data.type+", with key : " + data.key)
   }
 
   private handleAllerButtonClick(){
