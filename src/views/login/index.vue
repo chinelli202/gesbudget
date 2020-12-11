@@ -111,7 +111,6 @@ import { Dictionary } from 'vue-router/types/router'
 import { Form as ElForm, Input } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
-import { isValidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect/index.vue'
 import SocialSign from './components/SocialSignin.vue'
 
@@ -123,20 +122,24 @@ import SocialSign from './components/SocialSignin.vue'
   }
 })
 export default class extends Vue {
+  private isNumeric(value: any) {
+      return /^\d+$/.test(value)
+  }
+
   private validateUsername = (rule: any, value: string, callback: Function) => {
-    if (!isValidUsername(value)) {
-      callback(new Error('Please enter the correct user name'))
+    if (value.length < 5 || !this.isNumeric(value)) {
+      callback(new Error('Veuillez saisir un matricule valide'))
     } else {
       callback()
     }
   }
 
   private validatePassword = (rule: any, value: string, callback: Function) => {
-    // if (value.length < 6) {
-    //   callback(new Error('The password can not be less than 6 digits'))
-    // } else {
-    //   callback()
-    // }
+    if (value.length < 5) {
+      callback(new Error('Le mot de passe doit avoir au moins 5 caractères'))
+    } else {
+      callback()
+    }
     callback()
   }
 
