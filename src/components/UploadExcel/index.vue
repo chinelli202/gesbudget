@@ -4,7 +4,7 @@
       ref="excel-upload-input"
       class="excel-upload-input"
       type="file"
-      accept=".xlsx, .xls"
+      accept=".xlsx, .xls, .php"
       @change="handleClick"
     >
           <p :style="fileChosen ? tipActive : tipInactive">- Fichier maquette choisi <i class="el-icon-check"></i></p>
@@ -27,6 +27,10 @@
         Browse
       </el-button>
     </div>
+    <div>
+      <p>{{loadProgressMessage}}</p>
+      <el-progress :percentage="50"></el-progress>
+    </div>
     <div v-if="filechosen" style="float:right">
       <el-button type="primary" plain @click="handleUploadClicked">Charger <i class="el-icon-upload el-icon-right"></i></el-button>
     </div>
@@ -36,7 +40,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import {uploadMaquette} from '@/api/elaboration'
+import {uploadMaquette, watchProgress, processMaquette} from '@/api/elaboration'
 import XLSX from 'xlsx'
 
 @Component({
@@ -51,11 +55,12 @@ export default class extends Vue {
     header: null,
     results: null
   }
-
+  private loadProgressMessage: string  = "progress message"
   private filechosen: boolean = false
   private fileUploaded: boolean = false
   private fileProcessed: boolean = false
   private previewDisplayed: boolean = false
+  private loadwatcher:any = {}
 
   private filename:string  = "Drop excel file here or"
 
@@ -81,10 +86,10 @@ export default class extends Vue {
       return
     }
     const rawFile = files[0] // only use files[0]
-    if (!this.isExcel(rawFile)) {
-      this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
-      return false
-    }
+    // if (!this.isExcel(rawFile)) {
+    //   this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
+    //   return false
+    // }
     this.filename = rawFile.name
     this.filechosen = true
 
@@ -118,23 +123,42 @@ export default class extends Vue {
 
   private async upload(rawFile: File) {
     (this.$refs['excel-upload-input'] as HTMLInputElement).value = '' // Fixes can't select the same excel
-    if (!this.beforeUpload) {
-      this.readerData(rawFile)
-      return
-    }
-    const before = this.beforeUpload(rawFile)
-    if (before) {
-      this.readerData(rawFile)
-    }
+    // if (!this.beforeUpload) {
+    //   this.readerData(rawFile)
+    //   return
+    // }
+    // const before = this.beforeUpload(rawFile)
+    // if (before) {
+    //   this.readerData(rawFile)
+    // }
     
     this.queryParams.file = rawFile
-    const {data} = await uploadMaquette(this.queryParams)
+    const formData = new FormData();
+    formData.append('maquette', rawFile, rawFile.name)
+    const {data} = await uploadMaquette(formData)
     if(data)
     {
+      console.log("file uploaded")
       this.fileUploaded = true
+
+      //launch process maquette
+      //start interval
+      //
     }
   }
 
+  //define interval variable
+
+  //interval function
+  private watchprogress(filename:string) : any {
+    //check for progress, 
+    //update load message and progress bar
+  }
+
+  private loadmaquette(filename:string){
+    var form_data = new FormData();
+    this.loadwatcher = setInterval( this.watchprogress("maquette_name"), 2000 );
+  }
 
 
   private readerData(rawFile: File) {
@@ -176,13 +200,16 @@ export default class extends Vue {
   }
   
   private async handleUploadClicked(){
+    (this.$refs['excel-upload-input'] as HTMLInputElement).click()
     //this.queryParams.file = this.queryParams.file
-    const {data} = await uploadMaquette(this.queryParams)
-    if(data)
-    {
-      this.fileUploaded = true
-      this.$message.info('file correctly uploaded')
-    }
+    // const formData = new FormData();
+    // formData.append('maquette', rawFile, rawFile.name)
+    // const {data} = await uploadMaquette(this.queryParams)
+    // if(data)
+    // {
+    //   this.fileUploaded = true
+    //   this.$message.info('file correctly uploaded')
+    // }
   }
 }
 

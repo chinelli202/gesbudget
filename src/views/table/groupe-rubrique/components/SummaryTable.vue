@@ -195,7 +195,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
               } else {
                 return prev;
               }
-            }, 0).toLocaleString("fr-FR") + ' FCFA';
+            }, 0).toLocaleString("fr-FR");
           } else {
             sums[index] = 'N/A';
           }
