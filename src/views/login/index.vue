@@ -15,15 +15,15 @@
         <lang-select class="set-language" />
       </div>
 
-      <el-form-item prop="email">
+      <el-form-item prop="matricule">
         <span class="svg-container">
           <svg-icon name="user" />
         </span>
         <el-input
-          ref="email"
-          v-model="loginForm.email"
-          :placeholder="$t('login.email')"
-          name="email"
+          ref="matricule"
+          v-model="loginForm.matricule"
+          :placeholder="$t('login.matricule')"
+          name="matricule"
           type="text"
           tabindex="1"
           autocomplete="on"
@@ -73,11 +73,11 @@
 
       <div style="position:relative">
         <div class="tips">
-          <span>{{ $t('login.email') }} : admin </span>
+          <span>{{ $t('login.matricule') }} : admin </span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
         </div>
         <div class="tips">
-          <span>{{ $t('login.email') }} : editor </span>
+          <span>{{ $t('login.matricule') }} : editor </span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
         </div>
 
@@ -141,12 +141,12 @@ export default class extends Vue {
   }
 
   private loginForm = {
-    email: 'user1@app.com',
+    matricule: '00005',
     password: '12345'
   }
 
   private loginRules = {
-    email: [{ validator: this.validateUsername, trigger: 'blur' }],
+    matricule: [{ validator: this.validateUsername, trigger: 'blur' }],
     password: [{ validator: this.validatePassword, trigger: 'blur' }]
   }
 
@@ -169,7 +169,7 @@ export default class extends Vue {
   }
 
   mounted() {
-    if (this.loginForm.email === '') {
+    if (this.loginForm.matricule === '') {
       (this.$refs.email as Input).focus()
     } else if (this.loginForm.password === '') {
       (this.$refs.password as Input).focus()
