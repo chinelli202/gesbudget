@@ -12,7 +12,12 @@
       v-loading="dialogFormLoading"
       :visible.sync="dialogFormVisible"
     >
-      <el-form :model="engagement">
+      <el-form
+        ref="engagementForm"
+        :model="engagement"
+        :rules="engagementRules"
+        autocomplete="on"
+      >
         <el-row
           type="flex"
           justify="center"
@@ -44,7 +49,6 @@
             </el-radio-group>
           </el-col>
         </el-row>
-        <el-form-item>
           <el-row :gutter="10">
             <el-col
               :span="3"
@@ -53,17 +57,18 @@
               <strong>Ligne budget</strong>
             </el-col>
             <el-col :span="17">
-              <el-cascader
-                v-model="cascade"
-                :options="chapitresOptions"
-                :props="{expandTrigger: 'hover'}"
-                placeholder="Choisir la ligne budgétaire"
-                class="cascade-extra-lg"
-                @change="cascadeChange"
-              />
+              <el-form-item prop="ligne_budgetaire">
+                <el-cascader
+                  v-model="cascade"
+                  :options="chapitresOptions"
+                  :props="{expandTrigger: 'hover'}"
+                  placeholder="Choisir la ligne budgétaire"
+                  class="cascade-extra-lg"
+                  @change="cascadeChange"
+                />
+              </el-form-item>
             </el-col>
           </el-row>
-        </el-form-item>
         <el-form-item>
           <el-row :gutter="10">
             <el-col
@@ -122,29 +127,31 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="4"
-              :offset="2"
-            >
-              <strong>Montant TTC</strong>
-            </el-col>
-            <el-col
-              :span="4"
-            >
-              <span class="span-label">
-                <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-              </span>
-            </el-col>
-            <el-col :span="12">
-              <el-input
+        <el-row :gutter="10">
+          <el-col
+            :span="4"
+            :offset="2"
+          >
+            <strong>Montant TTC</strong>
+          </el-col>
+          <el-col
+            :span="4"
+          >
+            <span class="span-label">
+              <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
+            </span>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="montant_ttc">
+              <el-input-number
                 v-model="engagement.montant_ttc"
-                
+                :min="0"
+                :max="maxMontant()"
+                :controls="false"
               />
-            </el-col>
-          </el-row>
-        </el-form-item>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item>
           <el-row :gutter="10">
             <el-col
@@ -254,6 +261,24 @@ export default class CreateEngButton extends Vue {
   @Prop() private inactive!: string
   @Prop() private createEngAction!: CallableFunction
 
+  private validateLigne = (rule: any, value: number, callback: Function) => {
+    console.log('validate montant')
+    if (!value) {
+      callback(new Error('Veuillez choisir une ligne budgétaire'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMontant = (rule: any, value: number, callback: Function) => {
+    console.log('validate montant')
+    if (value < 1) {
+      callback(new Error('Veuillez saisir un montant valide'))
+    } else {
+      callback()
+    }
+  }
+
   /** Cascader variables */
   private domain = 'Fonctionnement'
   private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
@@ -283,12 +308,21 @@ export default class CreateEngButton extends Vue {
     chapitre_id: 0
   }
 
+  private engagementRules = {
+    montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
+    ligne_budgetaire: [{ validator: this.validateLigne, trigger: 'blur' }],
+  }
+
   created() {
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
   }
 
   private domainChange() {
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+  }
+
+  private maxMontant() {
+    return 0 < +this.soldeLigne ? +this.soldeLigne : 0
   }
 
   private cascadeChange() {
