@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, PropSync } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
 import { getUsers } from '@/api/users'
@@ -78,7 +78,7 @@ export default class Home extends Vue {
   private upperEngagementPermissions: any[] = []
   private writingEngagementPermissions: any[] = []
 
-  private hasUpperPermissions() {
+  created() {
     let engagementPermissions = UserModule.permissions.filter((value) => {
       console.log('value = >'+ value.code.split('_')[0].trim()+ '<')
       return value.code.split('_')[0].trim() === 'ENG'
@@ -89,19 +89,17 @@ export default class Home extends Vue {
       return value.code.split('_')[2].trim() === 'VALIDP' || value.code.split('_')[2].trim() === 'VALIDS' || value.code.split('_')[2].trim() === 'VALIDF'
     })
 
-    console.log('hasOnlySaisiPermissions ', engagementPermissions)
+    this.writingEngagementPermissions = engagementPermissions.filter((value) => {
+      return value.code.split('_')[2].trim() === 'SAISI'
+    })
+  }
+
+  private hasUpperPermissions() {
+    console.log('hasOnlySaisiPermissions ', this.upperEngagementPermissions)
     return this.upperEngagementPermissions.length > 0
   }
 
   private hasWritingPermissions() {
-    let engagementPermissions = UserModule.permissions.filter((value) => {
-      return value.code.split('_')[0].trim() === 'ENG'
-    })
-
-    this.writingEngagementPermissions = engagementPermissions.filter((value) => {
-      return value.code.split('_')[2].trim() === 'SAISI'
-    })
-
     console.log('writingEngagementPermissions ', this.writingEngagementPermissions)
     return this.writingEngagementPermissions.length > 0
   }

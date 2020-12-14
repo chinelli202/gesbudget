@@ -24,15 +24,11 @@
         :offset="4"
       >
         <el-button-group>
-      
-          <el-button
-            :disabled="!canCreateEngagement || !displayCreateButton"
-            type="primary"
-            icon="el-icon-edit"
-            @click="launchDialogForm"
+          <create-eng-button
+            :inactive="!canCreateEngagement || !displayCreateButton"
+            :createEngAction="createEngagement2"
           >
-            Créer un engagement
-          </el-button>
+          </create-eng-button>
           <el-button
             v-if="displayExportButton"
             @click="console.log('Exporter')"
@@ -162,231 +158,6 @@
       style="padding: 5px 16px 0px"
       @pagination="getEngagements"
     />
-    <el-dialog
-      v-loading="dialogFormLoading"
-      :visible.sync="dialogFormVisible"
-    >
-      <el-form :model="engagement">
-        <el-row
-          type="flex"
-          justify="center"
-        >
-          <el-col
-            :span="10"
-          >
-            <h1 style="text-align: center">
-              Créer un engagement
-            </h1>
-          </el-col>
-        </el-row>
-        <el-row
-          type="flex"
-          justify="center"
-          style="margin-bottom: 1.5em"
-        >
-          <el-col
-            :span="8"
-            :offset="2"
-          >
-            <el-radio-group
-              v-model="domain"
-              size="small"
-              @change="domainChange"
-            >
-              <el-radio-button label="Fonctionnement" />
-              <el-radio-button label="Mandat" />
-            </el-radio-group>
-          </el-col>
-        </el-row>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="3"
-              :offset="2"
-            >
-              <strong>Ligne budget</strong>
-            </el-col>
-            <el-col :span="17">
-              <el-cascader
-                v-model="cascade"
-                :options="chapitresOptions"
-                :props="{expandTrigger: 'hover'}"
-                placeholder="Choisir la ligne budgétaire"
-                class="cascade-extra-lg"
-                @change="cascadeChange"
-              />
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="3"
-              :offset="2"
-            >
-              <strong>Solde ligne</strong>
-            </el-col>
-            <el-col :span="17">
-              <strong>{{ soldeLigne | numFormat }}</strong>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-row :gutter="10">
-          <el-col
-            :span="20"
-            :offset="2"
-          >
-            <el-form-item label="Libellé">
-              <el-input
-                v-model="engagement.libelle"
-                type="textarea"
-                :rows="3"
-                @input="formAttributeChange"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="4"
-              :offset="2"
-            >
-              <strong>Montant HT</strong>
-            </el-col>
-            <el-col :span="4">
-              <el-select
-                v-model="engagement.devise"
-                placeholder="Devise"
-                @input="formAttributeChange"
-              >
-                <el-option
-                  v-for="(obj) in deviseOptions"
-                  :key="obj.code"
-                  :label="obj.code"
-                  :value="obj.code"
-                />
-              </el-select>
-            </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="engagement.montant_ht"
-                @input="changeMontantHT"
-              />
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="4"
-              :offset="2"
-            >
-              <strong>Montant TTC</strong>
-            </el-col>
-            <el-col
-              :span="4"
-            >
-              <span class="span-label">
-                <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-              </span>
-            </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="engagement.montant_ttc"
-                
-              />
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="10"
-              :offset="2"
-            >
-              <span class="span-label">
-                <strong>Nature</strong>
-              </span>
-            </el-col>
-            <el-col
-              :span="9"
-              :offset="2"
-            >
-              <span class="span-label">
-                <strong>Type</strong>
-              </span>
-            </el-col>
-          </el-row>
-          <el-row :gutter="10">
-            <el-col
-              :span="10"
-              :offset="2"
-            >
-              <el-select
-                v-model="engagement.nature"
-                placeholder="Nature"
-                class="select-large"
-                @input="formAttributeChange"
-              >
-                <el-option
-                  v-for="(obj) in natureOptions"
-                  :key="obj.code"
-                  :label="obj.libelle"
-                  :value="obj.code"
-                >
-                  <span style="float: left">{{ obj.libelle }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
-                </el-option>
-              </el-select>
-            </el-col>
-            <el-col
-              :span="9"
-              :offset="2"
-            >
-              <el-select
-                v-model="engagement.type"
-                placeholder="Type"
-                class="select-large"
-                @input="formAttributeChange"
-              >
-                <el-option
-                  v-for="(obj) in typeOptions"
-                  :key="obj.code"
-                  :label="obj.libelle"
-                  :value="obj.code"
-                >
-                  <span style="float: left">{{ obj.libelle }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
-                </el-option>
-              </el-select>
-            </el-col>
-          </el-row>
-        </el-form-item>
-      </el-form>
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-row
-          justify="end"
-        >
-          <el-col
-            :span="20"
-            :offset="2"
-          >
-            <el-button @click="dialogFormVisible = false">Annuler</el-button>
-            <el-button
-              type="primary"
-              :disabled="submitDisabled"
-              @click="createEngagement"
-            >
-              Créer l'engagement
-            </el-button>
-          </el-col>
-        </el-row>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -400,11 +171,12 @@ import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
 import { getBudgetStructure } from '@/api/variables'
 import Pagination from '@/components/Pagination/index.vue'
+import CreateEngButton from '@/views/engagement/components/createengbutton'
 
 @Component({
   name: 'EngagementsList',
   components: {
-    Pagination
+    Pagination, CreateEngButton
   }
 })
 
@@ -432,7 +204,6 @@ export default class EngagementsList extends Vue {
   @Prop() private valideursS!: string
   @Prop() private valideursF!: string
 
-  private soldeLigne = 0
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
   private canCreateEngagement = true
@@ -450,33 +221,6 @@ export default class EngagementsList extends Vue {
     'CLOT' : {libelle: 'Clôturés', title: 'Pré engagements clôturés'},
   }
 
-  /** Cascader variables */
-  private domain = 'Fonctionnement'
-  private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
-  private cascade: number[] = []
-
-  /** Dialog Form Variables */
-  // Add rules validation on the form to prevent incorrect submissions
-  private formLabelWidth = '120px'
-  private dialogFormVisible = false
-  private dialogFormLoading = false
-  private deviseOptions = {}
-  private typeOptions = {}
-  private natureOptions = {}
-  private etatOptions = {}
-  private statutOptions = {}
-  private tva = 0
-  private submitDisabled = true
-  private engagement = {
-    montant_ht: null,
-    montant_ttc: 0,
-    nature: '',
-    type: '',
-    devise: 'XAF',
-    ligne_id: 0,
-    rubrique_id: 0,
-    chapitre_id: 0
-  }
 
   private tageffect = {
     INIT: {
@@ -518,7 +262,6 @@ export default class EngagementsList extends Vue {
   created() {
     this.getEngagements()
     this.initializeVariables()
-    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
   }
 
   @Watch('etat')
@@ -640,10 +383,6 @@ export default class EngagementsList extends Vue {
     this.listLoading = false
   }
 
-  private domainChange() {
-    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
-  }
-
   private cascadeChange() {
     this.formAttributeChange()
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
@@ -667,37 +406,14 @@ export default class EngagementsList extends Vue {
     }
   }
 
-  private launchDialogForm() {
-    this.deviseOptions = AppModule.devises
-    this.typeOptions = AppModule.typesEngagement
-    this.natureOptions = AppModule.naturesEngagement
-    this.etatOptions = AppModule.etatsEngagement
-    this.statutOptions = AppModule.statutsEngagement
-    this.tva = AppModule.tva
 
-    this.dialogFormVisible = true
-  }
-
-  private createEngagement() {
-    this.dialogFormLoading = true
-    createEngagement(this.engagement).then((response) => {
+  private createEngagement2(engagement: any) {
+    console.log('engagement ', engagement)
+    createEngagement(engagement).then((response) => {
       const newEngagement = response.data
       this.initiatedEngagements.push(newEngagement)
       this.initiatedEngagements.sort((a, b) => b.id - a.id)
-      this.resetEngagement()
-      this.submitDisabled = true
-      this.dialogFormLoading = false
-      this.dialogFormVisible = false
     })
-  }
-
-  private changeMontantHT(value: number) {
-    this.engagement.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.formAttributeChange()
-  }
-
-  private formAttributeChange() {
-    this.submitDisabled = false
   }
 }
 
