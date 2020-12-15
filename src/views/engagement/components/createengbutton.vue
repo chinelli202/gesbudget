@@ -87,7 +87,10 @@
             :span="20"
             :offset="2"
           >
-            <el-form-item label="Libellé">
+            <el-form-item
+              prop="libelle"
+              label="Libellé"
+            >
               <el-input
                 v-model="engagement.libelle"
                 type="textarea"
@@ -103,7 +106,7 @@
               :span="4"
               :offset="2"
             >
-              <strong>Montant HT</strong>
+              <strong>Montant TTC</strong>
             </el-col>
             <el-col :span="4">
               <el-select
@@ -119,83 +122,29 @@
                 />
               </el-select>
             </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="engagement.montant_ht"
-                @input="changeMontantHT"
-              />
+            <el-col :span="3">
+              <el-form-item prop="montant_ttc">
+                <el-input-number
+                  style="width: 23.6vw"
+                  v-model="engagement.montant_ttc"
+                  :min="0"
+                  :max="maxMontant()"
+                  :controls="false"
+                />
+              </el-form-item>
             </el-col>
           </el-row>
         </el-form-item>
-        <el-row :gutter="10">
-          <el-col
-            :span="4"
-            :offset="2"
-          >
-            <strong>Montant TTC</strong>
-          </el-col>
-          <el-col
-            :span="4"
-          >
-            <span class="span-label">
-              <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-            </span>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item prop="montant_ttc">
-              <el-input-number
-                v-model="engagement.montant_ttc"
-                :min="0"
-                :max="maxMontant()"
-                :controls="false"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
         <el-form-item>
           <el-row :gutter="10">
             <el-col
-              :span="10"
+              :span="4"
               :offset="2"
             >
-              <span class="span-label">
-                <strong>Nature</strong>
-              </span>
+              <strong>Type d'engagement</strong>
             </el-col>
             <el-col
               :span="9"
-              :offset="2"
-            >
-              <span class="span-label">
-                <strong>Type</strong>
-              </span>
-            </el-col>
-          </el-row>
-          <el-row :gutter="10">
-            <el-col
-              :span="10"
-              :offset="2"
-            >
-              <el-select
-                v-model="engagement.nature"
-                placeholder="Nature"
-                class="select-large"
-                @input="formAttributeChange"
-              >
-                <el-option
-                  v-for="(obj) in natureOptions"
-                  :key="obj.code"
-                  :label="obj.libelle"
-                  :value="obj.code"
-                >
-                  <span style="float: left">{{ obj.libelle }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
-                </el-option>
-              </el-select>
-            </el-col>
-            <el-col
-              :span="9"
-              :offset="2"
             >
               <el-select
                 v-model="engagement.type"
@@ -262,9 +211,18 @@ export default class CreateEngButton extends Vue {
   @Prop() private createEngAction!: CallableFunction
 
   private validateLigne = (rule: any, value: number, callback: Function) => {
-    console.log('validate montant')
+    console.log('validate ligne')
     if (!value) {
       callback(new Error('Veuillez choisir une ligne budgétaire'))
+    } else {
+      callback()
+    }
+  }
+  
+  private validateLibelle = (rule: any, value: number, callback: Function) => {
+    console.log('validate libelle')
+    if (!value) {
+      callback(new Error('Veuillez saisir un libellé à cet engagement'))
     } else {
       callback()
     }
@@ -272,7 +230,7 @@ export default class CreateEngButton extends Vue {
 
   private validateMontant = (rule: any, value: number, callback: Function) => {
     console.log('validate montant')
-    if (value < 1) {
+    if (this.maxMontant() > 1 && value < 1) {
       callback(new Error('Veuillez saisir un montant valide'))
     } else {
       callback()
@@ -298,9 +256,8 @@ export default class CreateEngButton extends Vue {
   private tva = 0
   private submitDisabled = true
   private engagement = {
-    montant_ht: null,
     montant_ttc: 0,
-    nature: '',
+    nature: 'PEG',
     type: '',
     devise: 'XAF',
     ligne_id: 0,
@@ -311,6 +268,7 @@ export default class CreateEngButton extends Vue {
   private engagementRules = {
     montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
     ligne_budgetaire: [{ validator: this.validateLigne, trigger: 'blur' }],
+    libelle: [{ validator: this.validateLibelle, trigger: 'blur' }],
   }
 
   created() {
@@ -339,9 +297,8 @@ export default class CreateEngButton extends Vue {
     this.cascade = []
     this.soldeLigne = '0'
     this.engagement = {
-      montant_ht: null,
       montant_ttc: 0,
-      nature: '',
+      nature: 'PEG',
       type: '',
       devise: 'XAF',
       ligne_id: 0,
@@ -392,6 +349,6 @@ export default class CreateEngButton extends Vue {
   }
 
   .select-large{
-    width: 15.6vw;
+    width: 19.6vw;
   }
 </style>

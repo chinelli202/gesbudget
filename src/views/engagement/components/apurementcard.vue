@@ -3,7 +3,7 @@
     <el-container>
       <el-header>
         <h2 align="center">
-          Apurement {{ apurement.id }} (Eng:{{ engagement.id }})
+          Apurement {{ apurement.id }} de l'Engagement {{ engagement.code }}
         </h2>
       </el-header>
       <el-main
@@ -51,7 +51,7 @@
               @input="formAttributeChange"
             />
           </el-form-item>
-          <el-form-item label="Montant HT">
+          <el-form-item label="Montant TTC">
             <el-row :gutter="10">
               <el-col :span="3">
                 <el-form-item label="">
@@ -72,27 +72,14 @@
               </el-col>
               <el-col :span="18">
                 <el-input
-                  v-model="apurement.montant_ht"
+                  v-model="apurement.montant_ttc"
                   :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
-                  @input="changeMontantHT"
+                  @input="formAttributeChange"
                 />
               </el-col>
             </el-row>
           </el-form-item>
 
-          <el-form-item label="Montant TTC">
-            <el-row :gutter="10">
-              <el-col :span="3">
-                <strong>TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-              </el-col>
-              <el-col :span="20">
-                <el-input
-                  v-model="apurement.montant_ttc"
-                  :disabled="true"
-                />
-              </el-col>
-            </el-row>
-          </el-form-item>
           <el-form-item label="Statut">
             <el-input
               v-model="apurement.statut_libelle"
@@ -356,7 +343,6 @@ export default class ApurementCard extends Vue {
     this.apurement = {
       engagement_id: '',
       reference_paiement: '',
-      montant_ht: 0,
       montant_ttc: 0,
       devise: 'XAF',
       observations: '',
@@ -367,7 +353,6 @@ export default class ApurementCard extends Vue {
   }
 
   private launchImputer() {
-    this.apurement.montant_ht = this.engagement.montant_ht
     this.apurement.montant_ttc = this.engagement.montant_ttc
     this.apurement.devise = this.engagement.devise
     this.apurerFormVisible = true

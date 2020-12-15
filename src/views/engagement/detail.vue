@@ -125,7 +125,7 @@
                   @input="formAttributeChange"
                 />
               </el-form-item>
-              <el-form-item label="Montant HT">
+              <el-form-item label="Montant TTC">
                 <el-row :gutter="10">
                   <el-col :span="3">
                     <el-form-item label="">
@@ -145,27 +145,14 @@
                   </el-col>
                   <el-col :span="18">
                     <el-input
-                      v-model="engagement.montant_ht"
+                      v-model="engagement.montant_ttc"
                       :disabled="!toEdit"
-                      @input="changeMontantHT"
+                      @input="formAttributeChange"
                     />
                   </el-col>
                 </el-row>
               </el-form-item>
 
-              <el-form-item label="Montant TTC">
-                <el-row :gutter="10">
-                  <el-col :span="3">
-                    <strong>TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-                  </el-col>
-                  <el-col :span="20">
-                    <el-input
-                      v-model="engagement.montant_ttc"
-                      :disabled="!toEdit"
-                    />
-                  </el-col>
-                </el-row>
-              </el-form-item>
               <el-form-item class="no-margin-bottom">
                 <el-row :gutter="10">
                   <el-col
@@ -461,10 +448,10 @@
         <el-form-item>
           <el-row :gutter="10">
             <el-col
-              :span="4"
+              :span="3"
               :offset="2"
             >
-              <strong>Montant HT</strong>
+              <strong>Montant TTC</strong>
             </el-col>
             <el-col :span="4">
               <el-select
@@ -480,82 +467,11 @@
                 />
               </el-select>
             </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="imputation.montant_ht"
-                @input="changeImputerMontantHT"
-              />
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="4"
-              :offset="2"
-            >
-              <strong>Montant TTC</strong>
-            </el-col>
-            <el-col
-              :span="4"
-            >
-              <span class="span-label">
-                <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-              </span>
-            </el-col>
-            <el-col :span="12">
+            <el-col :span="13">
               <el-input
                 v-model="imputation.montant_ttc"
-                :disabled="true"
+                @input="formAttributeChange"
               />
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col
-              :offset="2"
-              :span="20"
-            >
-              <el-alert
-                v-if="tvaImputerMismatch"
-                title="Le taux de TVA de l'engagement est différent du taux de tva actuel"
-                type="warning"
-                :closable="false"
-                center
-                show-icon
-              />
-            </el-col>
-          </el-row>
-          <el-row
-            v-if="false"
-            style="margin-top: 2em"
-          >
-            <el-col
-              :offset="2"
-              :span="18"
-            >
-              <el-upload
-                ref="upload"
-                class="upload-demo"
-                drag
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :file-list="imputation.files"
-                :on-change="changeImputerFile"
-                :disabled="true"
-                multiple
-              >
-                <i class="el-icon-upload" />
-                <div class="el-upload__text">
-                  Déposer les fichiers ici ou<em>cliquez pour envoyer</em>
-                </div>
-                <div
-                  slot="tip"
-                  class="el-upload__tip"
-                >
-                  Fichiers jpg/png avec une taille inférieure à 500kb
-                </div>
-              </el-upload>
             </el-col>
           </el-row>
         </el-form-item>
@@ -651,7 +567,6 @@ export default class extends Vue {
   private engagement = {
     id: null,
     code: '',
-    montant_ht: 0,
     montant_ttc: 0,
     cumul_imputations: 0,
     cumul_apurements_initie_ht: 0,
@@ -682,7 +597,6 @@ export default class extends Vue {
   private imputation = {
     engagement_id: '',
     reference: '',
-    montant_ht: 0,
     montant_ttc: 0,
     devise: 'XAF',
     observations: '',
@@ -838,25 +752,16 @@ export default class extends Vue {
     return response
   }
 
-  private checkImputerTvaMismatch() {
-    let expectedTva = (this.engagement.montant_ttc / this.engagement.montant_ht) - 1
-    expectedTva = expectedTva * 100
-    this.tvaImputerMismatch = this.tva !== +expectedTva.toPrecision(4)
-  }
-
   private launchImputer() {
-    this.imputation.montant_ht = this.engagement.montant_ht
     this.imputation.montant_ttc = this.engagement.montant_ttc
     this.imputation.devise = this.engagement.devise
     this.imputerFormVisible = true
-    this.checkImputerTvaMismatch()
   }
 
   private resetImputerForm() {
     this.imputation = {
       engagement_id: '',
       reference: '',
-      montant_ht: 0,
       montant_ttc: 0,
       devise: 'XAF',
       observations: '',
@@ -893,18 +798,8 @@ export default class extends Vue {
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
   }
 
-  private changeMontantHT(value: number) {
-    this.engagement.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.formAttributeChange()
-  }
-
   private formAttributeChange() {
     this.submitUpdateDisabled = false
-  }
-
-  private changeImputerMontantHT(value: number) {
-    this.imputation.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.imputerFormAttributeChange()
   }
 
   private changeImputerFile(file: any, fileList: any) {

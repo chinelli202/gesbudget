@@ -4,7 +4,7 @@
       <el-container>
         <el-header>
           <h2 align="center">
-            Imputation {{ imputation.id }} (Eng:{{ engagement.id }})
+            Imputation {{ imputation.id }} de l'Engagement {{ engagement.code }}
           </h2>
         </el-header>
         <el-main
@@ -45,7 +45,7 @@
                 @input="formAttributeChange"
               />
             </el-form-item>
-            <el-form-item label="Montant HT">
+            <el-form-item label="Montant TTC">
               <el-row :gutter="10">
                 <el-col :span="3">
                   <el-form-item label="">
@@ -66,23 +66,9 @@
                 </el-col>
                 <el-col :span="18">
                   <el-input
-                    v-model="imputation.montant_ht"
-                    :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
-                    @input="changeMontantHT"
-                  />
-                </el-col>
-              </el-row>
-            </el-form-item>
-
-            <el-form-item label="Montant TTC">
-              <el-row :gutter="10">
-                <el-col :span="3">
-                  <strong>TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-                </el-col>
-                <el-col :span="20">
-                  <el-input
                     v-model="imputation.montant_ttc"
-                    :disabled="true"
+                    :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                    @input="formAttributeChange"
                   />
                 </el-col>
               </el-row>
@@ -294,10 +280,10 @@
         <el-form-item>
           <el-row :gutter="10">
             <el-col
-              :span="4"
+              :span="3"
               :offset="2"
             >
-              <strong>Montant HT</strong>
+              <strong>Montant TTC</strong>
             </el-col>
             <el-col :span="4">
               <el-select
@@ -313,82 +299,11 @@
                 />
               </el-select>
             </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="apurement.montant_ht"
-                @input="changeApurerMontantHT"
-              />
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="4"
-              :offset="2"
-            >
-              <strong>Montant TTC</strong>
-            </el-col>
-            <el-col
-              :span="4"
-            >
-              <span class="span-label">
-                <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-              </span>
-            </el-col>
-            <el-col :span="12">
+            <el-col :span="13">
               <el-input
                 v-model="apurement.montant_ttc"
-                :disabled="true"
+                @input="apurerFormAttributeChange"
               />
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col
-              :offset="2"
-              :span="20"
-            >
-              <el-alert
-                v-if="tvaApurerMismatch"
-                title="Le taux de TVA de l'engagement est différent du taux de tva actuel"
-                type="warning"
-                :closable="false"
-                center
-                show-icon
-              />
-            </el-col>
-          </el-row>
-          <el-row
-            v-if="false"
-            style="margin-top: 2em"
-          >
-            <el-col
-              :offset="2"
-              :span="18"
-            >
-              <el-upload
-                ref="upload"
-                class="upload-demo"
-                drag
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :file-list="apurement.files"
-                :on-change="changeApurerFile"
-                :disabled="true"
-                multiple
-              >
-                <i class="el-icon-upload" />
-                <div class="el-upload__text">
-                  Déposer les fichiers ici ou<em>cliquez pour envoyer</em>
-                </div>
-                <div
-                  slot="tip"
-                  class="el-upload__tip"
-                >
-                  Fichiers jpg/png avec une taille inférieure à 500kb
-                </div>
-              </el-upload>
             </el-col>
           </el-row>
         </el-form-item>
@@ -468,7 +383,6 @@ export default class ImputationCard extends Vue {
   private apurement = {
     engagement_id: '',
     reference_paiement: '',
-    montant_ht: 0,
     montant_ttc: 0,
     devise: 'XAF',
     observations: '',
@@ -586,7 +500,6 @@ export default class ImputationCard extends Vue {
     this.apurement = {
       engagement_id: '',
       reference_paiement: '',
-      montant_ht: 0,
       montant_ttc: 0,
       devise: 'XAF',
       observations: '',
@@ -598,7 +511,6 @@ export default class ImputationCard extends Vue {
   }
 
   private launchApurer() {
-    this.apurement.montant_ht = this.engagement.montant_ht
     this.apurement.montant_ttc = this.engagement.montant_ttc
     this.apurement.devise = this.engagement.devise
     this.apurerFormVisible = true
@@ -625,11 +537,6 @@ export default class ImputationCard extends Vue {
 
   private apurerFormAttributeChange() {
     this.submitApurerDisabled = false
-  }
-
-  private changeApurerMontantHT(value: number) {
-    this.apurement.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.apurerFormAttributeChange()
   }
 
   private async fbcloseImputation(id: number, comment: string) {
@@ -671,9 +578,5 @@ export default class ImputationCard extends Vue {
     this.submitDisabled = false
   }
 
-  private changeMontantHT(value: number) {
-    this.imputation.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.formAttributeChange()
-  }
 }
 </script>
