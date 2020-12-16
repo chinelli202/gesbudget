@@ -122,14 +122,15 @@
                 />
               </el-select>
             </el-col>
-            <el-col :span="9">
+            <el-col :span="12">
               <el-form-item prop="montant_ttc">
                 <el-input-number
-                  style="width: 23.6vw"
+                  style="width: 100%"
                   v-model="engagement.montant_ttc"
                   :min="0"
                   :max="maxMontant()"
                   :controls="false"
+                  @input="formAttributeChange"
                 />
               </el-form-item>
             </el-col>
@@ -143,13 +144,13 @@
               <strong>Type d'engagement</strong>
             </el-col>
             <el-col
-              :span="9"
+              :span="10"
             >
               <el-form-item prop="type">
                 <el-select
                   v-model="engagement.type"
                   placeholder="Type"
-                  class="select-large"
+                  style="width: 100%"
                   @input="formAttributeChange"
                 >
                   <el-option

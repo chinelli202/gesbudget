@@ -380,7 +380,10 @@
       top="3vh"
     >
       <el-form
+        ref="imputationForm"
         :model="engagement"
+        :rules="imputationRules"
+        autocomplete="on"
       >
         <el-row
           type="flex"
@@ -410,7 +413,6 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
           <el-row :gutter="10">
             <el-col
               :span="3"
@@ -419,13 +421,14 @@
               <strong>Reference</strong>
             </el-col>
             <el-col :span="17">
-              <el-input
-                v-model="imputation.reference"
-                @input="imputerFormAttributeChange"
-              />
+              <el-form-item prop="reference">
+                <el-input
+                  v-model="imputation.reference"
+                  @input="imputerFormAttributeChange"
+                />
+              </el-form-item>
             </el-col>
           </el-row>
-        </el-form-item>
         <el-row
           :gutter="10"
           style="margin-bottom: 2em"
@@ -437,44 +440,50 @@
             <strong>Observations</strong>
           </el-col>
           <el-col :span="17">
-            <el-input
-              v-model="imputation.observations"
-              type="textarea"
-              :rows="3"
-              @input="imputerFormAttributeChange"
-            />
+            <el-form-item prop="observation">
+              <el-input
+                v-model="imputation.observations"
+                type="textarea"
+                :rows="3"
+                @input="imputerFormAttributeChange"
+              />
+            </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="3"
-              :offset="2"
+        <el-row :gutter="10">
+          <el-col
+            :span="3"
+            :offset="2"
+          >
+            <strong>Montant TTC</strong>
+          </el-col>
+          <el-col :span="4">
+            <el-select
+              v-model="imputation.devise"
+              placeholder="Devise"
+              @input="imputerFormAttributeChange"
             >
-              <strong>Montant TTC</strong>
-            </el-col>
-            <el-col :span="4">
-              <el-select
-                v-model="imputation.devise"
-                placeholder="Devise"
-                @input="imputerFormAttributeChange"
-              >
-                <el-option
-                  v-for="(obj) in deviseOptions"
-                  :key="obj.code"
-                  :label="obj.code"
-                  :value="obj.code"
-                />
-              </el-select>
-            </el-col>
-            <el-col :span="13">
-              <el-input
-                v-model="imputation.montant_ttc"
-                @input="formAttributeChange"
+              <el-option
+                v-for="(obj) in deviseOptions"
+                :key="obj.code"
+                :label="obj.code"
+                :value="obj.code"
               />
-            </el-col>
-          </el-row>
-        </el-form-item>
+            </el-select>
+          </el-col>
+          <el-col :span="13">
+            <el-form-item prop="montant_ttc">
+              <el-input-number
+                style="width: 100%"
+                v-model="imputation.montant_ttc"
+                :min="0"
+                :max="maxMontant()"
+                :controls="false"
+                @input="imputerFormAttributeChange"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <span
         slot="footer"
@@ -513,6 +522,7 @@ import { imputerEngagement } from '@/api/imputations'
 import FooterButtons from './components/footerbuttons'
 import ImputationCard from './components/imputationcard'
 import ApurementCard from './components/apurementcard'
+import { Form as ElForm } from 'element-ui'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
@@ -532,6 +542,37 @@ import { PermissionModule } from '@/store/modules/permission'
 })
 
 export default class extends Vue {
+  private validateReference = (rule: any, value: string, callback: Function) => {
+    console.log('validate reference', value, rule)
+    if (!value) {
+      callback(new Error('Veuillez saisir une référence à cette imputation'))
+    } else {
+      callback()
+    }
+  }
+  
+  private validateObservation = (rule: any, value: string, callback: Function) => {
+    console.log('validate observation')
+    if (!value) {
+      callback(new Error('Veuillez saisir une observation à cette imputation'))
+    } else if(value.length < 4) {
+      callback(new Error('L\'observation saisie doit avoir au moins 4 caractères'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMontant = (rule: any, value: number, callback: Function) => {
+    console.log('validate montant limite', this.maxMontant())
+    if (value < 1) {
+      callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul'))
+    } else if (this.maxMontant() < value ) {
+      callback(new Error(`Le montant de l'imputation doit être inférieur au montant de engagé`))
+    } else {
+      callback()
+    }
+  }
+
   /** Ligne budgetaire cascader */
   private domain = 'Fonctionnement'
   private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
@@ -604,11 +645,21 @@ export default class extends Vue {
     files: []
   }
 
+  private imputationRules = {
+    montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
+    reference: [{ validator: this.validateReference, trigger: 'blur' }],
+    observation: [{ validator: this.validateObservation, trigger: 'blur' }],
+  }
+
   created() {
     const id = this.$route.params && this.$route.params.id
     this.permissions = UserModule.permissions
     this.permissionCodes = PermissionModule.permissionCodes
     this.fetchData(parseInt(id))
+  }
+
+  private maxMontant() {
+    return this.engagement.montant_ttc
   }
 
   private async fetchData(engagementId: number) {
@@ -771,22 +822,29 @@ export default class extends Vue {
   }
 
   private imputerEngagement() {
-    console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)
-    this.imputerFormLoading = true
-    this.imputation.engagement_id = this.engagement.code
-    imputerEngagement(this.imputation).then((response:any) => {
-      this.engagement = response.data
-      this.updateViewVariables()
-      this.imputerFormLoading = false
-      this.imputerFormVisible = false
-      this.resetImputerForm()
-    }).catch(error => {
-      this.imputerFormLoading = false
-      this.imputerFormVisible = false
-      console.log('Erreur lors de l\' imputation de l\'engagement ', error)
+    
+    (this.$refs.imputationForm as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)
+        this.imputerFormLoading = true
+        this.imputation.engagement_id = this.engagement.code
+        imputerEngagement(this.imputation).then((response:any) => {
+          this.engagement = response.data
+          this.updateViewVariables()
+          this.imputerFormLoading = false
+          this.imputerFormVisible = false
+          this.resetImputerForm()
+        }).catch(error => {
+          this.imputerFormLoading = false
+          this.imputerFormVisible = false
+          console.log('Erreur lors de l\' imputation de l\'engagement ', error)
+        })
+        // TODO : handle file upload
+        this.updateViewVariables()
+      } else {
+        return false
+      }
     })
-    // TODO : handle file upload
-    this.updateViewVariables()
   }
 
   private optionsAnnulerValider() {
