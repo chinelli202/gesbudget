@@ -272,9 +272,9 @@ export default class CreateEngButton extends Vue {
 
   private engagementRules = {
     montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
-    ligne_budgetaire: [{ validator: this.validateLigne, trigger: 'blur' }],
+    ligne_budgetaire: [{ validator: this.validateLigne, trigger: 'change' }],
     libelle: [{ validator: this.validateLibelle, trigger: 'blur' }],
-    type: [{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'blur'}],
+    type: [{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change'}],
   }
 
   created() {
