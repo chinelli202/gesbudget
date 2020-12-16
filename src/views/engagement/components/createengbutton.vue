@@ -122,7 +122,7 @@
                 />
               </el-select>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="9">
               <el-form-item prop="montant_ttc">
                 <el-input-number
                   style="width: 23.6vw"
@@ -135,7 +135,6 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
           <el-row :gutter="10">
             <el-col
               :span="4"
@@ -146,25 +145,26 @@
             <el-col
               :span="9"
             >
-              <el-select
-                v-model="engagement.type"
-                placeholder="Type"
-                class="select-large"
-                @input="formAttributeChange"
-              >
-                <el-option
-                  v-for="(obj) in typeOptions"
-                  :key="obj.code"
-                  :label="obj.libelle"
-                  :value="obj.code"
+              <el-form-item prop="type">
+                <el-select
+                  v-model="engagement.type"
+                  placeholder="Type"
+                  class="select-large"
+                  @input="formAttributeChange"
                 >
-                  <span style="float: left">{{ obj.libelle }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
-                </el-option>
-              </el-select>
+                  <el-option
+                    v-for="(obj) in typeOptions"
+                    :key="obj.code"
+                    :label="obj.libelle"
+                    :value="obj.code"
+                  >
+                    <span style="float: left">{{ obj.libelle }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
+                  </el-option>
+                </el-select>
+              </el-form-item>
             </el-col>
           </el-row>
-        </el-form-item>
       </el-form>
       <span
         slot="footer"
@@ -196,6 +196,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch} from 'vue-property-decorator'
 import { createEngagement } from '@/api/engagements'
+import { Form as ElForm, Input } from 'element-ui'
 import { getSoldeLigne } from '@/api/lignes'
 import { AppModule } from '@/store/modules/app'
 
@@ -211,27 +212,31 @@ export default class CreateEngButton extends Vue {
   @Prop() private createEngAction!: CallableFunction
 
   private validateLigne = (rule: any, value: number, callback: Function) => {
-    console.log('validate ligne')
-    if (!value) {
+    console.log('validate ligne ', this.selectedLigne())
+    if (this.selectedLigne().length === 0) {
       callback(new Error('Veuillez choisir une ligne budgétaire'))
+    } else if (this.maxMontant() === 0) {
+      callback(new Error('Vous ne pouvez pas créer un engagement sur une ligne avec un solde nul'))
     } else {
       callback()
     }
   }
   
-  private validateLibelle = (rule: any, value: number, callback: Function) => {
+  private validateLibelle = (rule: any, value: string, callback: Function) => {
     console.log('validate libelle')
     if (!value) {
       callback(new Error('Veuillez saisir un libellé à cet engagement'))
+    } else if(value.length < 4) {
+      callback(new Error('Le libellé saisi doit avoir au moins 4 caractères'))
     } else {
       callback()
     }
   }
 
   private validateMontant = (rule: any, value: number, callback: Function) => {
-    console.log('validate montant')
+    console.log('validate montant limite', this.maxMontant())
     if (this.maxMontant() > 1 && value < 1) {
-      callback(new Error('Veuillez saisir un montant valide'))
+      callback(new Error('Veuillez saisir un montant non nul'))
     } else {
       callback()
     }
@@ -269,6 +274,7 @@ export default class CreateEngButton extends Vue {
     montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
     ligne_budgetaire: [{ validator: this.validateLigne, trigger: 'blur' }],
     libelle: [{ validator: this.validateLibelle, trigger: 'blur' }],
+    type: [{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'blur'}],
   }
 
   created() {
@@ -283,7 +289,12 @@ export default class CreateEngButton extends Vue {
     return 0 < +this.soldeLigne ? +this.soldeLigne : 0
   }
 
+  private selectedLigne() {
+    return this.cascade
+  }
+
   private cascadeChange() {
+    console.log('cascade ', this.cascade)
     this.formAttributeChange()
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
     this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
@@ -319,12 +330,18 @@ export default class CreateEngButton extends Vue {
   }
 
   private preAction() {
-    this.dialogFormLoading = true
-    this.createEngAction(this.engagement)
-    this.resetForm()
-    this.submitDisabled = true
-    this.dialogFormLoading = false
-    this.dialogFormVisible = false
+    (this.$refs.engagementForm as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.dialogFormLoading = true
+        this.createEngAction(this.engagement)
+        this.resetForm()
+        this.submitDisabled = true
+        this.dialogFormLoading = false
+        this.dialogFormVisible = false
+      } else {
+        return false
+      }
+    })
   }
 
   private changeMontantHT(value: number) {
