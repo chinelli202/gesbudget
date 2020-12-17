@@ -78,8 +78,11 @@
                     style="width: 100%"
                     :rules="[{ validator: validateMontant, trigger: 'blur' }]"
                   >
-                    <el-input
+                    <el-input-number
+                      style="width: 100%"
                       v-model="imputation.montant_ttc"
+                      :min="0"
+                      :controls="false"
                       :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
                       @input="formAttributeChange"
                     />
@@ -332,8 +335,11 @@
                 prop="montant_ttc"
                 :rules="[{ validator: validateMontantApurement, trigger: 'blur' }]"
               >
-                <el-input
+                <el-input-number
+                  style="width: 100%"
                   v-model="apurement.montant_ttc"
+                  :min="0"
+                  :controls="false"
                   @input="apurerFormAttributeChange"
                 />
               </el-form-item>

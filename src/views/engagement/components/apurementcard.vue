@@ -83,13 +83,16 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="20">
                 <el-form-item
                   prop="montant_ttc"
                   :rules="[{ validator: validateMontantApurement, trigger: 'blur' }]"
                 >
-                  <el-input
+                  <el-input-number
+                    style="width: 100%"
                     v-model="apurement.montant_ttc"
+                    :min="0"
+                    :controls="false"
                     :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
                     @input="formAttributeChange"
                   />
@@ -220,7 +223,7 @@ import FooterButtons from './footerbuttons'
 import {
   updateApurement, resendUpdateApurement, addComment
   , closeApurement, restoreApurement, sendBack, validationApurement
-  , apurerEngagement, cancelValidationApurement
+  , cancelValidationApurement
 } from '@/api/apurements'
 
 @Component({
@@ -432,25 +435,6 @@ export default class ApurementCard extends Vue {
     this.apurement.montant_ttc = this.engagement.montant_ttc
     this.apurement.devise = this.engagement.devise
     this.apurerFormVisible = true
-  }
-
-  private apurerEngagement() {
-    console.log('Apurement de lengagement avec fichiers ' + this.apurement.files)
-    this.apurerFormLoading = true
-    this.apurement.engagement_id = this.engagement.code
-    apurerEngagement(this.apurement).then((response:any) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.apurerFormLoading = false
-      this.apurerFormVisible = false
-      this.resetApurerForm()
-    }).catch(error => {
-      this.apurerFormLoading = false
-      this.apurerFormVisible = false
-      console.log('Erreur lors de l\'apurement de l\'engagement ', error)
-    })
-    // TODO : handle file upload
-    this.updateViewVariables()
   }
 
   private async fbcloseApurement(id: number, comment: string) {
