@@ -30,13 +30,21 @@
                 :disabled="true"
               />
             </el-form-item>
-            <el-form-item label="Reference">
+            <el-form-item
+              label="Reference"
+              prop="reference"
+              :rules="[{ validator: validateReference, trigger: 'blur' }]"
+            >
               <el-input
                 v-model="imputation.reference"
                 :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
               />
             </el-form-item>
-            <el-form-item label="Observations">
+            <el-form-item
+              label="Observations"
+              prop="observations"
+              :rules="[{ validator: validateObservation, trigger: 'blur' }]"
+            >
               <el-input
                 v-model="imputation.observations"
                 type="textarea"
@@ -65,11 +73,16 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18">
-                  <el-input
-                    v-model="imputation.montant_ttc"
-                    :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
-                    @input="formAttributeChange"
-                  />
+                  <el-form-item
+                    prop="montant_ttc"
+                    :rules="[{ validator: validateMontant, trigger: 'blur' }]"
+                  >
+                    <el-input
+                      v-model="imputation.montant_ttc"
+                      :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                      @input="formAttributeChange"
+                    />
+                  </el-form-item>
                 </el-col>
               </el-row>
             </el-form-item>
@@ -237,7 +250,7 @@
           <el-col :span="17">
             <el-form-item
               prop="reference_paiement"
-              :rules="[{ validator: validateReference, trigger: 'blur' }]"
+              :rules="[{ validator: validateReferenceApurement, trigger: 'blur' }]"
             >
               <el-input
                 v-model="apurement.reference_paiement"
@@ -259,7 +272,7 @@
           <el-col :span="17">
             <el-form-item
               prop="libelle"
-              :rules="[{ validator: validateLibelle, trigger: 'blur' }]"
+              :rules="[{ validator: validateLibelleApurement, trigger: 'blur' }]"
             >
               <el-input
                 v-model="apurement.libelle"
@@ -281,7 +294,7 @@
           <el-col :span="17">
             <el-form-item
               prop="observations"
-              :rules="[{ validator: validateObservation, trigger: 'blur' }]"
+              :rules="[{ validator: validateObservationApurement, trigger: 'blur' }]"
             >
               <el-input
                 v-model="apurement.observations"
@@ -316,7 +329,7 @@
             <el-col :span="13">
               <el-form-item
                 prop="montant_ttc"
-                :rules="[{ validator: validateMontant, trigger: 'blur' }]"
+                :rules="[{ validator: validateMontantApurement, trigger: 'blur' }]"
               >
                 <el-input
                   v-model="apurement.montant_ttc"
@@ -380,24 +393,16 @@ export default class ImputationCard extends Vue {
   @Prop({ required: true }) private fallbackUrl!: any
 
   private validateReference = (rule: any, value: string, callback: Function) => {
+    console.log('validate reference', value, rule)
     if (!value) {
-      callback(new Error('Veuillez saisir une référence de paiement à cette opération.'))
-    } else {
-      callback()
-    }
-  }
-
-  private validateLibelle = (rule: any, value: string, callback: Function) => {
-    if (!value) {
-      callback(new Error('Veuillez saisir un libellé à cet engagement.'))
-    } else if(value.length < 4) {
-      callback(new Error('Le libellé saisi doit avoir au moins 4 caractères.'))
+      callback(new Error('Veuillez saisir une référence à cette imputation.'))
     } else {
       callback()
     }
   }
   
   private validateObservation = (rule: any, value: string, callback: Function) => {
+    console.log('validate observation')
     if (!value) {
       callback(new Error('Veuillez saisir une observation à cette imputation.'))
     } else if(value.length < 4) {
@@ -408,6 +413,47 @@ export default class ImputationCard extends Vue {
   }
 
   private validateMontant = (rule: any, value: number, callback: Function) => {
+    console.log('validate montant limite', this.maxMontant())
+    if (value < 1) {
+      callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
+    } else if (this.maxMontant() < value ) {
+      callback(new Error(
+        `Le montant ${this.engagement.cumul_imputations === 0 ? 'engagé' : 'qu\'il reste à imputer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
+        Vous ne pouvez pas imputer au delà de cette somme.`))
+    } else {
+      callback()
+    }
+  }
+
+  private validateReferenceApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une référence de paiement à cette opération.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateLibelleApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir un libellé à cet engagement.'))
+    } else if(value.length < 4) {
+      callback(new Error('Le libellé saisi doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+  
+  private validateObservationApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une observation à cette imputation.'))
+    } else if(value.length < 4) {
+      callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMontantApurement = (rule: any, value: number, callback: Function) => {
     if (value < 1) {
       callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
     } else if (this.maxMontant() < value ) {
@@ -490,27 +536,39 @@ export default class ImputationCard extends Vue {
   }
 
   private async updateSubmit() {
-    this.cardLoading = true
-    updateImputation(this.imputation).then((response) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error update', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        updateImputation(this.imputation).then((response) => {
+          this.$emit('engagementChanged', response.data)
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error update', error)
+        })
+        // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+      } else {
+        return false
+      }
     })
-    // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
   }
 
   private async resendUpdate() {
-    this.cardLoading = true
-    resendUpdateImputation(this.imputation).then((response) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error resendUpdate', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        resendUpdateImputation(this.imputation).then((response) => {
+          this.$emit('engagementChanged', response.data)
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error resendUpdate', error)
+        })
+      } else {
+          return false
+      }
     })
   }
 
