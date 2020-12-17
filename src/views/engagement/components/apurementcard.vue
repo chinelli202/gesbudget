@@ -20,7 +20,7 @@
         />
         <el-form
           ref="form"
-          :model="engagement"
+          :model="apurement"
           label-width="100px"
         >
           <el-form-item label="Engagement">
@@ -29,20 +29,33 @@
               :disabled="true"
             />
           </el-form-item>
-          <el-form-item label="Reference">
+          <el-form-item
+            label="Reference"
+            prop="reference_paiement"
+            :rules="[{ validator: validateReferenceApurement, trigger: 'blur' }]"
+          >
             <el-input
               v-model="apurement.reference_paiement"
               :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+              @input="formAttributeChange"
             />
           </el-form-item>
-          <el-form-item label="Libelle">
+          <el-form-item
+            label="Libelle"
+            prop="libelle"
+            :rules="[{ validator: validateLibelleApurement, trigger: 'blur' }]"
+          >
             <el-input
               v-model="apurement.libelle"
               :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
               @input="formAttributeChange"
             />
           </el-form-item>
-          <el-form-item label="Observations">
+          <el-form-item
+            label="Observations"
+            prop="observations"
+            :rules="[{ validator: validateObservationApurement, trigger: 'blur' }]"
+          >
             <el-input
               v-model="apurement.observations"
               type="textarea"
@@ -71,11 +84,16 @@
                 </el-form-item>
               </el-col>
               <el-col :span="18">
-                <el-input
-                  v-model="apurement.montant_ttc"
-                  :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
-                  @input="formAttributeChange"
-                />
+                <el-form-item
+                  prop="montant_ttc"
+                  :rules="[{ validator: validateMontantApurement, trigger: 'blur' }]"
+                >
+                  <el-input
+                    v-model="apurement.montant_ttc"
+                    :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                    @input="formAttributeChange"
+                  />
+                </el-form-item>
               </el-col>
             </el-row>
           </el-form-item>
@@ -196,6 +214,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
+import { Form as ElForm } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
 import FooterButtons from './footerbuttons'
 import {
@@ -217,6 +236,47 @@ export default class ApurementCard extends Vue {
   @Prop({ required: true }) private deviseOptions!: any
   @Prop({ required: true }) private tva!: any
   @Prop({ required: true }) private fallbackUrl!: any
+
+  private validateReferenceApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une référence de paiement à cette opération.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateLibelleApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir un libellé à cet engagement.'))
+    } else if(value.length < 4) {
+      callback(new Error('Le libellé saisi doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+  
+  private validateObservationApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une observation à cette imputation.'))
+    } else if(value.length < 4) {
+      callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMontantApurement = (rule: any, value: number, callback: Function) => {
+    if (value < 1) {
+      callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
+    } else if (this.maxMontant() < value ) {
+      callback(new Error(
+        `Le montant ${this.engagement.cumul_apurements === 0 ? 'imputé' : 'qu\'il reste à réaliser/apurer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.engagement.devise}.
+        Vous ne pouvez pas effectuer une réalisation au delà de cette somme.`
+      ))
+    } else {
+      callback()
+    }
+  }
 
   private cardLoading = false
   private cardActive = false
@@ -247,6 +307,10 @@ export default class ApurementCard extends Vue {
     }, { immediate: true })
   }
 
+  private maxMontant() {
+    return this.engagement.montant_ttc - this.engagement.cumul_imputations
+  }
+
   private initializeCard() {
     this.cardLoading = true
     this.updateViewVariables()
@@ -269,27 +333,39 @@ export default class ApurementCard extends Vue {
   }
 
   private async updateSubmit() {
-    this.cardLoading = true
-    updateApurement(this.apurement).then((response) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error update', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        updateApurement(this.apurement).then((response) => {
+          this.$emit('engagementChanged', response.data)
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error update', error)
+        })
+        // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+      } else {
+          return false
+      }
     })
-    // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
   }
 
   private async resendUpdate() {
-    this.cardLoading = true
-    resendUpdateApurement(this.apurement).then((response) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error resendUpdate', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        resendUpdateApurement(this.apurement).then((response) => {
+          this.$emit('engagementChanged', response.data)
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error resendUpdate', error)
+        })
+      } else {
+          return false
+      }
     })
   }
 

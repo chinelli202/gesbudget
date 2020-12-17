@@ -774,7 +774,6 @@ export default class extends Vue {
   }
 
   private async updateSubmit() {
-    
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
       if(valid) {
         this.cardLoading = true
@@ -794,14 +793,20 @@ export default class extends Vue {
   }
 
   private async resendUpdate() {
-    this.cardLoading = true
-    resendUpdateEngagement(this.engagement).then((response) => {
-      this.engagement = response.data
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error resendUpdate', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        resendUpdateEngagement(this.engagement).then((response) => {
+          this.engagement = response.data
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error resendUpdate', error)
+        })
+      } else {
+          return false
+      }
     })
   }
 

@@ -21,7 +21,7 @@
           />
           <el-form
             ref="form"
-            :model="engagement"
+            :model="imputation"
             label-width="100px"
           >
             <el-form-item label="Engagement">
@@ -72,9 +72,10 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="18">
+                <el-col :span="20">
                   <el-form-item
                     prop="montant_ttc"
+                    style="width: 100%"
                     :rules="[{ validator: validateMontant, trigger: 'blur' }]"
                   >
                     <el-input
@@ -418,7 +419,7 @@ export default class ImputationCard extends Vue {
       callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
     } else if (this.maxMontant() < value ) {
       callback(new Error(
-        `Le montant ${this.engagement.cumul_imputations === 0 ? 'engagé' : 'qu\'il reste à imputer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
+        `Le montant ${this.engagement.cumul_imputations === 0 ? 'engagé' : 'qu\'il reste à imputer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.engagement.devise}.
         Vous ne pouvez pas imputer au delà de cette somme.`))
     } else {
       callback()
@@ -511,6 +512,10 @@ export default class ImputationCard extends Vue {
   }
 
   private maxMontant() {
+    return this.engagement.montant_ttc - this.engagement.cumul_imputations
+  }
+
+  private maxMontantApurement() {
     return this.engagement.cumul_imputations - this.engagement.cumul_apurements
   }
 
