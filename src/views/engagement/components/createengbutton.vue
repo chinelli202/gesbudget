@@ -100,7 +100,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item>
+        <el-form-item style="margin-bottom: 2.3em">
           <el-row :gutter="10">
             <el-col
               :span="4"
@@ -128,7 +128,6 @@
                   style="width: 100%"
                   v-model="engagement.montant_ttc"
                   :min="0"
-                  :max="maxMontant()"
                   :controls="false"
                   @input="formAttributeChange"
                 />
@@ -136,36 +135,36 @@
             </el-col>
           </el-row>
         </el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="4"
-              :offset="2"
-            >
-              <strong>Type d'engagement</strong>
-            </el-col>
-            <el-col
-              :span="10"
-            >
-              <el-form-item prop="type">
-                <el-select
-                  v-model="engagement.type"
-                  placeholder="Type"
-                  style="width: 100%"
-                  @input="formAttributeChange"
+        <el-row :gutter="10">
+          <el-col
+            :span="4"
+            :offset="2"
+          >
+            <strong>Type d'engagement</strong>
+          </el-col>
+          <el-col
+            :span="10"
+          >
+            <el-form-item prop="type">
+              <el-select
+                v-model="engagement.type"
+                placeholder="Type"
+                style="width: 100%"
+                @input="formAttributeChange"
+              >
+                <el-option
+                  v-for="(obj) in typeOptions"
+                  :key="obj.code"
+                  :label="obj.libelle"
+                  :value="obj.code"
                 >
-                  <el-option
-                    v-for="(obj) in typeOptions"
-                    :key="obj.code"
-                    :label="obj.libelle"
-                    :value="obj.code"
-                  >
-                    <span style="float: left">{{ obj.libelle }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
+                  <span style="float: left">{{ obj.libelle }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <span
         slot="footer"
@@ -238,6 +237,9 @@ export default class CreateEngButton extends Vue {
     console.log('validate montant limite', this.maxMontant())
     if (this.maxMontant() > 1 && value < 1) {
       callback(new Error('Veuillez saisir un montant non nul'))
+    } else if (this.maxMontant() < value ) {
+      callback(new Error(`Le solde restant pour cette ligne budgétaire est de ${this.maxMontant().toLocaleString()} XAF.
+      Vous ne pouvez pas créer un engagement d'un montant supérieur à cette somme.`))
     } else {
       callback()
     }
@@ -273,7 +275,7 @@ export default class CreateEngButton extends Vue {
 
   private engagementRules = {
     montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
-    ligne_budgetaire: [{ validator: this.validateLigne, trigger: 'change' }],
+    ligne_budgetaire: [{ validator: this.validateLigne, trigger: 'blur' }],
     libelle: [{ validator: this.validateLibelle, trigger: 'blur' }],
     type: [{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change'}],
   }

@@ -381,7 +381,7 @@
     >
       <el-form
         ref="imputationForm"
-        :model="engagement"
+        :model="imputation"
         :rules="imputationRules"
         autocomplete="on"
       >
@@ -440,7 +440,7 @@
             <strong>Observations</strong>
           </el-col>
           <el-col :span="17">
-            <el-form-item prop="observation">
+            <el-form-item prop="observations">
               <el-input
                 v-model="imputation.observations"
                 type="textarea"
@@ -477,7 +477,6 @@
                 style="width: 100%"
                 v-model="imputation.montant_ttc"
                 :min="0"
-                :max="maxMontant()"
                 :controls="false"
                 @input="imputerFormAttributeChange"
               />
@@ -567,7 +566,8 @@ export default class extends Vue {
     if (value < 1) {
       callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul'))
     } else if (this.maxMontant() < value ) {
-      callback(new Error(`Le montant de l'imputation doit être inférieur au montant de engagé`))
+      callback(new Error(`Le montant qui reste a imputer pour cet engagement est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
+      Vous ne pouvez pas imputer au delà de cette somme.`))
     } else {
       callback()
     }
@@ -648,7 +648,7 @@ export default class extends Vue {
   private imputationRules = {
     montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
     reference: [{ validator: this.validateReference, trigger: 'blur' }],
-    observation: [{ validator: this.validateObservation, trigger: 'blur' }],
+    observations: [{ validator: this.validateObservation, trigger: 'blur' }],
   }
 
   created() {
@@ -659,7 +659,7 @@ export default class extends Vue {
   }
 
   private maxMontant() {
-    return this.engagement.montant_ttc
+    return this.engagement.montant_ttc - this.engagement.cumul_imputations
   }
 
   private async fetchData(engagementId: number) {
