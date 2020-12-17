@@ -14,7 +14,7 @@
                 <EngagementsList
                   :etat="permission.code.split('_')[1]"
                   :statut="'NEW,SAISI'"
-                  :title="'Engagements à imputer'"
+                  :title="permission.display_name"
                   :show-title="true"
                   :table-height="'50vh'"
                   :display-create-button="permission.code.split('_')[1] === 'INIT'"

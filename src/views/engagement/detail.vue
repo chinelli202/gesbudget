@@ -382,7 +382,6 @@
       <el-form
         ref="imputationForm"
         :model="imputation"
-        :rules="imputationRules"
         autocomplete="on"
       >
         <el-row
@@ -421,7 +420,10 @@
               <strong>Reference</strong>
             </el-col>
             <el-col :span="17">
-              <el-form-item prop="reference">
+              <el-form-item
+                prop="reference"
+              :rules="[{ validator: validateReference, trigger: 'blur' }]"
+            >
                 <el-input
                   v-model="imputation.reference"
                   @input="imputerFormAttributeChange"
@@ -440,7 +442,10 @@
             <strong>Observations</strong>
           </el-col>
           <el-col :span="17">
-            <el-form-item prop="observations">
+            <el-form-item
+              prop="observations"
+              :rules="[{ validator: validateObservation, trigger: 'blur' }]"
+            >
               <el-input
                 v-model="imputation.observations"
                 type="textarea"
@@ -472,7 +477,10 @@
             </el-select>
           </el-col>
           <el-col :span="13">
-            <el-form-item prop="montant_ttc">
+            <el-form-item
+                prop="montant_ttc"
+                :rules="[{ validator: validateMontant, trigger: 'blur' }]"
+              >
               <el-input-number
                 style="width: 100%"
                 v-model="imputation.montant_ttc"
@@ -544,7 +552,7 @@ export default class extends Vue {
   private validateReference = (rule: any, value: string, callback: Function) => {
     console.log('validate reference', value, rule)
     if (!value) {
-      callback(new Error('Veuillez saisir une référence à cette imputation'))
+      callback(new Error('Veuillez saisir une référence à cette imputation.'))
     } else {
       callback()
     }
@@ -553,9 +561,9 @@ export default class extends Vue {
   private validateObservation = (rule: any, value: string, callback: Function) => {
     console.log('validate observation')
     if (!value) {
-      callback(new Error('Veuillez saisir une observation à cette imputation'))
+      callback(new Error('Veuillez saisir une observation à cette imputation.'))
     } else if(value.length < 4) {
-      callback(new Error('L\'observation saisie doit avoir au moins 4 caractères'))
+      callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
     } else {
       callback()
     }
@@ -564,10 +572,11 @@ export default class extends Vue {
   private validateMontant = (rule: any, value: number, callback: Function) => {
     console.log('validate montant limite', this.maxMontant())
     if (value < 1) {
-      callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul'))
+      callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
     } else if (this.maxMontant() < value ) {
-      callback(new Error(`Le montant qui reste a imputer pour cet engagement est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
-      Vous ne pouvez pas imputer au delà de cette somme.`))
+      callback(new Error(
+        `Le montant ${this.engagement.cumul_imputations === 0 ? 'engagé' : 'qu\'il reste à imputer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
+        Vous ne pouvez pas imputer au delà de cette somme.`))
     } else {
       callback()
     }
@@ -643,12 +652,6 @@ export default class extends Vue {
     observations: '',
     statut: '',
     files: []
-  }
-
-  private imputationRules = {
-    montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
-    reference: [{ validator: this.validateReference, trigger: 'blur' }],
-    observations: [{ validator: this.validateObservation, trigger: 'blur' }],
   }
 
   created() {
@@ -822,7 +825,6 @@ export default class extends Vue {
   }
 
   private imputerEngagement() {
-    
     (this.$refs.imputationForm as ElForm).validate(async(valid: boolean) => {
       if(valid) {
         console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)

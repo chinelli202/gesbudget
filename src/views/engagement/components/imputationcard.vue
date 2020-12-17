@@ -195,7 +195,9 @@
       top="3vh"
     >
       <el-form
-        :model="engagement"
+        ref="apurementForm"
+        :model="apurement"
+        autocomplete="on"
       >
         <el-row
           type="flex"
@@ -225,22 +227,25 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="3"
-              :offset="2"
+        <el-row :gutter="10">
+          <el-col
+            :span="3"
+            :offset="2"
+          >
+            <strong>Reference paiement</strong>
+          </el-col>
+          <el-col :span="17">
+            <el-form-item
+              prop="reference_paiement"
+              :rules="[{ validator: validateReference, trigger: 'blur' }]"
             >
-              <strong>Reference paiement</strong>
-            </el-col>
-            <el-col :span="17">
               <el-input
                 v-model="apurement.reference_paiement"
                 @input="apurerFormAttributeChange"
               />
-            </el-col>
-          </el-row>
-        </el-form-item>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row
           :gutter="10"
           style="margin-bottom: 2em"
@@ -252,10 +257,15 @@
             <strong>Libelle</strong>
           </el-col>
           <el-col :span="17">
-            <el-input
-              v-model="apurement.libelle"
-              @input="apurerFormAttributeChange"
-            />
+            <el-form-item
+              prop="libelle"
+              :rules="[{ validator: validateLibelle, trigger: 'blur' }]"
+            >
+              <el-input
+                v-model="apurement.libelle"
+                @input="apurerFormAttributeChange"
+              />
+            </el-form-item>
           </el-col>
         </el-row>
         <el-row
@@ -269,15 +279,19 @@
             <strong>Observations</strong>
           </el-col>
           <el-col :span="17">
-            <el-input
-              v-model="apurement.observations"
-              type="textarea"
-              :rows="3"
-              @input="apurerFormAttributeChange"
-            />
+            <el-form-item
+              prop="observations"
+              :rules="[{ validator: validateObservation, trigger: 'blur' }]"
+            >
+              <el-input
+                v-model="apurement.observations"
+                type="textarea"
+                :rows="3"
+                @input="apurerFormAttributeChange"
+              />
+            </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item>
           <el-row :gutter="10">
             <el-col
               :span="3"
@@ -300,13 +314,17 @@
               </el-select>
             </el-col>
             <el-col :span="13">
-              <el-input
-                v-model="apurement.montant_ttc"
-                @input="apurerFormAttributeChange"
-              />
+              <el-form-item
+                prop="montant_ttc"
+                :rules="[{ validator: validateMontant, trigger: 'blur' }]"
+              >
+                <el-input
+                  v-model="apurement.montant_ttc"
+                  @input="apurerFormAttributeChange"
+                />
+              </el-form-item>
             </el-col>
           </el-row>
-        </el-form-item>
       </el-form>
       <span
         slot="footer"
@@ -336,8 +354,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
-import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
+import { AppModule } from '@/store/modules/app'
+import { Form as ElForm } from 'element-ui'
 import FooterButtons from './footerbuttons'
 import {
   updateImputation, resendUpdateImputation, addComment
@@ -359,6 +378,47 @@ export default class ImputationCard extends Vue {
   @Prop({ required: true }) private deviseOptions!: any
   @Prop({ required: true }) private tva!: any
   @Prop({ required: true }) private fallbackUrl!: any
+
+  private validateReference = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une référence de paiement à cette opération.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateLibelle = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir un libellé à cet engagement.'))
+    } else if(value.length < 4) {
+      callback(new Error('Le libellé saisi doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+  
+  private validateObservation = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une observation à cette imputation.'))
+    } else if(value.length < 4) {
+      callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMontant = (rule: any, value: number, callback: Function) => {
+    if (value < 1) {
+      callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
+    } else if (this.maxMontant() < value ) {
+      callback(new Error(
+        `Le montant ${this.engagement.cumul_apurements === 0 ? 'imputé' : 'qu\'il reste à réaliser/apurer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
+        Vous ne pouvez pas effectuer une réalisation au delà de cette somme.`
+      ))
+    } else {
+      callback()
+    }
+  }
 
   private cardLoading = false
   private cardActive = false
@@ -402,6 +462,10 @@ export default class ImputationCard extends Vue {
     this.$watch('imputation', imputation => {
       this.initializeCard()
     }, { immediate: true })
+  }
+
+  private maxMontant() {
+    return this.engagement.cumul_imputations - this.engagement.cumul_apurements
   }
 
   private initializeCard() {
@@ -517,22 +581,28 @@ export default class ImputationCard extends Vue {
   }
 
   private apurerEngagement() {
-    console.log('Imputation de lengagement avec fichiers ' + this.apurement.files)
-    this.apurerFormLoading = true
-    this.apurement.engagement_id = this.engagement.code
-    apurerEngagement(this.apurement).then((response:any) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.apurerFormLoading = false
-      this.apurerFormVisible = false
-      this.resetApurerForm()
-    }).catch(error => {
-      this.apurerFormLoading = false
-      this.apurerFormVisible = false
-      console.log('Erreur lors de l\'apurement de l\'engagement ', error)
+    (this.$refs.apurementForm as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        console.log('Imputation de lengagement avec fichiers ' + this.apurement.files)
+        this.apurerFormLoading = true
+        this.apurement.engagement_id = this.engagement.code
+        apurerEngagement(this.apurement).then((response:any) => {
+          this.$emit('engagementChanged', response.data)
+          this.updateViewVariables()
+          this.apurerFormLoading = false
+          this.apurerFormVisible = false
+          this.resetApurerForm()
+        }).catch(error => {
+          this.apurerFormLoading = false
+          this.apurerFormVisible = false
+          console.log('Erreur lors de l\'apurement de l\'engagement ', error)
+        })
+        // TODO : handle file upload
+        this.updateViewVariables()
+      } else {
+        return false
+      }
     })
-    // TODO : handle file upload
-    this.updateViewVariables()
   }
 
   private apurerFormAttributeChange() {

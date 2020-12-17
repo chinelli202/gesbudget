@@ -15,7 +15,6 @@
       <el-form
         ref="engagementForm"
         :model="engagement"
-        :rules="engagementRules"
         autocomplete="on"
       >
         <el-row
@@ -57,7 +56,10 @@
               <strong>Ligne budget</strong>
             </el-col>
             <el-col :span="17">
-              <el-form-item prop="ligne_budgetaire">
+              <el-form-item
+                prop="ligne_budgetaire"
+                :rules="[{ validator: this.validateLigne, trigger: 'blur' }]"
+              >
                 <el-cascader
                   v-model="cascade"
                   :options="chapitresOptions"
@@ -90,6 +92,7 @@
             <el-form-item
               prop="libelle"
               label="Libellé"
+              :rules="[{ validator: this.validateLibelle, trigger: 'blur' }]"
             >
               <el-input
                 v-model="engagement.libelle"
@@ -123,7 +126,10 @@
               </el-select>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="montant_ttc">
+              <el-form-item
+                prop="montant_ttc"
+                :rules="[{ validator: this.validateMontant, trigger: 'blur' }]"
+              >
                 <el-input-number
                   style="width: 100%"
                   v-model="engagement.montant_ttc"
@@ -145,7 +151,10 @@
           <el-col
             :span="10"
           >
-            <el-form-item prop="type">
+            <el-form-item
+              prop="type"
+              :rules="[{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change' }]"
+            >
               <el-select
                 v-model="engagement.type"
                 placeholder="Type"
@@ -271,13 +280,6 @@ export default class CreateEngButton extends Vue {
     ligne_id: 0,
     rubrique_id: 0,
     chapitre_id: 0
-  }
-
-  private engagementRules = {
-    montant_ttc: [{ validator: this.validateMontant, trigger: 'blur' }],
-    ligne_budgetaire: [{ validator: this.validateLigne, trigger: 'blur' }],
-    libelle: [{ validator: this.validateLibelle, trigger: 'blur' }],
-    type: [{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change'}],
   }
 
   created() {
