@@ -224,7 +224,7 @@
             :span="10"
           >
             <h1 style="text-align: center">
-              Apurer l'engagement {{ engagement.id }}
+              Apurer l'engagement {{ engagement.code }}
             </h1>
           </el-col>
         </el-row>

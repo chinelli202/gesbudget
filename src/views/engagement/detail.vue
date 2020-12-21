@@ -42,7 +42,7 @@
                 :offset="2"
               >
                 <h1 align="center">
-                  Engagement - {{ engagement.id }}
+                  Engagement {{ engagement.code }}
                 </h1>
               </el-col>
             </el-row>
@@ -80,7 +80,7 @@
                 style="margin-bottom: 1.5em"
               >
                 <el-col
-                  :span="10"
+                  :span="4"
                   :offset="2"
                 >
                   <el-radio-group
@@ -375,7 +375,7 @@
             :span="10"
           >
             <h1 style="text-align: center">
-              Imputer l'engagement {{ engagement.id }}
+              Imputer l'engagement {{ engagement.code }}
             </h1>
           </el-col>
         </el-row>

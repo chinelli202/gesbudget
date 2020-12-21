@@ -58,11 +58,12 @@
       :height="tableHeight ? tableHeight: '78vh'"
       style="width: 100%"
     >
+      
       <el-table-column
         fixed
-        prop="id"
-        label="ID"
-        width="70"
+        prop="code"
+        label="Code"
+        width="170"
       />
       <el-table-column
         fixed
@@ -70,12 +71,6 @@
         :formatter="dateFormatter"
         label="Mis à jour le"
         width="130"
-      />
-      <el-table-column
-        fixed
-        prop="code"
-        label="Code"
-        width="170"
       />
       <el-table-column
         prop="statut"
