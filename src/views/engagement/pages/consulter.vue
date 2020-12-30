@@ -3,6 +3,61 @@
     <div class="clearfix">
       <div class="app-container">
         <el-row :gutter="10" style="margin-bottom: 1em">
+          <el-col :span="4" :offset="6">
+            <el-select
+              v-model="operationType"
+              style="width: 14vw"
+              placeholder="Engagements ayant été..."
+              @change="operationTypeChanged"
+              clearable
+            >
+              <el-option
+                v-for="item in operationSelect"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="4">
+            <el-select
+              v-model="operateurSelect"
+              style="width: 14vw"
+              multiple
+              placeholder="Choisir un utilisateur"
+              @change="operationTypeChanged"
+            >
+              <el-option
+                v-for="item in usersList"
+                :key="item.matricule"
+                :label="item.name"
+                :value="item.matricule">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="4">
+            <el-select v-model="etat" style="width: 14vw" multiple placeholder="Etat de l'engagement">
+              <el-option
+                v-for="item in etatSelect"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                <span style="float: left">{{ item.label }}</span>
+                <span style="float: right; margin-right: 3em; color: rgb(132, 146, 166); font-size: 13px;">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </el-col>
+
+          <el-col :span="5">
+            <el-input
+              v-if="false"
+              width="18vw"
+              v-model="libelle"
+              placeholder="Rechercher par libelle">  
+            </el-input>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10">
           <el-col
             :span="3" 
             :offset="3"
@@ -36,61 +91,6 @@
               @change="ligneChanged"
               >
             </el-cascader>
-          </el-col>
-          <el-col :span="4">
-            <el-select v-model="etat" style="width: 14vw" multiple placeholder="Etat de l'engagement">
-              <el-option
-                v-for="item in etatSelect"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-                <span style="float: left">{{ item.label }}</span>
-                <span style="float: right; margin-right: 3em; color: rgb(132, 146, 166); font-size: 13px;">{{ item.value }}</span>
-              </el-option>
-            </el-select>
-          </el-col>
-
-          <el-col :span="5">
-            <el-input
-              v-if="false"
-              width="18vw"
-              v-model="libelle"
-              placeholder="Rechercher par libelle">  
-            </el-input>
-          </el-col>
-        </el-row>
-        <el-row :gutter="10">
-          <el-col :span="4" :offset="6">
-            <el-select
-              v-model="operationType"
-              style="width: 14vw"
-              placeholder="Engagements ayant été..."
-              @change="operationTypeChanged"
-              clearable
-            >
-              <el-option
-                v-for="item in operationSelect"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-select
-              v-model="operateurSelect"
-              style="width: 14vw"
-              multiple
-              placeholder="Choisir un utilisateur"
-              @change="operationTypeChanged"
-            >
-              <el-option
-                v-for="item in usersList"
-                :key="item.matricule"
-                :label="item.name"
-                :value="item.matricule">
-              </el-option>
-            </el-select>
           </el-col>
           <el-col :span="4">
             <el-select v-model="statut" style="width: 14vw" multiple placeholder="Statut de l'engagement">

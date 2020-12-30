@@ -185,6 +185,7 @@ export default class EngagementsList extends Vue {
   @Prop() private rubriques!: string
   @Prop() private chapitres!: string
   @Prop() private etat!: string
+  @Prop() private code!: string
   @Prop() private statut!: string
   @Prop() private nature!: string
   @Prop() private type!: string
@@ -218,6 +219,7 @@ export default class EngagementsList extends Vue {
     this.initializeVariables()
   }
 
+  @Watch('code')
   @Watch('etat')
   @Watch('statut')
   @Watch('lignes')
@@ -265,6 +267,11 @@ export default class EngagementsList extends Vue {
   private async getEngagements() {
     this.listLoading = true
     
+    if (this.code) {
+      this.listQuery.code = this.code
+    } else {
+      delete this.listQuery.code
+    }
     if (this.periode) {
       this.listQuery.periode = this.periode
     } else {

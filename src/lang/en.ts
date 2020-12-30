@@ -99,7 +99,7 @@ export default {
     profile: 'Profile'
   },
   login: {
-    title: 'Connexion à l\'application de gestion du budget',
+    title: 'Application de Gestion du Budget',
     logIn: 'Login',
     username: 'Username',
     password: 'Password',
