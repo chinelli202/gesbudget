@@ -156,6 +156,24 @@
         :model="plusDactionsForm"
         :rules="rulesPlusDactionsForm"
       >
+        <el-form-item
+          v-if="isbtnClose"
+          label="Raison de la clôture"
+        >
+          <el-select
+              v-model="plusDactionsForm.reason"
+              style="width: 20vw"
+              clearable
+              placeholder="Choisir une raison"
+            >
+              <el-option
+                v-for="item in raisonsCloseList"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key">
+              </el-option>
+            </el-select>
+        </el-form-item>
         <el-form-item label="Ajouter un commentaire">
           <el-input
             v-model="plusDactionsForm.commentaire"
@@ -173,7 +191,7 @@
           </el-button>
           <el-button
             type="info"
-            :disabled="sendCommentDisabled"
+            :disabled="plusDactionsForm.commentaire === '' || plusDactionsForm.reason !== ''"
             @click="preCommentaireSubmit"
           >
             Envoyer un commentaire
@@ -181,7 +199,7 @@
           <el-button
             v-if="isbtnClose"
             type="primary"
-            :disabled="sendCommentDisabled"
+            :disabled="plusDactionsForm.commentaire === '' || plusDactionsForm.reason === ''"
             @click="preClosePreeng"
           >
             Clôturer {{ entityLabel() }}
@@ -282,10 +300,15 @@ export default class FooterButtons extends Vue {
 
   private plusDactionsDialogVisible = false
   private plusDactionsForm = {
+    reason: '',
     commentaire: '',
     used: false
   }
 
+  private raisonsCloseList = [
+    {key: 'ENG_NON_VALID', label: 'Engagement non validé par la hiérarchie'},
+    {key: 'ENG_ERR_CREA', label: 'Erreur dans la création de l\'engagement'}
+  ]
   private rulesPlusDactionsForm = {
     commentaire: [
       { required: true, message: 'Veuillez saisir un commentaire.', trigger: 'blur' }
@@ -422,7 +445,7 @@ export default class FooterButtons extends Vue {
       }
     ).then(_ => {
       this.footerLoading = true
-      this.close(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
+      this.close(this.entity.id, this.plusDactionsForm.commentaire, this.plusDactionsForm.reason).then((response:any) => {
         this.plusDactionsDialogVisible = false
         this.plusDactionsForm.commentaire = ''
         this.plusDactionsForm.used = true

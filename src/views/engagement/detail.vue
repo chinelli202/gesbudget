@@ -754,10 +754,10 @@ export default class extends Vue {
     return response
   }
 
-  private async fbclosePreeng(id: number, comment: string) {
+  private async fbclosePreeng(id: number, comment: string, reason: string) {
     this.cardLoading = true
     console.log("cloturer engagement")
-    const response = await closePreeng({ id: id, comment: comment })
+    const response = await closePreeng({ id: id, comment: comment, reason: reason })
     this.engagement = response.data
     this.updateViewVariables()
     this.cardLoading = false
