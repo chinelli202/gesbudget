@@ -338,12 +338,12 @@ import { getBudgetStructure } from '@/api/variables'
 import { REPLEval } from 'repl'
 
 @Component({
-  name: 'PreEngagements',
+  name: 'EngagementsList',
   components: {
   }
 })
 
-export default class PreEngagements extends Vue {
+export default class EngagementsList extends Vue {
   @Prop({ required: true }) private etat!: string
   @Prop({ required: true }) private title!: string
   @Prop({ required: true }) private displayCreateButton!: boolean
@@ -401,7 +401,7 @@ export default class PreEngagements extends Vue {
   }
 
   detail(value: any, engagement: any) {
-    this.$router.push({ name: 'DetailEngagement', params: { id: engagement.id } })
+    this.$router.push({ name: 'engagementDetailView', params: { id: engagement.id } })
   }
 
   deleteRow(index: any, rows: any) {

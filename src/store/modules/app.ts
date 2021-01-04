@@ -53,6 +53,42 @@ class App extends VuexModule implements IAppState {
   public statutsEngagement = getStatutsEngagement()
 
   public budgetStructure: any = getLocaldbBudgetStructure()
+  public tageffect = {
+    INIT: {
+      NEW: { type: 'info', effect: 'plain' },
+      SAISI: { type: 'info', effect: 'plain' },
+      VALIDP: { type: 'info', effect: 'plain' },
+      VALIDS: { type: 'info', effect: 'light' },
+      VALIDF: { type: 'info', effect: 'dark' }
+    },
+    PEG: {
+      NEW: { type: '', effect: 'plain' },
+      SAISI: { type: '', effect: 'plain' },
+      VALIDP: { type: '', effect: 'plain' },
+      VALIDS: { type: '', effect: 'light' },
+      VALIDF: { type: '', effect: 'dark' }
+    },
+    IMP: {
+      NEW: { type: 'success', effect: 'plain' },
+      SAISI: { type: 'success', effect: 'plain' },
+      VALIDP: { type: 'success', effect: 'plain' },
+      VALIDS: { type: 'success', effect: 'light' },
+      VALIDF: { type: 'success', effect: 'dark' }
+    },
+    APUR: {
+      NEW: { type: 'success', effect: 'plain' },
+      SAISI: { type: 'success', effect: 'plain' },
+      VALIDP: { type: 'success', effect: 'plain' },
+      VALIDS: { type: 'success', effect: 'light' },
+      VALIDF: { type: 'success', effect: 'dark' }
+    },
+    CLOT: {
+      SAISI: { type: 'danger', effect: '' },
+      VALIDP: { type: 'danger', effect: '' },
+      VALIDS: { type: 'danger', effect: '' },
+      VALIDF: { type: 'danger', effect: '' }
+    }
+  }
 
   @Action
   public async fetchEngagementVariables() {

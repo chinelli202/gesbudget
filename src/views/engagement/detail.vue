@@ -42,7 +42,7 @@
                 :offset="2"
               >
                 <h1 align="center">
-                  Engagement - {{ engagement.id }}
+                  Engagement {{ engagement.code }}
                 </h1>
               </el-col>
             </el-row>
@@ -80,7 +80,7 @@
                 style="margin-bottom: 1.5em"
               >
                 <el-col
-                  :span="10"
+                  :span="4"
                   :offset="2"
                 >
                   <el-radio-group
@@ -105,18 +105,32 @@
                   :disabled="true"
                 />
               </el-form-item>
-              <el-form-item label="Ligne">
+              <el-form-item
+                label="Ligne"
+                prop="ligne_budgetaire"
+                :rules="[{ validator: validateLigne, trigger: 'blur' }]"
+              >
                 <el-cascader
                   v-model="cascade"
                   :options="chapitresOptions"
                   :props="{expandTrigger: 'hover'}"
                   :disabled="!toEdit"
+                  style="width: 100%"
                   placeholder="Choisir la ligne budgétaire"
                   class="cascade-extra-lg"
                   @change="cascadeChange"
                 />
               </el-form-item>
-              <el-form-item label="Libellé">
+              <el-form-item
+                label="Solde Ligne"
+              >
+                <strong>{{ soldeLigne.toLocaleString() }}</strong>
+              </el-form-item>
+              <el-form-item
+                prop="libelle"
+                label="Libellé"
+                :rules="[{ validator: validateLibelle, trigger: 'blur' }]"
+              >
                 <el-input
                   v-model="engagement.libelle"
                   type="textarea"
@@ -125,10 +139,9 @@
                   @input="formAttributeChange"
                 />
               </el-form-item>
-              <el-form-item label="Montant HT">
+              <el-form-item label="Montant TTC">
                 <el-row :gutter="10">
                   <el-col :span="3">
-                    <el-form-item label="">
                       <el-select
                         v-model="engagement.devise"
                         placeholder="Devise"
@@ -141,31 +154,25 @@
                           :value="obj.code"
                         />
                       </el-select>
-                    </el-form-item>
                   </el-col>
-                  <el-col :span="18">
-                    <el-input
-                      v-model="engagement.montant_ht"
-                      :disabled="!toEdit"
-                      @input="changeMontantHT"
-                    />
+                  <el-col :span="20">
+                    <el-form-item
+                      prop="montant_ttc"
+                      :rules="[{ validator: validateMontantEngagement, trigger: 'blur' }]"
+                    >
+                      <el-input-number
+                        style="width: 100%"
+                        v-model="engagement.montant_ttc"
+                        :min="0"
+                        :controls="false"
+                        :disabled="!toEdit"
+                        @input="formAttributeChange"
+                      />
+                    </el-form-item>
                   </el-col>
                 </el-row>
               </el-form-item>
 
-              <el-form-item label="Montant TTC">
-                <el-row :gutter="10">
-                  <el-col :span="3">
-                    <strong>TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-                  </el-col>
-                  <el-col :span="20">
-                    <el-input
-                      v-model="engagement.montant_ttc"
-                      :disabled="true"
-                    />
-                  </el-col>
-                </el-row>
-              </el-form-item>
               <el-form-item class="no-margin-bottom">
                 <el-row :gutter="10">
                   <el-col
@@ -175,50 +182,39 @@
                     <span class="span-label">Type
                     </span>
                   </el-col>
-                  <el-col
-                    :span="10"
-                    :offset="1"
-                  >
-                    <span class="span-label">Statut
-                    </span>
-                  </el-col>
                 </el-row>
                 <el-row :gutter="10">
                   <el-col
                     :span="10"
                     :offset="3"
                   >
-                    <el-select
-                      v-if="toEdit"
-                      v-model="engagement.type"
-                      placeholder="Type"
-                      class="type-select"
-                      @change="formAttributeChange"
+                    <el-form-item
+                      prop="type"
+                      :rules="[{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change' }]"
                     >
-                      <el-option
-                        v-for="(obj) in typeOptions"
-                        :key="obj.code"
-                        :label="obj.libelle"
-                        :value="obj.code"
+                      <el-select
+                        v-if="toEdit"
+                        v-model="engagement.type"
+                        placeholder="Type"
+                        style="width: 100%"
+                        @change="formAttributeChange"
                       >
-                        <span style="float: left">{{ obj.libelle }}</span>
-                        <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
-                      </el-option>
-                    </el-select>
-                    <el-input
-                      v-else
-                      v-model="engagement.type_libelle"
-                      :disabled="true"
-                    />
-                  </el-col>
-                  <el-col
-                    :span="10"
-                    :offset="1"
-                  >
-                    <el-input
-                      v-model="engagement.statut_libelle"
-                      :disabled="true"
-                    />
+                        <el-option
+                          v-for="(obj) in typeOptions"
+                          :key="obj.code"
+                          :label="obj.libelle"
+                          :value="obj.code"
+                        >
+                          <span style="float: left">{{ obj.libelle }}</span>
+                          <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
+                        </el-option>
+                      </el-select>
+                      <el-input
+                        v-else
+                        v-model="engagement.type_libelle"
+                        :disabled="true"
+                      />
+                    </el-form-item>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -236,7 +232,7 @@
                     :span="10"
                     :offset="1"
                   >
-                    <span class="span-label">Etat
+                    <span class="span-label">Statut
                     </span>
                   </el-col>
                 </el-row>
@@ -245,30 +241,8 @@
                     :span="10"
                     :offset="3"
                   >
-                    <!-- <el-input
-                      v-model="engagement.nature_libelle"
-                      :disabled="true"
-                    /> -->
-                    <el-select
-                      v-if="toEdit"
-                      v-model="engagement.nature"
-                      placeholder="Nature"
-                      class="type-select"
-                      @change="formAttributeChange"
-                    >
-                      <el-option
-                        v-for="(obj) in natureOptions"
-                        :key="obj.code"
-                        :label="obj.libelle"
-                        :value="obj.code"
-                      >
-                        <span style="float: left">{{ obj.libelle }}</span>
-                        <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
-                      </el-option>
-                    </el-select>
                     <el-input
-                      v-else
-                      v-model="engagement.nature_libelle"
+                      v-model="engagement.statut_libelle"
                       :disabled="true"
                     />
                   </el-col>
@@ -276,10 +250,6 @@
                     :span="10"
                     :offset="1"
                   >
-                    <!-- <el-input
-                      v-model="engagement.etat_libelle"
-                      :disabled="true"
-                    /> -->
                     <el-input
                       v-model="engagement.etat_libelle"
                       :disabled="true"
@@ -393,7 +363,9 @@
       top="3vh"
     >
       <el-form
-        :model="engagement"
+        ref="imputationForm"
+        :model="imputation"
+        autocomplete="on"
       >
         <el-row
           type="flex"
@@ -403,7 +375,7 @@
             :span="10"
           >
             <h1 style="text-align: center">
-              Imputer l'engagement {{ engagement.id }}
+              Imputer l'engagement {{ engagement.code }}
             </h1>
           </el-col>
         </el-row>
@@ -423,7 +395,6 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
           <el-row :gutter="10">
             <el-col
               :span="3"
@@ -432,13 +403,17 @@
               <strong>Reference</strong>
             </el-col>
             <el-col :span="17">
-              <el-input
-                v-model="imputation.reference"
-                @input="imputerFormAttributeChange"
-              />
+              <el-form-item
+                prop="reference"
+                :rules="[{ validator: validateReference, trigger: 'blur' }]"
+              >
+                <el-input
+                  v-model="imputation.reference"
+                  @input="imputerFormAttributeChange"
+                />
+              </el-form-item>
             </el-col>
           </el-row>
-        </el-form-item>
         <el-row
           :gutter="10"
           style="margin-bottom: 2em"
@@ -450,115 +425,55 @@
             <strong>Observations</strong>
           </el-col>
           <el-col :span="17">
-            <el-input
-              v-model="imputation.observations"
-              type="textarea"
-              :rows="3"
-              @input="imputerFormAttributeChange"
-            />
+            <el-form-item
+              prop="observations"
+              :rules="[{ validator: validateObservation, trigger: 'blur' }]"
+            >
+              <el-input
+                v-model="imputation.observations"
+                type="textarea"
+                :rows="3"
+                @input="imputerFormAttributeChange"
+              />
+            </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="4"
-              :offset="2"
-            >
-              <strong>Montant HT</strong>
-            </el-col>
-            <el-col :span="4">
-              <el-select
-                v-model="imputation.devise"
-                placeholder="Devise"
-                @input="imputerFormAttributeChange"
-              >
-                <el-option
-                  v-for="(obj) in deviseOptions"
-                  :key="obj.code"
-                  :label="obj.code"
-                  :value="obj.code"
-                />
-              </el-select>
-            </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="imputation.montant_ht"
-                @input="changeImputerMontantHT"
-              />
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="4"
-              :offset="2"
-            >
-              <strong>Montant TTC</strong>
-            </el-col>
-            <el-col
-              :span="4"
-            >
-              <span class="span-label">
-                <strong> TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-              </span>
-            </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="imputation.montant_ttc"
-                :disabled="true"
-              />
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col
-              :offset="2"
-              :span="20"
-            >
-              <el-alert
-                v-if="tvaImputerMismatch"
-                title="Le taux de TVA de l'engagement est différent du taux de tva actuel"
-                type="warning"
-                :closable="false"
-                center
-                show-icon
-              />
-            </el-col>
-          </el-row>
-          <el-row
-            v-if="false"
-            style="margin-top: 2em"
+        <el-row :gutter="10">
+          <el-col
+            :span="3"
+            :offset="2"
           >
-            <el-col
-              :offset="2"
-              :span="18"
+            <strong>Montant TTC</strong>
+          </el-col>
+          <el-col :span="4">
+            <el-select
+              v-model="imputation.devise"
+              placeholder="Devise"
+              @input="imputerFormAttributeChange"
             >
-              <el-upload
-                ref="upload"
-                class="upload-demo"
-                drag
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :file-list="imputation.files"
-                :on-change="changeImputerFile"
-                :disabled="true"
-                multiple
+              <el-option
+                v-for="(obj) in deviseOptions"
+                :key="obj.code"
+                :label="obj.code"
+                :value="obj.code"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="13">
+            <el-form-item
+                prop="montant_ttc"
+                :rules="[{ validator: validateMontant, trigger: 'blur' }]"
               >
-                <i class="el-icon-upload" />
-                <div class="el-upload__text">
-                  Déposer les fichiers ici ou<em>cliquez pour envoyer</em>
-                </div>
-                <div
-                  slot="tip"
-                  class="el-upload__tip"
-                >
-                  Fichiers jpg/png avec une taille inférieure à 500kb
-                </div>
-              </el-upload>
-            </el-col>
-          </el-row>
-        </el-form-item>
+              <el-input-number
+                style="width: 100%"
+                v-model="imputation.montant_ttc"
+                :min="0"
+                :controls="false"
+                @input="imputerFormAttributeChange"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <span
         slot="footer"
@@ -593,10 +508,12 @@ import {
   , updateEngagement, validationPreeng, cancelValidationPreeng
   , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
 } from '@/api/engagements'
+import { getSoldeLigne } from '@/api/lignes'
 import { imputerEngagement } from '@/api/imputations'
 import FooterButtons from './components/footerbuttons'
 import ImputationCard from './components/imputationcard'
 import ApurementCard from './components/apurementcard'
+import { Form as ElForm } from 'element-ui'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
@@ -616,10 +533,78 @@ import { PermissionModule } from '@/store/modules/permission'
 })
 
 export default class extends Vue {
+  private validateReference = (rule: any, value: string, callback: Function) => {
+    console.log('validate reference', value, rule)
+    if (!value) {
+      callback(new Error('Veuillez saisir une référence à cette imputation.'))
+    } else {
+      callback()
+    }
+  }
+  
+  private validateObservation = (rule: any, value: string, callback: Function) => {
+    console.log('validate observation')
+    if (!value) {
+      callback(new Error('Veuillez saisir une observation à cette imputation.'))
+    } else if(value.length < 4) {
+      callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMontant = (rule: any, value: number, callback: Function) => {
+    console.log('validate montant limite', this.maxMontant())
+    if (value < 1) {
+      callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
+    } else if (this.maxMontant() < value ) {
+      callback(new Error(
+        `Le montant ${this.engagement.cumul_imputations === 0 ? 'engagé' : 'qu\'il reste à imputer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
+        Vous ne pouvez pas imputer au delà de cette somme.`))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMontantEngagement = (rule: any, value: number, callback: Function) => {
+    console.log('validate montant limite', this.maxMontantEngagement())
+    if (this.maxMontantEngagement() > 1 && value < 1) {
+      callback(new Error(`Veuillez saisir un montant différent de 0 et inférieur au solde de la ligne qui est de ${this.maxMontantEngagement().toLocaleString()} XAF.`))
+    } else if (this.maxMontantEngagement() < value ) {
+      callback(new Error(`Le solde restant pour cette ligne budgétaire est de ${this.maxMontantEngagement().toLocaleString()} XAF.
+      Vous ne pouvez pas créer un engagement d'un montant supérieur à cette somme.`))
+    } else {
+      callback()
+    }
+  }
+
+  private validateLibelle = (rule: any, value: string, callback: Function) => {
+    console.log('validate libelle')
+    if (!value) {
+      callback(new Error('Veuillez saisir un libellé à cet engagement'))
+    } else if(value.length < 4) {
+      callback(new Error('Le libellé saisi doit avoir au moins 4 caractères'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateLigne = (rule: any, value: number, callback: Function) => {
+    console.log('validate ligne ', this.selectedLigne())
+    if (this.selectedLigne().length === 0) {
+      callback(new Error('Veuillez choisir une ligne budgétaire'))
+    } else if (this.maxMontantEngagement() === 0) {
+      callback(new Error('Vous ne pouvez pas choisir une ligne avec un solde nul'))
+    } else {
+      callback()
+    }
+  }
+
   /** Ligne budgetaire cascader */
   private domain = 'Fonctionnement'
   private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
   private cascade: number[] = []
+  private soldeLigne = 0
 
   /** Main card form attributes */
   private cardLoading = true
@@ -651,7 +636,6 @@ export default class extends Vue {
   private engagement = {
     id: null,
     code: '',
-    montant_ht: 0,
     montant_ttc: 0,
     cumul_imputations: 0,
     cumul_apurements_initie_ht: 0,
@@ -682,7 +666,6 @@ export default class extends Vue {
   private imputation = {
     engagement_id: '',
     reference: '',
-    montant_ht: 0,
     montant_ttc: 0,
     devise: 'XAF',
     observations: '',
@@ -695,6 +678,18 @@ export default class extends Vue {
     this.permissions = UserModule.permissions
     this.permissionCodes = PermissionModule.permissionCodes
     this.fetchData(parseInt(id))
+  }
+
+  private maxMontant() {
+    return this.engagement.montant_ttc - this.engagement.cumul_imputations
+  }
+
+  private selectedLigne() {
+    return this.cascade
+  }
+
+  private maxMontantEngagement() {
+    return 0 < +this.soldeLigne ? +this.soldeLigne : 0
   }
 
   private async fetchData(engagementId: number) {
@@ -715,6 +710,10 @@ export default class extends Vue {
       this.domain = this.engagement.domaine
       this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
 
+      getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
+        this.soldeLigne = response.data.solde_restant == 0 ? 'Solde nul' : response.data.solde_restant
+      })
+
       this.cardLoading = false
     })
       .catch(error => {
@@ -731,6 +730,11 @@ export default class extends Vue {
     console.log(this.cascade)
     this.formAttributeChange()
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
+    this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
+    this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
+    getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
+      this.soldeLigne = response.data.solde_restant == 0 ? 'Solde nul' : response.data.solde_restant
+    })
     this.updateViewVariables()
   }
 
@@ -750,10 +754,10 @@ export default class extends Vue {
     return response
   }
 
-  private async fbclosePreeng(id: number, comment: string) {
+  private async fbclosePreeng(id: number, comment: string, reason: string) {
     this.cardLoading = true
     console.log("cloturer engagement")
-    const response = await closePreeng({ id: id, comment: comment })
+    const response = await closePreeng({ id: id, comment: comment, reason: reason })
     this.engagement = response.data
     this.updateViewVariables()
     this.cardLoading = false
@@ -770,27 +774,39 @@ export default class extends Vue {
   }
 
   private async updateSubmit() {
-    this.cardLoading = true
-    updateEngagement(this.engagement).then((response) => {
-      this.engagement = response.data
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error update', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        updateEngagement(this.engagement).then((response) => {
+          this.engagement = response.data
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error update', error)
+        })
+        // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+      } else {
+        return false
+      }
     })
-    // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
   }
 
   private async resendUpdate() {
-    this.cardLoading = true
-    resendUpdateEngagement(this.engagement).then((response) => {
-      this.engagement = response.data
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error resendUpdate', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        resendUpdateEngagement(this.engagement).then((response) => {
+          this.engagement = response.data
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error resendUpdate', error)
+        })
+      } else {
+          return false
+      }
     })
   }
 
@@ -836,25 +852,16 @@ export default class extends Vue {
     return response
   }
 
-  private checkImputerTvaMismatch() {
-    let expectedTva = (this.engagement.montant_ttc / this.engagement.montant_ht) - 1
-    expectedTva = expectedTva * 100
-    this.tvaImputerMismatch = this.tva !== +expectedTva.toPrecision(4)
-  }
-
   private launchImputer() {
-    this.imputation.montant_ht = this.engagement.montant_ht
     this.imputation.montant_ttc = this.engagement.montant_ttc
     this.imputation.devise = this.engagement.devise
     this.imputerFormVisible = true
-    this.checkImputerTvaMismatch()
   }
 
   private resetImputerForm() {
     this.imputation = {
       engagement_id: '',
       reference: '',
-      montant_ht: 0,
       montant_ttc: 0,
       devise: 'XAF',
       observations: '',
@@ -864,22 +871,28 @@ export default class extends Vue {
   }
 
   private imputerEngagement() {
-    console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)
-    this.imputerFormLoading = true
-    this.imputation.engagement_id = this.engagement.code
-    imputerEngagement(this.imputation).then((response:any) => {
-      this.engagement = response.data
-      this.updateViewVariables()
-      this.imputerFormLoading = false
-      this.imputerFormVisible = false
-      this.resetImputerForm()
-    }).catch(error => {
-      this.imputerFormLoading = false
-      this.imputerFormVisible = false
-      console.log('Erreur lors de l\' imputation de l\'engagement ', error)
+    (this.$refs.imputationForm as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)
+        this.imputerFormLoading = true
+        this.imputation.engagement_id = this.engagement.code
+        imputerEngagement(this.imputation).then((response:any) => {
+          this.engagement = response.data
+          this.updateViewVariables()
+          this.imputerFormLoading = false
+          this.imputerFormVisible = false
+          this.resetImputerForm()
+        }).catch(error => {
+          this.imputerFormLoading = false
+          this.imputerFormVisible = false
+          console.log('Erreur lors de l\' imputation de l\'engagement ', error)
+        })
+        // TODO : handle file upload
+        this.updateViewVariables()
+      } else {
+        return false
+      }
     })
-    // TODO : handle file upload
-    this.updateViewVariables()
   }
 
   private optionsAnnulerValider() {
@@ -891,18 +904,8 @@ export default class extends Vue {
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
   }
 
-  private changeMontantHT(value: number) {
-    this.engagement.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.formAttributeChange()
-  }
-
   private formAttributeChange() {
     this.submitUpdateDisabled = false
-  }
-
-  private changeImputerMontantHT(value: number) {
-    this.imputation.montant_ttc = Math.ceil(value * (1 + this.tva / 100))
-    this.imputerFormAttributeChange()
   }
 
   private changeImputerFile(file: any, fileList: any) {
