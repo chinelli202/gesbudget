@@ -377,7 +377,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
 import { Form as ElForm } from 'element-ui'
-import FooterButtons from './footerbuttons'
+import FooterButtons from '@/views/engagement/components/footerbuttons.vue'
 import {
   updateImputation, resendUpdateImputation, addComment
   , closeImputation, restoreImputation, sendBack, validationImputation

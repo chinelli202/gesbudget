@@ -510,9 +510,9 @@ import {
 } from '@/api/engagements'
 import { getSoldeLigne } from '@/api/lignes'
 import { imputerEngagement } from '@/api/imputations'
-import FooterButtons from './components/footerbuttons'
-import ImputationCard from './components/imputationcard'
-import ApurementCard from './components/apurementcard'
+import FooterButtons from '@/views/engagement/components/footerbuttons.vue'
+import ImputationCard from '@/views/engagement/components/imputationcard.vue'
+import ApurementCard from '@/views/engagement/components/apurementcard.vue'
 import { Form as ElForm } from 'element-ui'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
@@ -527,7 +527,7 @@ import { PermissionModule } from '@/store/modules/permission'
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.fallbackUrl = from.path
+      (vm as any).fallbackUrl = from.path
     })
   }
 })

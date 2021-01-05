@@ -36,7 +36,7 @@ export const createEngagement = (data: any) =>
     data
   })
 
-  export const getEngagements = (params: any) =>
+export const getEngagements = (params: any): Promise<any> =>
   request({
     url: '/getengagements',
     method: 'get',

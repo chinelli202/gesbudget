@@ -160,7 +160,7 @@ import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
 import { getBudgetStructure } from '@/api/variables'
 import Pagination from '@/components/Pagination/index.vue'
-import CreateEngButton from '@/views/engagement/components/createengbutton'
+import CreateEngButton from '@/views/engagement/components/createengbutton.vue'
 
 @Component({
   name: 'EngagementsList',
@@ -338,19 +338,10 @@ export default class EngagementsList extends Vue {
       delete this.listQuery.valideurs_final
     }
 
-    const response = await getEngagements(this.listQuery)
-    this.paginationTotal = response.total
-    this.initiatedEngagements = response.data
-    this.listLoading = false
-  }
-
-  private cascadeChange() {
-    this.formAttributeChange()
-    this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
-    this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
-    this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
-    getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
-      this.soldeLigne = response.data.solde_restant
+    getEngagements(this.listQuery).then(response => {
+      this.paginationTotal = response.total
+      this.initiatedEngagements = response.data
+      this.listLoading = false
     })
   }
 

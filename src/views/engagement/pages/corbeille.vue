@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
-import EngagementsList from '../components/engagementslist'
+import EngagementsList from '@/views/engagement/components/engagementslist.vue'
 
 @Component({
   name: 'Corbeille',
@@ -28,9 +28,6 @@ import EngagementsList from '../components/engagementslist'
 export default class extends Vue {
   private etat = 'CLOT'
   private title = 'Préengagements supprimés'
-
-  created() {
-  }
 
   get name() {
     return UserModule.name
