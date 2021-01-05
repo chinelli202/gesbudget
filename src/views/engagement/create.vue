@@ -232,7 +232,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import {
   detailEngagement
-  , updateEngagement, validationPreeng, cancelValidationPreeng,
+  , updateEngagement, validationPreeng, cancelValidationPreeng
   , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
 } from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
