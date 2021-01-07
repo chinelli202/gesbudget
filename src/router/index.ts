@@ -107,7 +107,7 @@ export const constantRoutes: RouteConfig[] = [
     children : [
       {
         path: 'dashboard',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/home.vue'),
+        component: () => import(/* webpackChunkName: "home" */ '@/views/engagement/home.vue'),
         //redirect: '/consulter/list/',
         name: 'engagementHomeDashboard',
         meta: {
@@ -129,7 +129,7 @@ export const constantRoutes: RouteConfig[] = [
     children : [
       {
         path: 'list',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/index.vue'),
+        component: () => import(/* webpackChunkName: "engagementlist" */ '@/views/engagement/index.vue'),
         name: 'EngagementList',
         meta: {
           title: 'engagementList',
@@ -152,7 +152,7 @@ export const constantRoutes: RouteConfig[] = [
     children : [
       {
         path: 'engagement/:id(\\d+)',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/detail.vue'),
+        component: () => import(/* webpackChunkName: "engagement-detail" */ '@/views/engagement/detail.vue'),
         name: 'engagementDetailView',
         meta: {
           title: 'engagementDetailView',
@@ -173,7 +173,7 @@ export const constantRoutes: RouteConfig[] = [
     children : [
       {
         path: 'list',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/corbeille.vue'),
+        component: () => import(/* webpackChunkName: "corbeille" */ '@/views/engagement/pages/corbeille.vue'),
         name: 'corbeilleList',
         meta: {
           title: 'corbeilleList',
@@ -194,7 +194,7 @@ export const constantRoutes: RouteConfig[] = [
     children: [
       {
         path: 'fonctionnement',
-        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        component: () => import(/* webpackChunkName: "etatslayout-fonctionnement" */ '@/sublayouts/etatslayout/index.vue'),
         name: 'Fonctionnement',
         children: [
           {
@@ -231,7 +231,7 @@ export const constantRoutes: RouteConfig[] = [
       },
       {
         path: 'mandat',
-        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        component: () => import(/* webpackChunkName: "etatslayout-mandat" */ '@/sublayouts/etatslayout/index.vue'),
         name: 'Mandat',
         children: [
           {
