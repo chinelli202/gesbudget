@@ -75,48 +75,7 @@ export const constantRoutes: RouteConfig[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
-        name: 'Dashboard',
-        meta: {
-          title: 'dashboard',
-          icon: 'dashboard',
-          affix: true
-        }
-      }
-    ]
-  },
-  // {
-  //   path: '/documentation',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import(/* webpackChunkName: "documentation" */ '@/views/documentation/index.vue'),
-  //       name: 'Documentation',
-  //       meta: { title: 'documentation', icon: 'documentation', affix: true }
-  //     }
-  //   ]
-  // },
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "guide" */ '@/views/guide/index.vue'),
-        name: 'Guide',
-        meta: {
-          title: 'guide',
-          icon: 'guide',
-          noCache: true
-        }
-      }
-    ]
+    redirect: '/home'
   },
   {
     path: '/profile',
@@ -135,171 +94,196 @@ export const constantRoutes: RouteConfig[] = [
         }
       }
     ]
-  }
-]
-
-/**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
-*/
-export const asyncRoutes: RouteConfig[] = [
+  },
   {
-    path: '/permission',
+    path: '/home',
     component: Layout,
-    redirect: '/permission/directive',
+    redirect: '/home/dashboard/',
+    name: 'engagementHome',
     meta: {
-      title: 'permission',
-      icon: 'lock',
-      roles: ['admin', 'editor'], // you can set roles in root nav
-      alwaysShow: true // will always show the root menu
+      title: 'engagementHome',
+      icon: 'component'
     },
-    children: [
+    children : [
       {
-        path: 'page',
-        component: () => import(/* webpackChunkName: "permission-page" */ '@/views/permission/page.vue'),
-        name: 'PagePermission',
+        path: 'dashboard',
+        component: () => import(/* webpackChunkName: "home" */ '@/views/engagement/home.vue'),
+        //redirect: '/consulter/list/',
+        name: 'engagementHomeDashboard',
         meta: {
-          title: 'pagePermission',
-          roles: ['admin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: 'directive',
-        component: () => import(/* webpackChunkName: "permission-directive" */ '@/views/permission/directive.vue'),
-        name: 'DirectivePermission',
-        meta: {
-          title: 'directivePermission'
-          // if do not set roles, means: this page does not require permission
-        }
-      },
-      {
-        path: 'role',
-        component: () => import(/* webpackChunkName: "permission-role" */ '@/views/permission/role.vue'),
-        name: 'RolePermission',
-        meta: {
-          title: 'rolePermission',
-          roles: ['admin']
+          title: 'engagementHomeDashboard',
+          icon: 'component'
         }
       }
     ]
   },
   {
-    path: '/icon',
+    path: '/engagement',
     component: Layout,
-    children: [
+    redirect: '/engagement/list',
+    name: 'engagement',
+    meta: {
+      title: 'engagement',
+      icon: 'list'
+    },
+    children : [
       {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "icons" */ '@/views/icons/index.vue'),
-        name: 'Icons',
+        path: 'list',
+        component: () => import(/* webpackChunkName: "engagementlist" */ '@/views/engagement/index.vue'),
+        name: 'EngagementList',
         meta: {
-          title: 'icons',
-          icon: 'icon',
+          title: 'engagementList',
+          activeMenu: '/engagement/list',
+          icon: 'search'
+        }
+      }
+    ]
+  },
+  {
+    path: '/detail',
+    component: Layout,
+    redirect: '/detail/engagement',
+    name: 'engagementDetail',
+    meta: {
+      title: 'engagementDetail',
+      icon: 'form',
+      hidden: true
+    },
+    children : [
+      {
+        path: 'engagement/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "engagement-detail" */ '@/views/engagement/detail.vue'),
+        name: 'engagementDetailView',
+        meta: {
+          title: 'engagementDetailView',
           noCache: true
         }
       }
     ]
   },
-  /** when your routing map is too long, you can split it into small modules **/
-  componentsRouter,
-  chartsRouter,
-  nestedRouter,
-  tableRouter,
   {
-    path: '/example',
+    path: '/corbeille',
     component: Layout,
-    redirect: '/example/list',
+    redirect: '/corbeille/list',
+    name: 'corbeille',
     meta: {
-      title: 'example',
-      icon: 'example'
+      title: 'corbeille',
+      icon: 'list'
     },
-    children: [
-      {
-        path: 'create',
-        component: () => import(/* webpackChunkName: "example-create" */ '@/views/example/create.vue'),
-        name: 'CreateArticle',
-        meta: {
-          title: 'createArticle',
-          icon: 'edit'
-        }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import(/* webpackChunkName: "example-edit" */ '@/views/example/edit.vue'),
-        name: 'EditArticle',
-        meta: {
-          title: 'editArticle',
-          noCache: true,
-          activeMenu: '/example/list',
-          hidden: true
-        }
-      },
+    children : [
       {
         path: 'list',
-        component: () => import(/* webpackChunkName: "example-list" */ '@/views/example/list.vue'),
-        name: 'ArticleList',
+        component: () => import(/* webpackChunkName: "corbeille" */ '@/views/engagement/pages/corbeille.vue'),
+        name: 'corbeilleList',
         meta: {
-          title: 'articleList',
-          icon: 'list'
+          title: 'corbeilleList',
+          icon: 'bug'
         }
       }
     ]
   },
+  
   {
-    path: '/tab',
+    path: '/etats',
     component: Layout,
+    redirect: '/etats/fonctionnement',
+    meta: {
+      title: 'etatsBudget',
+      icon: 'dashboard'
+    },
     children: [
       {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "tab" */ '@/views/tab/index.vue'),
-        name: 'Tab',
+        path: 'fonctionnement',
+        component: () => import(/* webpackChunkName: "etatslayout-fonctionnement" */ '@/sublayouts/etatslayout/index.vue'),
+        name: 'Fonctionnement',
+        children: [
+          {
+            path: 'generaux',
+            component: () => import('@/views/table/etats-generaux.vue'),
+            name: 'Fonctionnement',
+            meta: {
+              title: 'fonctionnement',
+            }
+          },
+          {
+            path: ':entitytype/:entitykey',
+            component: () => import('@/views/table/groupe-rubrique/index.vue'),
+            name: 'element-fonctionnement',
+            meta: {
+              title: 'elementFonctionnement',
+              hidden: true
+            }
+          },
+          {
+            path: 'navetats',
+            component: () => import('@/components/NavigateurEtats/index.vue'),
+            name: 'Navigateur Etats',
+            meta: {
+              title: 'navetats',
+              hidden: true
+            }
+          }
+        ],
         meta: {
-          title: 'tab',
+          title: 'etatsFonctionnement',
+          icon: 'tab'
+        }
+      },
+      {
+        path: 'mandat',
+        component: () => import(/* webpackChunkName: "etatslayout-mandat" */ '@/sublayouts/etatslayout/index.vue'),
+        name: 'Mandat',
+        children: [
+          {
+            path: 'generaux',
+            component: () => import('@/views/table/etats-generaux.vue'),
+            name: 'Mandat',
+            meta: {
+              title: 'mandat',
+            }
+          },
+          {
+            path: ':entitytype/:entitykey',
+            component: () => import('@/views/table/groupe-rubrique/index.vue'),
+            name: 'element-mandat',
+            meta: {
+              title: 'elementMandat',
+              hidden: true
+            }
+          }
+        ],
+        meta: {
+          title: 'etatsMandat',
           icon: 'tab'
         }
       }
     ]
   },
   {
-    path: '/error',
+    path: '/elaboration',
     component: Layout,
-    redirect: 'noredirect',
+    name: 'elaboration',
     meta: {
-      title: 'errorPages',
-      icon: '404'
-    },
-    children: [
+      title: 'elaboration',
+      icon: 'edit',
+    }, 
+    children : [
       {
-        path: '401',
-        component: () => import(/* webpackChunkName: "error-page-401" */ '@/views/error-page/401.vue'),
-        name: 'Page401',
+        path : 'draft',
+        component: () => import('@/views/table/elaboration/draft.vue'),
+        name: 'draftBudget',
         meta: {
-          title: 'page401',
-          noCache: true
+          title: 'draftBudget',
+          icon: 'data'
         }
       },
       {
-        path: '404',
-        component: () => import(/* webpackChunkName: "error-page-404" */ '@/views/error-page/404.vue'),
-        name: 'Page404',
+        path : 'active',
+        component: () => import('@/views/table/elaboration/maquette-active.vue'),
+        name: 'maquetteActiveBudget',
         meta: {
-          title: 'page404',
-          noCache: true
-        }
-      }
-    ]
-  },
-  {
-    path: '/error-log',
-    component: Layout,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: 'log',
-        component: () => import(/* webpackChunkName: "error-log" */ '@/views/error-log/index.vue'),
-        name: 'ErrorLog',
-        meta: {
-          title: 'errorLog',
-          icon: 'bug'
+          title: 'maquetteActiveBudget',
+          icon: 'setting'
         }
       }
     ]
@@ -339,104 +323,14 @@ export const asyncRoutes: RouteConfig[] = [
       }
     ]
   },
-  {
-    path: '/zip',
-    component: Layout,
-    redirect: '/zip/download',
-    meta: {
-      title: 'zip',
-      icon: 'zip',
-      alwaysShow: true // will always show the root menu
-    },
-    children: [
-      {
-        path: 'download',
-        component: () => import(/* webpackChunkName: "zip" */ '@/views/zip/index.vue'),
-        name: 'ExportZip',
-        meta: { title: 'exportZip' }
-      }
-    ]
-  },
-  {
-    path: '/pdf',
-    component: Layout,
-    redirect: '/pdf/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "pdf" */ '@/views/pdf/index.vue'),
-        name: 'PDF',
-        meta: {
-          title: 'pdf',
-          icon: 'pdf'
-        }
-      }
-    ]
-  },
-  {
-    path: '/pdf-download-example',
-    component: () => import(/* webpackChunkName: "pdf-download-example" */ '@/views/pdf/download.vue'),
-    meta: { hidden: true }
-  },
-  {
-    path: '/theme',
-    component: Layout,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "theme" */ '@/views/theme/index.vue'),
-        name: 'Theme',
-        meta: {
-          title: 'theme',
-          icon: 'theme'
-        }
-      }
-    ]
-  },
-  {
-    path: '/clipboard',
-    component: Layout,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "clipboard" */ '@/views/clipboard/index.vue'),
-        name: 'Clipboard',
-        meta: {
-          title: 'clipboard',
-          icon: 'clipboard'
-        }
-      }
-    ]
-  },
-  {
-    path: '/i18n',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import(/* webpackChunkName: "i18n-demo" */ '@/views/i18n-demo/index.vue'),
-        name: 'I18n',
-        meta: {
-          title: 'i18n',
-          icon: 'international'
-        }
-      }
-    ]
-  },
-  {
-    path: 'https://github.com/Armour/vue-typescript-admin-template',
-    meta: {
-      title: 'externalLink',
-      icon: 'link'
-    }
-  },
-  {
-    path: '*',
-    redirect: '/404',
-    meta: { hidden: true }
-  }
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+*/
+export const asyncRoutes: RouteConfig[] = [
+  
 ]
 
 const createRouter = () => new Router({

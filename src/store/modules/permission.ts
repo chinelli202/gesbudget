@@ -34,7 +34,33 @@ export interface IPermissionState {
 class Permission extends VuexModule implements IPermissionState {
   public routes: RouteConfig[] = []
   public dynamicRoutes: RouteConfig[] = []
-
+  public permissionCodes: Record<string, any> = {
+    engagement: {
+      INIT: { //actions possibles lorsque l'engagement est à l'état Initial
+        SAISI:  'ENG_INIT_SAISI',
+        VALIDP: 'ENG_INIT_VALIDP',
+        VALIDS: 'ENG_INIT_VALIDS',
+        VALIDF: 'ENG_INIT_VALIDF',
+        CLOT:   'ENG_INIT_CLOT'
+      },
+      PEG: { //actions possibles lorsque l'engagement est à l'état pré-engagé
+        SAISI:  'ENG_PEG_SAISI', // IMP
+        VALIDP: 'ENG_PEG_VALIDP',
+        VALIDS: 'ENG_PEG_VALIDS',
+        VALIDF: 'ENG_PEG_VALIDF',
+        CLOT:   'ENG_PEG_CLOT'
+      },
+      IMP: { //actions possibles lorsque l'engagement est à l'état Imputé
+        SAISI:  'ENG_IMP_SAISI', // APUR
+        VALIDP: 'ENG_IMP_VALIDP',
+        VALIDS: 'ENG_IMP_VALIDS',
+        VALIDF: 'ENG_IMP_VALIDF',
+        REG:    'ENG_IMP_REG',
+        CLOT:   'ENG_IMP_REG'
+      }
+    }
+  }
+  
   @Mutation
   private SET_ROUTES(routes: RouteConfig[]) {
     this.routes = constantRoutes.concat(routes)

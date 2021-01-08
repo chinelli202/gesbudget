@@ -4,16 +4,19 @@
       ref="excel-upload-input"
       class="excel-upload-input"
       type="file"
-      accept=".xlsx, .xls"
+      accept=".xlsx, .xls, .php"
       @change="handleClick"
     >
+          <p :style="fileChosen ? tipActive : tipInactive">- Fichier maquette choisi <i class="el-icon-check"></i></p>
+          <p :style="fileUploaded ? tipActive : tipInactive">- Fichier uploadé sur le serveur <i class="el-icon-check"></i></p>
+          <p :style="fileProcessed ? tipActive : tipInactive">- Maquette générée dans la base de données <i class="el-icon-check"></i></p>
     <div
       class="drop"
       @drop="handleDrop"
       @dragover="handleDragover"
       @dragenter="handleDragover"
     >
-      Drop excel file here or
+      {{filename}}
       <el-button
         :loading="loading"
         style="margin-left:16px;"
@@ -24,11 +27,20 @@
         Browse
       </el-button>
     </div>
+    <div>
+      <p>{{loadProgressMessage}}</p>
+      <el-progress :percentage="50"></el-progress>
+    </div>
+    <div v-if="filechosen" style="float:right">
+      <el-button type="primary" plain @click="handleUploadClicked">Charger <i class="el-icon-upload el-icon-right"></i></el-button>
+    </div>
+
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
+import {uploadMaquette, watchProgress, processMaquette} from '@/api/elaboration'
 import XLSX from 'xlsx'
 
 @Component({
@@ -43,11 +55,24 @@ export default class extends Vue {
     header: null,
     results: null
   }
+  private loadProgressMessage: string  = "progress message"
+  private filechosen: boolean = false
+  private fileUploaded: boolean = false
+  private fileProcessed: boolean = false
+  private previewDisplayed: boolean = false
+  private loadwatcher:any = {}
+
+  private filename:string  = "Drop excel file here or"
 
   private generateData(header: any, results: any) {
     this.excelData.header = header
     this.excelData.results = results
     this.onSuccess && this.onSuccess(this.excelData)
+  }
+
+  private queryParams = {
+    file:{},
+    size:2
   }
 
   private handleDrop(e: DragEvent) {
@@ -61,12 +86,17 @@ export default class extends Vue {
       return
     }
     const rawFile = files[0] // only use files[0]
+    // if (!this.isExcel(rawFile)) {
+    //   this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
+    //   return false
+    // }
+    this.filename = rawFile.name
+    this.filechosen = true
 
-    if (!this.isExcel(rawFile)) {
-      this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
-      return false
-    }
-    this.upload(rawFile)
+
+    this.queryParams.file = rawFile
+
+    //this.upload(rawFile)
     e.stopPropagation()
     e.preventDefault()
   }
@@ -91,32 +121,60 @@ export default class extends Vue {
     }
   }
 
-  private upload(rawFile: File) {
+  private async upload(rawFile: File) {
     (this.$refs['excel-upload-input'] as HTMLInputElement).value = '' // Fixes can't select the same excel
-    if (!this.beforeUpload) {
-      this.readerData(rawFile)
-      return
-    }
-    const before = this.beforeUpload(rawFile)
-    if (before) {
-      this.readerData(rawFile)
+    // if (!this.beforeUpload) {
+    //   this.readerData(rawFile)
+    //   return
+    // }
+    // const before = this.beforeUpload(rawFile)
+    // if (before) {
+    //   this.readerData(rawFile)
+    // }
+    
+    this.queryParams.file = rawFile
+    const formData = new FormData();
+    formData.append('maquette', rawFile, rawFile.name)
+    const {data} = await uploadMaquette(formData)
+    if(data)
+    {
+      console.log("file uploaded")
+      this.fileUploaded = true
+
+      //launch process maquette
+      //start interval
+      //
     }
   }
 
+  //define interval variable
+
+  //interval function
+  private watchprogress(filename:string) : any {
+    //check for progress, 
+    //update load message and progress bar
+  }
+
+  private loadmaquette(filename:string){
+    var form_data = new FormData();
+    this.loadwatcher = setInterval( this.watchprogress("maquette_name"), 2000 );
+  }
+
+
   private readerData(rawFile: File) {
-    this.loading = true
-    const reader = new FileReader()
-    reader.onload = e => {
-      const data = (e.target as FileReader).result
-      const workbook = XLSX.read(data, { type: 'array' })
-      const firstSheetName = workbook.SheetNames[0]
-      const worksheet = workbook.Sheets[firstSheetName]
-      const header = this.getHeaderRow(worksheet)
-      const results = XLSX.utils.sheet_to_json(worksheet)
-      this.generateData(header, results)
-      this.loading = false
-    }
-    reader.readAsArrayBuffer(rawFile)
+    // this.loading = true
+    // const reader = new FileReader()
+    // reader.onload = e => {
+    //   const data = (e.target as FileReader).result
+    //   const workbook = XLSX.read(data, { type: 'array' })
+    //   const firstSheetName = workbook.SheetNames[0]
+    //   const worksheet = workbook.Sheets[firstSheetName]
+    //   const header = this.getHeaderRow(worksheet)
+    //   const results = XLSX.utils.sheet_to_json(worksheet)
+    //   this.generateData(header, results)
+    //   this.loading = false
+    // }
+    // reader.readAsArrayBuffer(rawFile)
   }
 
   private getHeaderRow(sheet: { [key: string ]: any }) {
@@ -140,7 +198,22 @@ export default class extends Vue {
   private isExcel(file: File) {
     return /\.(xlsx|xls|csv)$/.test(file.name)
   }
+  
+  private async handleUploadClicked(){
+    (this.$refs['excel-upload-input'] as HTMLInputElement).click()
+    //this.queryParams.file = this.queryParams.file
+    // const formData = new FormData();
+    // formData.append('maquette', rawFile, rawFile.name)
+    // const {data} = await uploadMaquette(this.queryParams)
+    // if(data)
+    // {
+    //   this.fileUploaded = true
+    //   this.$message.info('file correctly uploaded')
+    // }
+  }
 }
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -161,4 +234,13 @@ export default class extends Vue {
   color: #bbb;
   position: relative;
 }
+
+.tipActive{
+  font-weight: bold; color:#61A0A8
+}
+
+.tipInactive{
+  color:#61A0A8
+}
+
 </style>

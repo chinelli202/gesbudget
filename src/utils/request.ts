@@ -25,28 +25,28 @@ service.interceptors.request.use(
 // Response interceptors
 service.interceptors.response.use(
   (response) => {
-    // Some example codes here:
-    // code == 20000: success
-    // code == 50001: invalid access token
-    // code == 50002: already login in other place
-    // code == 50003: access token expired
-    // code == 50004: invalid user (user not exist)
-    // code == 50005: username or password is incorrect
+    // Some example statuses here:
+    // status == 200: success
+    // status == 501: invalid access token
+    // status == 502: already login in other place
+    // status == 503: access token expired
+    // status == 504: invalid user (user not exist)
+    // status == 505: username or password is incorrect
     // You can change this part for your own usage.
     const res = response.data
-    if (res.code !== 20000) {
+    if (res.status !== 200) {
       Message({
         message: res.message || 'Error',
         type: 'error',
-        duration: 5 * 1000
+        duration: 7 * 1000
       })
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      if (res.status === 508 || res.status === 512 || res.status === 514) {
         MessageBox.confirm(
-          '你已被登出，可以取消继续留在该页面，或者重新登录',
-          '确定登出',
+          'Vous avez été déconnecté, essayez de vous connecter à nouveau',
+          'Message de déconnexion',
           {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
+            confirmButtonText: 'Me connecter',
+            cancelButtonText: 'Annuler',
             type: 'warning'
           }
         ).then(() => {
@@ -56,6 +56,13 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
+      if (res.message) {
+        Message({
+          message: res.message || 'Success',
+          type: 'success',
+          duration: 7 * 1000
+        })
+      }
       return response.data
     }
   },
@@ -63,7 +70,7 @@ service.interceptors.response.use(
     Message({
       message: error.message,
       type: 'error',
-      duration: 5 * 1000
+      duration: 7 * 1000
     })
     return Promise.reject(error)
   }

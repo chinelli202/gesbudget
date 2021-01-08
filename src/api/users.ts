@@ -1,19 +1,44 @@
 import request from '@/utils/request'
+import { getToken } from '@/utils/cookies'
 
-export const getUsers = (params: any) =>
+// Login function
+export const login = (data: any) =>
   request({
-    url: '/users',
-    method: 'get',
-    params
-  })
-
-export const getUserInfo = (data: any) =>
-  request({
-    url: '/users/info',
+    url: '/user-login',
     method: 'post',
     data
   })
 
+export const logout = (data: any) =>
+  request({
+    url: '/user-logout',
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${data.token}`
+    }
+  })
+
+// Get user info
+export const getUserInfo = (data: any) =>
+  request({
+    url: '/user-detail',
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${data.token}`
+    }
+  })
+
+export const getUsers = (params: any) =>
+  request({
+    url: '/users/list',
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    params
+  })
+
+// TO EDIT
 export const getUserByName = (username: string) =>
   request({
     url: `/users/${username}`,
@@ -31,19 +56,6 @@ export const deleteUser = (username: string) =>
   request({
     url: `/users/${username}`,
     method: 'delete'
-  })
-
-export const login = (data: any) =>
-  request({
-    url: '/users/login',
-    method: 'post',
-    data
-  })
-
-export const logout = () =>
-  request({
-    url: '/users/logout',
-    method: 'post'
   })
 
 export const register = (data: any) =>
