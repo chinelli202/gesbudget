@@ -4,7 +4,7 @@ import { getToken } from '@/utils/cookies'
 
 export const apurerEngagement = (data: any) =>
   request({
-    url: `/apurement/create/`,
+    url: `/apurement/create`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
