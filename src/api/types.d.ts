@@ -102,8 +102,23 @@ export interface IRecapData {
   sumrow: object
   //collection : IRecapData[]
   header:any
+  libelle: string
+  id: number
+  previsions: number
+  realisationsMois: number
+  realisationsPrecedentes: number
+  realisationsCumulees: number
+  engagements: number
+  execution: number
+  solde: number
+  tauxExecution: number
 }
 
+export interface IMaquetteData {
+  label: string
+  montant: number
+  description: string
+}
 export interface IMonthRecapCollection {
   months : IMonthRecapData[]
 }
