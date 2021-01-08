@@ -106,7 +106,6 @@ import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
 import LangSelect from '@/components/LangSelect/index.vue'
 import SocialSign from './components/SocialSignin.vue'
-import { getVariables } from '@/api/variables'
 
 @Component({
   name: 'Login',
