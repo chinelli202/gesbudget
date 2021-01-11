@@ -10,6 +10,7 @@
           :apurement="apurement"
           :engagement="engagement"
           :devise-options="deviseOptions"
+          :types-paiement-options="typesPaiementOptions"
           :tva="tva"
           :fallback-url="fallbackUrl"
           @engagementChanged="engagementChanged"
@@ -24,6 +25,7 @@
           :imputation="imputation"
           :engagement="engagement"
           :devise-options="deviseOptions"
+          :types-paiement-options="typesPaiementOptions"
           :tva="tva"
           :fallback-url="fallbackUrl"
           @engagementChanged="engagementChanged"
@@ -609,6 +611,7 @@ export default class extends Vue {
   /** Main card form attributes */
   private cardLoading = true
   private deviseOptions = {}
+  private typesPaiementOptions = {}
   private typeOptions = {}
   private natureOptions = {}
   private etatOptions = {}
@@ -697,6 +700,7 @@ export default class extends Vue {
     detailEngagement({ id: engagementId }).then((response) => {
       this.engagement = response.data
       this.deviseOptions = AppModule.devises
+      this.typesPaiementOptions = AppModule.typesPaiement
       this.typeOptions = AppModule.typesEngagement
       this.natureOptions = AppModule.naturesEngagement
       this.etatOptions = AppModule.etatsEngagement

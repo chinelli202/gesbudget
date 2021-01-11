@@ -3,7 +3,7 @@
     <el-container>
       <el-header>
         <h2 align="center">
-          Apurement {{ apurement.id }} de l'Engagement {{ engagement.code }}
+          Apurement de l'Engagement {{ engagement.code }}
         </h2>
       </el-header>
       <el-main
@@ -67,23 +67,37 @@
           <el-form-item label="Montant TTC">
             <el-row :gutter="10">
               <el-col :span="3">
-                <el-form-item label="">
-                  <el-select
-                    v-model="apurement.devise"
-                    placeholder="Devise"
-                    :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
-                    @change="formAttributeChange"
-                  >
-                    <el-option
-                      v-for="(obj) in deviseOptions"
-                      :key="obj.code"
-                      :label="obj.code"
-                      :value="obj.code"
-                    />
-                  </el-select>
-                </el-form-item>
+                <el-select
+                  v-model="apurement.devise"
+                  placeholder="Devise"
+                  :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                  @change="formAttributeChange"
+                >
+                  <el-option
+                    v-for="(obj) in deviseOptions"
+                    :key="obj.code"
+                    :label="obj.code"
+                    :value="obj.code"
+                  />
+                </el-select>
               </el-col>
-              <el-col :span="20">
+              <el-col :span="5">
+                <el-select
+                  style="width: 100%"
+                  v-model="apurement.type_paiement"
+                  placeholder="Type de paiement"
+                  :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                  @change="formAttributeChange"
+                >
+                  <el-option
+                    v-for="(obj) in typesPaiementOptions"
+                    :key="obj.code"
+                    :label="obj.libelle"
+                    :value="obj.code"
+                  />
+                </el-select>
+              </el-col>
+              <el-col :span="15">
                 <el-form-item
                   prop="montant_ttc"
                   :rules="[{ validator: validateMontantApurement, trigger: 'blur' }]"
@@ -237,6 +251,7 @@ export default class ApurementCard extends Vue {
   @Prop({ required: true }) private engagement!: any
   @Prop({ required: true }) private apurement!: any
   @Prop({ required: true }) private deviseOptions!: any
+  @Prop({ required: true }) private typesPaiementOptions!: any
   @Prop({ required: true }) private tva!: any
   @Prop({ required: true }) private fallbackUrl!: any
 
