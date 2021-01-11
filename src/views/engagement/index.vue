@@ -141,7 +141,7 @@
           :valideursF = "operateurs.VALIDF"
           :tableHeight="'72vh'"
           :displayCreateButton="false"
-          :display-export-button="false"
+          :display-export-button="true"
         />
       </div>
     </div>
