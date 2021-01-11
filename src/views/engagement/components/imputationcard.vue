@@ -59,13 +59,17 @@
                   <el-select
                     v-model="imputation.devise"
                     placeholder="Devise"
+                    filterable
+                    remote
+                    :remote-method="selectDevise"
+                    :loading="deviseLoading"
                     :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
                     @change="formAttributeChange"
                   >
                     <el-option
                       v-for="(obj) in deviseOptions"
                       :key="obj.code"
-                      :label="obj.code"
+                      :label="obj.libelle"
                       :value="obj.code"
                     />
                   </el-select>
@@ -342,12 +346,16 @@
               <el-select
                 v-model="apurement.devise"
                 placeholder="Devise"
+                filterable
+                remote
+                :remote-method="selectDevise"
+                :loading="deviseLoading"
                 @input="apurerFormAttributeChange"
               >
                 <el-option
                   v-for="(obj) in deviseOptions"
                   :key="obj.code"
-                  :label="obj.code"
+                  :label="obj.libelle"
                   :value="obj.code"
                 />
               </el-select>
@@ -417,7 +425,7 @@ import { apurerEngagement } from '@/api/apurements'
 export default class ImputationCard extends Vue {
   @Prop({ required: true }) private engagement!: any
   @Prop({ required: true }) private imputation!: any
-  @Prop({ required: true }) private deviseOptions!: any
+  @Prop({ required: true }) private listeDevises!: any
   @Prop({ required: true }) private typesPaiementOptions!: any
   @Prop({ required: true }) private tva!: any
   @Prop({ required: true }) private fallbackUrl!: any
@@ -518,6 +526,9 @@ export default class ImputationCard extends Vue {
   private nextEtatActionText = "Apurer l'engagement"
   private isNextEtatAction = false
 
+  private deviseLoading: boolean = false
+  private deviseOptions: string[] = []
+
   /** Variables for Imputation dialog form */
   private apurerFormVisible = false
   private apurerFormLoading = false
@@ -558,12 +569,24 @@ export default class ImputationCard extends Vue {
 
   private initializeCard() {
     this.cardLoading = true
+    this.deviseOptions = this.listeDevises
     this.updateViewVariables()
     this.cardLoading = false
   }
 
   private onCancel() {
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+  }
+
+  private selectDevise(query: string) {
+    if (query !== '') {
+      this.deviseLoading = true;
+      this.deviseLoading = false;
+      this.deviseOptions = this.listeDevises.filter((item: any) => {
+        return item.libelle.toLowerCase()
+          .indexOf(query.toLowerCase()) > -1;
+      });
+    }
   }
 
   private optionsAnnulerValider() {

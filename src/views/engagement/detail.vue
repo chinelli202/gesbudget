@@ -9,7 +9,7 @@
         <apurement-card
           :apurement="apurement"
           :engagement="engagement"
-          :devise-options="deviseOptions"
+          :liste-devises="listeDevises"
           :types-paiement-options="typesPaiementOptions"
           :tva="tva"
           :fallback-url="fallbackUrl"
@@ -24,7 +24,7 @@
         <imputation-card
           :imputation="imputation"
           :engagement="engagement"
-          :devise-options="deviseOptions"
+          :liste-devises="listeDevises"
           :types-paiement-options="typesPaiementOptions"
           :tva="tva"
           :fallback-url="fallbackUrl"
@@ -147,10 +147,14 @@
                       <el-select
                         v-model="engagement.devise"
                         placeholder="Devise"
+                        filterable
+                        remote
+                        :remote-method="selectDevise"
+                        :loading="deviseLoading"
                         :disabled="!toEdit"
                       >
                         <el-option
-                          v-for="(obj) in deviseOptions"
+                          v-for="(obj) in listeDevises"
                           :key="obj.code"
                           :label="obj.code"
                           :value="obj.code"
@@ -451,10 +455,14 @@
             <el-select
               v-model="imputation.devise"
               placeholder="Devise"
+              filterable
+              remote
+              :remote-method="selectDevise"
+              :loading="deviseLoading"
               @input="imputerFormAttributeChange"
             >
               <el-option
-                v-for="(obj) in deviseOptions"
+                v-for="(obj) in listeDevises"
                 :key="obj.code"
                 :label="obj.code"
                 :value="obj.code"
@@ -610,7 +618,7 @@ export default class extends Vue {
 
   /** Main card form attributes */
   private cardLoading = true
-  private deviseOptions = {}
+  private listeDevises: any[] = []
   private typesPaiementOptions = {}
   private typeOptions = {}
   private natureOptions = {}
@@ -632,6 +640,9 @@ export default class extends Vue {
   private toEdit = false;
   private nextEtatActionText = "Imputer l'engagement";
   private isNextEtatAction = true
+
+  private deviseLoading: boolean = false
+  private deviseOptions: string[] = []
 
   /** Variables for buttons rendering */
   private permissions : any[] = []
@@ -683,6 +694,17 @@ export default class extends Vue {
     this.fetchData(parseInt(id))
   }
 
+  private selectDevise(query: string) {
+    if (query !== '') {
+      this.deviseLoading = true;
+      this.deviseLoading = false;
+      this.deviseOptions = this.listeDevises.filter((item: any) => {
+        return item.libelle.toLowerCase()
+          .indexOf(query.toLowerCase()) > -1;
+      });
+    }
+  }
+
   private maxMontant() {
     return this.engagement.montant_ttc - this.engagement.cumul_imputations
   }
@@ -699,7 +721,8 @@ export default class extends Vue {
     this.cardLoading = true
     detailEngagement({ id: engagementId }).then((response) => {
       this.engagement = response.data
-      this.deviseOptions = AppModule.devises
+      let devises = AppModule.devises
+      this.listeDevises = Object.keys(AppModule.devises).map(key => {return AppModule.devises[key];})
       this.typesPaiementOptions = AppModule.typesPaiement
       this.typeOptions = AppModule.typesEngagement
       this.natureOptions = AppModule.naturesEngagement

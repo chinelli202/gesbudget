@@ -47,7 +47,7 @@ class App extends VuexModule implements IAppState {
   public language = getLocale()
   public size = getSize() || 'medium'
   public tva = parseFloat(getTva());
-  public devises : string[] = getDevises()
+  public devises : any = getDevises()
   public typesPaiement : string[] = getTypesPaiement()
   public typesEngagement = getTypesEngagement()
   public naturesEngagement = getNaturesEngagement()

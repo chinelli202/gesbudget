@@ -115,12 +115,16 @@
               <el-select
                 v-model="engagement.devise"
                 placeholder="Devise"
+                filterable
+                remote
+                :remote-method="selectDevise"
+                :loading="deviseLoading"
                 @input="formAttributeChange"
               >
                 <el-option
                   v-for="(obj) in deviseOptions"
                   :key="obj.code"
-                  :label="obj.code"
+                  :label="obj.libelle"
                   :value="obj.code"
                 />
               </el-select>
@@ -265,13 +269,16 @@ export default class CreateEngButton extends Vue {
   private formLabelWidth = '120px'
   private dialogFormVisible = false
   private dialogFormLoading = false
-  private deviseOptions = {}
+  private deviseLoading: boolean = false
+  private deviseOptions: string[] = []
+  private listeDevises: string[] = []
   private typeOptions = {}
   private natureOptions = {}
   private etatOptions = {}
   private statutOptions = {}
   private tva = 0
   private submitDisabled = true
+
   private engagement = {
     montant_ttc: 0,
     nature: 'PEG',
@@ -298,6 +305,17 @@ export default class CreateEngButton extends Vue {
     return this.cascade
   }
 
+  private selectDevise(query: string) {
+    if (query !== '') {
+      this.deviseLoading = true;
+      this.deviseLoading = false;
+      this.deviseOptions = this.listeDevises.filter((item: any) => {
+        return item.libelle.toLowerCase()
+          .indexOf(query.toLowerCase()) > -1;
+      });
+    }
+  }
+  
   private cascadeChange() {
     console.log('cascade ', this.cascade)
     this.formAttributeChange()
