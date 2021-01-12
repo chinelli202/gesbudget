@@ -22,7 +22,7 @@
       style="width: 100%"
     >
       <el-table-column
-        prop="libelleParent"
+        prop="libelle"
         :label="recapData.header.labelLabel"
         width="200"
       />
@@ -242,7 +242,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
   }
 
   private formatColumn(value: any, row: any, column: any){
-    console.log("displaying values. row : ",row)
+    //console.log("displaying values. row : ",row)
     return column.toLocaleString("fr-FR");
   }
 }

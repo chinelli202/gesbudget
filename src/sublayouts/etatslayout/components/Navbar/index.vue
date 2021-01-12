@@ -306,12 +306,23 @@ private exportMap: any [] = []
     const param = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? etatsmodule.jourPeriodeJour : 
       etatsmodule.moisPeriodeMois
 
-    window.location.href = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
-          +'critere='+periode+'&'
-          +'param='+param+'&'
-          +'mois='+etatsmodule.moisPeriodeMois+'&'
-          +'startmonth='+etatsmodule.debutPeriodeIntervalle+'&'
-          +'endmonth='+etatsmodule.finPeriodeIntervalle
+    console.log("entyty type evaluated as", entitytype)
+    if (entitytype == 'groupe'){
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/full/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
+            +'critere='+periode+'&'
+            +'param='+param+'&'
+            +'mois='+etatsmodule.moisPeriodeMois+'&'
+            +'startmonth='+etatsmodule.debutPeriodeIntervalle+'&'
+            +'endmonth='+etatsmodule.finPeriodeIntervalle
+    }
+    else{
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/'+entitytype+'/'+entitykey+'?'//'http://localhost:8000/api/export/'+entitytype+'/'+entitykey+'?'
+            +'critere='+periode+'&'
+            +'param='+param+'&'
+            +'mois='+etatsmodule.moisPeriodeMois+'&'
+            +'startmonth='+etatsmodule.debutPeriodeIntervalle+'&'
+            +'endmonth='+etatsmodule.finPeriodeIntervalle
+    }
   }
 
   private handleExporterGeneraux(map:any){

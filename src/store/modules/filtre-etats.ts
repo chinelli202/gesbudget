@@ -18,7 +18,7 @@ const defaultFiltreEtat : IFiltreEtats = {
     jourPeriodeJour: '2020-06-12',
     moisPeriodeMois: 1,
     debutPeriodeIntervalle: 1,
-    finPeriodeIntervalle: 6
+    finPeriodeIntervalle: 1
 }
 
 export const periodes = {
@@ -33,7 +33,8 @@ export const periodes = {
 class FiltreEtats extends VuexModule implements IFiltreEtats {
   public section = defaultFiltreEtat.section
   public periode = defaultFiltreEtat.periode
-  public jourPeriodeJour = defaultFiltreEtat.jourPeriodeJour
+  public jourPeriodeJour = this.getDate()
+  //public jourPeriodeJour = defaultFiltreEtat.jourPeriodeJour
   public moisPeriodeMois = defaultFiltreEtat.moisPeriodeMois
   public debutPeriodeIntervalle = defaultFiltreEtat.debutPeriodeIntervalle
   public finPeriodeIntervalle = defaultFiltreEtat.finPeriodeIntervalle
@@ -89,6 +90,14 @@ class FiltreEtats extends VuexModule implements IFiltreEtats {
   @Action
   public SetPeriodeIntervalle(payload: { debut: number, fin: number }){
       this.SET_PERIODE_INTERVALLE(payload)
+  }
+
+  private getDate(){
+    const moment = require('moment');
+    let m = moment();
+    let my_date = m.format('yyyy-MM-D')
+    console.log("date : ",my_date)
+    return my_date
   }
 }
 
