@@ -219,7 +219,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
 import { Form as ElForm } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
-import FooterButtons from './footerbuttons'
+import FooterButtons from '@/views/engagement/components/footerbuttons.vue'
 import {
   updateApurement, resendUpdateApurement, addComment
   , closeApurement, restoreApurement, sendBack, validationApurement
