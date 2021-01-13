@@ -284,6 +284,17 @@
                     :span="6"
                     :offset="3"
                   >
+                    Pour la date du 
+                  </el-col>
+                  <el-col :span="15">
+                    {{ engagement.eng_date | dateFormatLong }}
+                  </el-col>
+                </el-row>
+                <el-row :gutter="10">
+                  <el-col
+                    :span="6"
+                    :offset="3"
+                  >
                     Saisi par
                   </el-col>
                   <el-col :span="15">

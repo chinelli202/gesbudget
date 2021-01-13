@@ -69,9 +69,16 @@
       />
       <el-table-column
         fixed
+        prop="eng_date"
+        :formatter="dateFormatterShort"
+        label="Date"
+        width="100"
+      />
+      <el-table-column
+        fixed
         prop="latest_edited_at"
         :formatter="dateFormatter"
-        label="Mis à jour le"
+        label="Dernière mise à jour"
         width="130"
       />
       <el-table-column
@@ -253,9 +260,9 @@ export default class EngagementsList extends Vue {
 
   private handleExport() {
     this.listLoading = true
-    const tHeader = ['Code', 'Dernière mise à Jour le', 'Etat', 'Statut', 'Libellé', 'Domaine', 'Ligne budgétaire', 'Rubrique du Budget', 'Chapitre du Budget'
+    const tHeader = ['Code', 'Date', 'Dernière mise à Jour le', 'Etat', 'Statut', 'Libellé', 'Domaine', 'Ligne budgétaire', 'Rubrique du Budget', 'Chapitre du Budget'
       , 'Devise', 'Montant TTC', 'Cumul des imputations', 'Cumul des apurements', 'Type engagement', 'Saisi par', 'Saisi le', 'Validé au 1er niveau par', 'Validé au 2nd niveau par', 'Validé au niveau final par']
-    const filterVal = ['code', 'latest_edited_at', 'etat_libelle', 'latest_statut', 'libelle', 'domaine', 'ligne_libelle', 'rubrique_libelle', 'chapitre_libelle'
+    const filterVal = ['code', 'eng_date', 'latest_edited_at', 'etat_libelle', 'latest_statut', 'libelle', 'domaine', 'ligne_libelle', 'rubrique_libelle', 'chapitre_libelle'
       , 'devise', 'montant_ttc', 'cumul_imputations', 'cumul_apurements' ,'type_libelle', 'saisisseur_name', 'created_at', 'valideurp_name', 'valideurs_name', 'valideurf_name']
     const list = this.initiatedEngagements
     const fileNameSuffix = Object.keys(this.listQuery).reduce((all: string, newKey: string) => {
@@ -284,6 +291,14 @@ export default class EngagementsList extends Vue {
       '/' + (currentDatetime.getMonth() + 1) +
       '/' + currentDatetime.getFullYear() +
       ' ' + currentDatetime.getHours() + ':' + currentDatetime.getMinutes()
+    return formattedDate
+  }
+
+  dateFormatterShort(value: any, row: any, column: any) {
+    const currentDatetime = new Date(column)
+    const formattedDate = currentDatetime.getDate() +
+      '/' + (currentDatetime.getMonth() + 1) +
+      '/' + currentDatetime.getFullYear()
     return formattedDate
   }
 

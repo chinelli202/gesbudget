@@ -167,7 +167,7 @@ export default class extends Vue {
 
   mounted() {
     if (this.loginForm.matricule === '') {
-      (this.$refs.email as Input).focus()
+      (this.$refs.matricule as Input).focus()
     } else if (this.loginForm.password === '') {
       (this.$refs.password as Input).focus()
     }

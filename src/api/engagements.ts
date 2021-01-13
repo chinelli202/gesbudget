@@ -6,6 +6,7 @@ export const defaultArticleData: IEngagementData = {
   id: 0,
   created_at: '',
   updated_at: '',
+  eng_date: '',
   code: '',
   libelle: '',
   montant_ht: 0,
