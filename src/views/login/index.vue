@@ -137,8 +137,8 @@ export default class extends Vue {
   }
 
   private loginForm = {
-    matricule: '00005',
-    password: '12345'
+    matricule: '',
+    password: ''
   }
 
   private loginRules = {
