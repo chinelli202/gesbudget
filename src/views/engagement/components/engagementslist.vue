@@ -30,8 +30,9 @@
           >
           </create-eng-button>
           <el-button
+            type="success"
             v-if="displayExportButton"
-            @click="console.log('Exporter')"
+            @click="handleExport"
           >
             Exporter la liste <i class="el-icon-download el-icon-right"></i>
           </el-button>
@@ -44,8 +45,9 @@
       >
         <el-button-group>
           <el-button
+            type="success"
             v-if="displayExportButton"
-            @click="console.log('Exporter')"
+            @click="handleExport"
           >
             Exporter la liste <i class="el-icon-download el-icon-right"></i>
           </el-button>
@@ -96,7 +98,11 @@
         prop="ligne_libelle"
         label="Ligne Budgétaire"
         width="300"
-      />
+      >
+        <template slot-scope="scope">
+            {{ scope.row.chapitre_libelle }} // {{ scope.row.rubrique_libelle }} // {{ scope.row.ligne_libelle }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="montant_ttc"
         :formatter="numFormatter"
@@ -152,6 +158,8 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch} from 'vue-property-decorator'
+import { formatJson } from '@/utils'
+import { exportJson2Excel } from '@/utils/excel'
 import { getEngagements, createEngagement } from '@/api/engagements'
 import { getSoldeLigne } from '@/api/lignes'
 import { IEngagementData } from '@/api/types'
@@ -160,7 +168,7 @@ import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
 import { getBudgetStructure } from '@/api/variables'
 import Pagination from '@/components/Pagination/index.vue'
-import CreateEngButton from '@/views/engagement/components/createengbutton'
+import CreateEngButton from '@/views/engagement/components/createengbutton.vue'
 
 @Component({
   name: 'EngagementsList',
@@ -241,6 +249,21 @@ export default class EngagementsList extends Vue {
 
   private hasPermission(permission: string) {
     return UserModule.permissions.filter(item => item.code === permission).length > 0
+  }
+
+  private handleExport() {
+    this.listLoading = true
+    const tHeader = ['Code', 'Dernière mise à Jour le', 'Etat', 'Statut', 'Libellé', 'Domaine', 'Ligne budgétaire', 'Rubrique du Budget', 'Chapitre du Budget'
+      , 'Devise', 'Montant TTC', 'Cumul des imputations', 'Cumul des apurements', 'Type engagement', 'Saisi par', 'Saisi le', 'Validé au 1er niveau par', 'Validé au 2nd niveau par', 'Validé au niveau final par']
+    const filterVal = ['code', 'latest_edited_at', 'etat_libelle', 'latest_statut', 'libelle', 'domaine', 'ligne_libelle', 'rubrique_libelle', 'chapitre_libelle'
+      , 'devise', 'montant_ttc', 'cumul_imputations', 'cumul_apurements' ,'type_libelle', 'saisisseur_name', 'created_at', 'valideurp_name', 'valideurs_name', 'valideurf_name']
+    const list = this.initiatedEngagements
+    const fileNameSuffix = Object.keys(this.listQuery).reduce((all: string, newKey: string) => {
+      return all + '--' + newKey + '_' + this.listQuery[newKey]
+    }, '')
+    const data = formatJson(filterVal, list)
+    exportJson2Excel(tHeader, data, 'Liste des engagements '+ fileNameSuffix, undefined, undefined, true, 'xlsx')
+    this.listLoading = false
   }
 
   detail(value: any, engagement: any) {
@@ -338,19 +361,10 @@ export default class EngagementsList extends Vue {
       delete this.listQuery.valideurs_final
     }
 
-    const response = await getEngagements(this.listQuery)
-    this.paginationTotal = response.total
-    this.initiatedEngagements = response.data
-    this.listLoading = false
-  }
-
-  private cascadeChange() {
-    this.formAttributeChange()
-    this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
-    this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
-    this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
-    getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
-      this.soldeLigne = response.data.solde_restant
+    getEngagements(this.listQuery).then(response => {
+      this.paginationTotal = response.total
+      this.initiatedEngagements = response.data
+      this.listLoading = false
     })
   }
 

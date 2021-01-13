@@ -107,7 +107,7 @@ export const constantRoutes: RouteConfig[] = [
     children : [
       {
         path: 'dashboard',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/home.vue'),
+        component: () => import(/* webpackChunkName: "home" */ '@/views/engagement/home.vue'),
         //redirect: '/consulter/list/',
         name: 'engagementHomeDashboard',
         meta: {
@@ -129,7 +129,7 @@ export const constantRoutes: RouteConfig[] = [
     children : [
       {
         path: 'list',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/index.vue'),
+        component: () => import(/* webpackChunkName: "engagementlist" */ '@/views/engagement/index.vue'),
         name: 'EngagementList',
         meta: {
           title: 'engagementList',
@@ -152,7 +152,7 @@ export const constantRoutes: RouteConfig[] = [
     children : [
       {
         path: 'engagement/:id(\\d+)',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/detail.vue'),
+        component: () => import(/* webpackChunkName: "engagement-detail" */ '@/views/engagement/detail.vue'),
         name: 'engagementDetailView',
         meta: {
           title: 'engagementDetailView',
@@ -173,7 +173,7 @@ export const constantRoutes: RouteConfig[] = [
     children : [
       {
         path: 'list',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/corbeille.vue'),
+        component: () => import(/* webpackChunkName: "corbeille" */ '@/views/engagement/pages/corbeille.vue'),
         name: 'corbeilleList',
         meta: {
           title: 'corbeilleList',
@@ -194,7 +194,7 @@ export const constantRoutes: RouteConfig[] = [
     children: [
       {
         path: 'fonctionnement',
-        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        component: () => import(/* webpackChunkName: "etatslayout-fonctionnement" */ '@/sublayouts/etatslayout/index.vue'),
         name: 'Fonctionnement',
         children: [
           {
@@ -231,7 +231,7 @@ export const constantRoutes: RouteConfig[] = [
       },
       {
         path: 'mandat',
-        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        component: () => import(/* webpackChunkName: "etatslayout-mandat" */ '@/sublayouts/etatslayout/index.vue'),
         name: 'Mandat',
         children: [
           {
@@ -259,70 +259,35 @@ export const constantRoutes: RouteConfig[] = [
       }
     ]
   },
-  {
-    path: '/elaboration',
-    component: Layout,
-    name: 'elaboration',
-    meta: {
-      title: 'elaboration',
-      icon: 'edit',
-    }, 
-    children : [
-      {
-        path : 'draft',
-        component: () => import('@/views/table/elaboration/draft.vue'),
-        name: 'draftBudget',
-        meta: {
-          title: 'draftBudget',
-          icon: 'data'
-        }
-      },
-      {
-        path : 'active',
-        component: () => import('@/views/table/elaboration/maquette-active.vue'),
-        name: 'maquetteActiveBudget',
-        meta: {
-          title: 'maquetteActiveBudget',
-          icon: 'setting'
-        }
-      }
-    ]
-  },
-  {
-    path: '/excel',
-    component: Layout,
-    redirect: '/excel/export-excel',
-    meta: {
-      title: 'excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'export-excel',
-        component: () => import(/* webpackChunkName: "export-excel" */ '@/views/excel/export-excel.vue'),
-        name: 'ExportExcel',
-        meta: { title: 'exportExcel' }
-      },
-      {
-        path: 'export-selected-excel',
-        component: () => import(/* webpackChunkName: "select-excel" */ '@/views/excel/select-excel.vue'),
-        name: 'SelectExcel',
-        meta: { title: 'selectExcel' }
-      },
-      {
-        path: 'export-merge-header',
-        component: () => import(/* webpackChunkName: "merge-header" */ '@/views/excel/merge-header.vue'),
-        name: 'MergeHeader',
-        meta: { title: 'mergeHeader' }
-      },
-      {
-        path: 'upload-excel',
-        component: () => import(/* webpackChunkName: "upload-excel" */ '@/views/excel/upload-excel.vue'),
-        name: 'UploadExcel',
-        meta: { title: 'uploadExcel' }
-      }
-    ]
-  },
+  // {
+  //   path: '/elaboration',
+  //   component: Layout,
+  //   name: 'elaboration',
+  //   meta: {
+  //     title: 'elaboration',
+  //     icon: 'edit',
+  //   }, 
+  //   children : [
+  //     {
+  //       path : 'draft',
+  //       component: () => import('@/views/table/elaboration/draft.vue'),
+  //       name: 'draftBudget',
+  //       meta: {
+  //         title: 'draftBudget',
+  //         icon: 'data'
+  //       }
+  //     },
+  //     {
+  //       path : 'active',
+  //       component: () => import('@/views/table/elaboration/maquette-active.vue'),
+  //       name: 'maquetteActiveBudget',
+  //       meta: {
+  //         title: 'maquetteActiveBudget',
+  //         icon: 'setting'
+  //       }
+  //     }
+  //   ]
+  // },
 ]
 
 /**

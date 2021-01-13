@@ -4,7 +4,7 @@ import { getToken } from '@/utils/cookies'
 
 export const imputerEngagement = (data: any) =>
   request({
-    url: `/imputation/create/`,
+    url: `/imputation/create`,
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`

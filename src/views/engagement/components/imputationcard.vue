@@ -4,7 +4,7 @@
       <el-container>
         <el-header>
           <h2 align="center">
-            Imputation {{ imputation.id }} de l'Engagement {{ engagement.code }}
+            Imputation de l'Engagement {{ engagement.code }}
           </h2>
         </el-header>
         <el-main
@@ -56,26 +56,27 @@
             <el-form-item label="Montant TTC">
               <el-row :gutter="10">
                 <el-col :span="3">
-                  <el-form-item label="">
-                    <el-select
-                      v-model="imputation.devise"
-                      placeholder="Devise"
-                      :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
-                      @change="formAttributeChange"
-                    >
-                      <el-option
-                        v-for="(obj) in deviseOptions"
-                        :key="obj.code"
-                        :label="obj.code"
-                        :value="obj.code"
-                      />
-                    </el-select>
-                  </el-form-item>
+                  <el-select
+                    v-model="imputation.devise"
+                    placeholder="Devise"
+                    filterable
+                    remote
+                    :remote-method="selectDevise"
+                    :loading="deviseLoading"
+                    :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                    @change="formAttributeChange"
+                  >
+                    <el-option
+                      v-for="(obj) in deviseOptions"
+                      :key="obj.code"
+                      :label="obj.libelle"
+                      :value="obj.code"
+                    />
+                  </el-select>
                 </el-col>
                 <el-col :span="20">
                   <el-form-item
                     prop="montant_ttc"
-                    style="width: 100%"
                     :rules="[{ validator: validateMontant, trigger: 'blur' }]"
                   >
                     <el-input-number
@@ -251,7 +252,7 @@
           >
             <strong>Reference paiement</strong>
           </el-col>
-          <el-col :span="17">
+          <el-col :span="7">
             <el-form-item
               prop="reference_paiement"
               :rules="[{ validator: validateReferenceApurement, trigger: 'blur' }]"
@@ -260,6 +261,31 @@
                 v-model="apurement.reference_paiement"
                 @input="apurerFormAttributeChange"
               />
+            </el-form-item>
+          </el-col>
+          <el-col
+            :span="2"
+          >
+            <strong>Type paiement</strong>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item
+              prop="type_paiement"
+              :rules="[{ validator: validateTypePaiementApurement, trigger: 'blur' }]"
+            >
+              <el-select
+                style="width: 100%"
+                v-model="apurement.type_paiement"
+                placeholder="Type de paiement"
+                @input="apurerFormAttributeChange"
+              >
+                <el-option
+                  v-for="(obj) in typesPaiementOptions"
+                  :key="obj.code"
+                  :label="obj.libelle"
+                  :value="obj.code"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -320,12 +346,16 @@
               <el-select
                 v-model="apurement.devise"
                 placeholder="Devise"
+                filterable
+                remote
+                :remote-method="selectDevise"
+                :loading="deviseLoading"
                 @input="apurerFormAttributeChange"
               >
                 <el-option
                   v-for="(obj) in deviseOptions"
                   :key="obj.code"
-                  :label="obj.code"
+                  :label="obj.libelle"
                   :value="obj.code"
                 />
               </el-select>
@@ -377,7 +407,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
 import { Form as ElForm } from 'element-ui'
-import FooterButtons from './footerbuttons'
+import FooterButtons from '@/views/engagement/components/footerbuttons.vue'
 import {
   updateImputation, resendUpdateImputation, addComment
   , closeImputation, restoreImputation, sendBack, validationImputation
@@ -395,7 +425,8 @@ import { apurerEngagement } from '@/api/apurements'
 export default class ImputationCard extends Vue {
   @Prop({ required: true }) private engagement!: any
   @Prop({ required: true }) private imputation!: any
-  @Prop({ required: true }) private deviseOptions!: any
+  @Prop({ required: true }) private listeDevises!: any
+  @Prop({ required: true }) private typesPaiementOptions!: any
   @Prop({ required: true }) private tva!: any
   @Prop({ required: true }) private fallbackUrl!: any
 
@@ -435,6 +466,14 @@ export default class ImputationCard extends Vue {
   private validateReferenceApurement = (rule: any, value: string, callback: Function) => {
     if (!value) {
       callback(new Error('Veuillez saisir une référence de paiement à cette opération.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateTypePaiementApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez choisir un type de paiement à cette opération.'))
     } else {
       callback()
     }
@@ -487,6 +526,9 @@ export default class ImputationCard extends Vue {
   private nextEtatActionText = "Apurer l'engagement"
   private isNextEtatAction = false
 
+  private deviseLoading: boolean = false
+  private deviseOptions: string[] = []
+
   /** Variables for Imputation dialog form */
   private apurerFormVisible = false
   private apurerFormLoading = false
@@ -527,12 +569,24 @@ export default class ImputationCard extends Vue {
 
   private initializeCard() {
     this.cardLoading = true
+    this.deviseOptions = this.listeDevises
     this.updateViewVariables()
     this.cardLoading = false
   }
 
   private onCancel() {
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+  }
+
+  private selectDevise(query: string) {
+    if (query !== '') {
+      this.deviseLoading = true;
+      this.deviseLoading = false;
+      this.deviseOptions = this.listeDevises.filter((item: any) => {
+        return item.libelle.toLowerCase()
+          .indexOf(query.toLowerCase()) > -1;
+      });
+    }
   }
 
   private optionsAnnulerValider() {

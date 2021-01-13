@@ -64,7 +64,7 @@ import { Component, Vue, PropSync } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
 import { getUsers } from '@/api/users'
-import EngagementsList from './components/engagementslist'
+import EngagementsList from '@/views/engagement/components/engagementslist.vue'
 
 @Component({
   name: 'Home',

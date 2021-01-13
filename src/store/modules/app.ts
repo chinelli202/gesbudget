@@ -4,9 +4,9 @@ import {
   , setSidebarStatus, setLanguage, setSize
 } from '@/utils/cookies'
 import {
-  setDevises, setEtatsEngagement, setNaturesEngagement
+  setDevises, setTypesPaiement, setEtatsEngagement, setNaturesEngagement
   , setStatutsEngagement, setTva, setTypesEngagement, getTva
-  , getDevises, getTypesEngagement, getNaturesEngagement
+  , getDevises, getTypesPaiement, getTypesEngagement, getNaturesEngagement
   , getEtatsEngagement, getStatutsEngagement
   , getLocaldbBudgetStructure, setLocaldbBudgetStructure
 } from '@/utils/localdb'
@@ -29,6 +29,7 @@ export interface IAppState {
   size: string
   tva: number
   devises: string[]
+  typesPaiement: string[]
   typesEngagement: string[]
   naturesEngagement: string[]
   etatsEngagement: string[]
@@ -46,7 +47,8 @@ class App extends VuexModule implements IAppState {
   public language = getLocale()
   public size = getSize() || 'medium'
   public tva = parseFloat(getTva());
-  public devises : string[] = getDevises()
+  public devises : any = getDevises()
+  public typesPaiement : string[] = getTypesPaiement()
   public typesEngagement = getTypesEngagement()
   public naturesEngagement = getNaturesEngagement()
   public etatsEngagement = getEtatsEngagement()
@@ -94,6 +96,12 @@ class App extends VuexModule implements IAppState {
   public async fetchEngagementVariables() {
     let response = await getVariables({ cle: 'DEVISE' })
     this.SET_DEVISES(response.data.reduce(function(all: any, obj: any) {
+      all[obj.code] = { code: obj.code, libelle: obj.libelle }
+      return all
+    }, {}))
+    
+    response = await getVariables({ cle: 'TYPE_PAIEMENT' })
+    this.SET_TYPES_PAIEMENT(response.data.reduce(function(all: any, obj: any) {
       all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
     }, {}))
@@ -220,6 +228,12 @@ class App extends VuexModule implements IAppState {
   private SET_DEVISES(devises: string[]) {
     this.devises = devises
     setDevises(this.devises)
+  }
+  
+  @Mutation
+  private SET_TYPES_PAIEMENT(typesPaiement: string[]) {
+    this.typesPaiement = typesPaiement
+    setTypesPaiement(this.typesPaiement)
   }
 
   @Mutation

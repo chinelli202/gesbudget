@@ -21,7 +21,6 @@
               :src="'/img/logo-snh.jpg'"
               :fit="'cover'">
               <div slot="error" class="image-slot">
-                
               </div>
             </el-image>
           </el-col>
@@ -117,7 +116,7 @@ import SocialSign from './components/SocialSignin.vue'
 })
 export default class extends Vue {
   private isNumeric(value: any) {
-      return /^\d+$/.test(value)
+    return /^\d+$/.test(value)
   }
 
   private validateUsername = (rule: any, value: string, callback: Function) => {
