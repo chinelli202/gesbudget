@@ -12,6 +12,7 @@
     />
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+        <div style="display: inline-block;padding: 0 8px;vertical-align: text-bottom;"><strong>{{ userName }}</strong></div>
         <error-log class="errLog-container right-menu-item hover-effect" />
         <screenfull class="right-menu-item hover-effect" />
         <el-tooltip
@@ -97,6 +98,10 @@ import SizeSelect from '@/components/SizeSelect/index.vue'
   }
 })
 export default class extends Vue {
+  get userName() {
+    return UserModule.name
+  }
+
   get sidebar() {
     return AppModule.sidebar
   }

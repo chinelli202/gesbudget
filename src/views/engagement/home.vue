@@ -80,12 +80,10 @@ export default class Home extends Vue {
 
   created() {
     let engagementPermissions = UserModule.permissions.filter((value) => {
-      console.log('value = >'+ value.code.split('_')[0].trim()+ '<')
       return value.code.split('_')[0].trim() === 'ENG'
     })
 
     this.upperEngagementPermissions = engagementPermissions.filter((value) => {
-      console.log('value = >'+ value.code.split('_')[2].trim()+ '<')
       return value.code.split('_')[2].trim() === 'VALIDP' || value.code.split('_')[2].trim() === 'VALIDS' || value.code.split('_')[2].trim() === 'VALIDF'
     })
 
@@ -95,12 +93,10 @@ export default class Home extends Vue {
   }
 
   private hasUpperPermissions() {
-    console.log('hasOnlySaisiPermissions ', this.upperEngagementPermissions)
     return this.upperEngagementPermissions.length > 0
   }
 
   private hasWritingPermissions() {
-    console.log('writingEngagementPermissions ', this.writingEngagementPermissions)
     return this.writingEngagementPermissions.length > 0
   }
 }

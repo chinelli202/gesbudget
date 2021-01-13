@@ -134,53 +134,52 @@ class App extends VuexModule implements IAppState {
     this.SET_TVA(parseFloat(response.data[0].valeur))
 
     const budget: Record<string, any> = {
-      fonctionnement: {},
-      mandat: {}
+      fonctionnement: [],
+      mandat: []
     }
 
     const respBudget: Record<string, any> = {
-      fonctionnement: {},
-      mandat: {}
+      fonctionnement: [],
+      mandat: []
     }
+    
+    response = await getBudgetStructure({ domain: 'fonctionnement' })
+    budget.fonctionnement = response.data
 
-    getBudgetStructure({ domain: 'fonctionnement' }).then((response) => {
-      budget.fonctionnement = response.data
-    })
-    getBudgetStructure({ domain: 'mandat' }).then((response) => {
-      budget.mandat = response.data
+    response = await getBudgetStructure({ domain: 'mandat' })
+    budget.mandat = response.data
 
-      for (const domain in budget) {
-        let chapts:Record<string, any>[] = []
-        for (const section in budget[domain]) {
-          chapts = chapts.concat(budget[domain][section].chapitres)
-        }
-        respBudget[domain] = chapts.map(
-          (chapitre) => {
-            return {
-              label: chapitre.label,
-              value: chapitre.id,
-              children: chapitre.rubriques.map(
-                (rubrique: any) => {
-                  return {
-                    label: rubrique.label,
-                    value: rubrique.id,
-                    children: rubrique.lignes.map(
-                      (ligne: any) => {
-                        return {
-                          label: ligne.label,
-                          value: ligne.id
-                        }
-                      }
-                    )
-                  }
-                }
-              )
-            }
-          }
-        )
+    for (const domain in budget) {
+      let chapts:Record<string, any>[] = []
+      for (const section in budget[domain]) {
+        chapts = chapts.concat(budget[domain][section].chapitres)
       }
-      this.SET_BUDGET_STRUCTURE(respBudget)
-    })
+      respBudget[domain] = chapts.map(
+        (chapitre) => {
+          return {
+            label: chapitre.label,
+            value: chapitre.id,
+            children: chapitre.rubriques.map(
+              (rubrique: any) => {
+                return {
+                  label: rubrique.label,
+                  value: rubrique.id,
+                  children: rubrique.lignes.map(
+                    (ligne: any) => {
+                      return {
+                        label: ligne.label,
+                        value: ligne.id
+                      }
+                    }
+                  )
+                }
+              }
+            )
+          }
+        }
+      )
+    }
+    this.SET_BUDGET_STRUCTURE(respBudget)
   }
 
   @Mutation
