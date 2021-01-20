@@ -134,7 +134,7 @@
       <el-table-column
         prop="saisisseur_name"
         label="Saisi par"
-        width="100"
+        width="120"
       />
       <el-table-column
         fixed="right"

@@ -124,6 +124,21 @@
                 />
               </el-form-item>
               <el-form-item
+                label="Date"
+                prop="eng_date"
+                :rules="[{ validator: validateDate, trigger: 'blur' }]"
+              >
+                <el-date-picker
+                  style="width: 50%"
+                  v-model="engagement.eng_date"
+                  format="dd MMMM yyyy"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  type="date"
+                  placeholder="Choississez un jour"
+                  :picker-options="pickerOptions">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item
                 label="Solde Ligne"
               >
                 <strong>{{ soldeLigne.toLocaleString() }}</strong>
@@ -277,17 +292,6 @@
                   </el-col>
                   <el-col :span="15">
                     {{ engagement.created_at | dateFormatLong }}
-                  </el-col>
-                </el-row>
-                <el-row :gutter="10">
-                  <el-col
-                    :span="6"
-                    :offset="3"
-                  >
-                    Pour la date du 
-                  </el-col>
-                  <el-col :span="15">
-                    {{ engagement.eng_date | dateFormatLong }}
                   </el-col>
                 </el-row>
                 <el-row :gutter="10">
@@ -621,6 +625,14 @@ export default class extends Vue {
     }
   }
 
+    private validateDate = (rule: any, value: number, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une date pour cet engagement'))
+    } else {
+      callback()
+    }
+  }
+
   /** Ligne budgetaire cascader */
   private domain = 'Fonctionnement'
   private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
@@ -661,6 +673,7 @@ export default class extends Vue {
   private engagement = {
     id: null,
     code: '',
+    eng_date: new Date(),
     montant_ttc: 0,
     cumul_imputations: 0,
     cumul_apurements_initie_ht: 0,
@@ -680,6 +693,32 @@ export default class extends Vue {
     domaine: 'Fonctionnement',
     documents: [],
     imputations: []
+  }
+
+  private pickerOptions = {
+    disabledDate(time: any) {
+      return time.getTime() > Date.now();
+    },
+    shortcuts: [{
+      text: 'Aujourd\'hui',
+      onClick(picker: any) {
+        picker.$emit('pick', new Date());
+      }
+    }, {
+      text: 'Hier',
+      onClick(picker: any) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24);
+        picker.$emit('pick', date);
+      }
+    }, {
+      text: 'Il y a une semaine',
+      onClick(picker: any) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+        picker.$emit('pick', date);
+      }
+    }]
   }
 
   /** Variables for Imputation dialog form */
@@ -731,7 +770,8 @@ export default class extends Vue {
   private async fetchData(engagementId: number) {
     this.cardLoading = true
     detailEngagement({ id: engagementId }).then((response) => {
-      this.engagement = response.data
+      let { eng_date, ...eng } = response.data
+      this.engagement = {eng_date: new Date(eng_date), ...eng}
       let devises = AppModule.devises
       this.listeDevises = Object.keys(AppModule.devises).map(key => {return AppModule.devises[key];})
       this.typesPaiementOptions = AppModule.typesPaiement
@@ -816,7 +856,8 @@ export default class extends Vue {
       if(valid) {
         this.cardLoading = true
         updateEngagement(this.engagement).then((response) => {
-          this.engagement = response.data
+          let { eng_date, ...eng } = response.data
+          this.engagement = {eng_date: new Date(eng_date), ...eng}
           this.updateViewVariables()
           this.cardLoading = false
         }).catch(error => {

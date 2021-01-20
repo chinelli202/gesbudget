@@ -311,7 +311,7 @@ export default class CreateEngButton extends Vue {
 
   private engagement = {
     montant_ttc: 0,
-    eng_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    eng_date: new Date(),
     nature: 'PEG',
     type: '',
     devise: 'XAF',
@@ -389,7 +389,7 @@ export default class CreateEngButton extends Vue {
     this.soldeLigne = '0'
     this.engagement = {
       montant_ttc: 0,
-      eng_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      eng_date: new Date(),
       nature: 'PEG',
       type: '',
       devise: 'XAF',
@@ -414,7 +414,9 @@ export default class CreateEngButton extends Vue {
     (this.$refs.engagementForm as ElForm).validate(async(valid: boolean) => {
       if(valid) {
         this.dialogFormLoading = true
-        this.createEngAction(this.engagement)
+        let { eng_date, ...eng } = this.engagement
+        console.log('eng_date ', eng_date, eng)
+        this.createEngAction({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng})
         this.resetForm()
         this.submitDisabled = true
         this.dialogFormLoading = false

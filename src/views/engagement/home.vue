@@ -3,29 +3,6 @@
     <div class="clearfix">
       <div class="app-container">
         <h1> Tableau de bord </h1>
-        <div v-if="hasWritingPermissions()">
-          
-          <div
-            v-for="(permission) in writingEngagementPermissions"
-            :key="permission.code"
-          >
-            <el-card shadow="always">
-              <el-main>
-                <EngagementsList
-                  :etat="permission.code.split('_')[1]"
-                  :statut="'NEW,SAISI'"
-                  :title="permission.display_name"
-                  :show-title="true"
-                  :table-height="'50vh'"
-                  :display-create-button="permission.code.split('_')[1] === 'INIT'"
-                  :display-export-button="false"
-                />
-              </el-main>
-            </el-card>
-            <br>
-          </div>
-          
-        </div>
         <div v-if="hasUpperPermissions()">
           <div
             v-for="(permission) in upperEngagementPermissions"
@@ -53,6 +30,28 @@
               <br>
             </div>
           </div>
+        </div>
+        <div v-if="hasWritingPermissions()">
+          <div
+            v-for="(permission) in writingEngagementPermissions"
+            :key="permission.code"
+          >
+            <el-card shadow="always">
+              <el-main>
+                <EngagementsList
+                  :etat="permission.code.split('_')[1]"
+                  :statut="'NEW,SAISI'"
+                  :title="permission.display_name"
+                  :show-title="true"
+                  :table-height="'50vh'"
+                  :display-create-button="permission.code.split('_')[1] === 'INIT'"
+                  :display-export-button="false"
+                />
+              </el-main>
+            </el-card>
+            <br>
+          </div>
+          
         </div>
       </div>
     </div>

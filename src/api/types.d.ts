@@ -21,7 +21,7 @@ export interface IEngagementData {
   id: number,
   created_at: string,
   updated_at: string,
-  eng_date: string,
+  eng_date: Date,
   code: string,
   libelle: string,
   montant_ht: number,
