@@ -65,13 +65,13 @@
         fixed
         prop="code"
         label="Code"
-        width="170"
+        width="120"
       />
       <el-table-column
         fixed
         prop="eng_date"
         :formatter="dateFormatterShort"
-        label="Date"
+        label="Date engagement"
         width="100"
       />
       <el-table-column
@@ -104,7 +104,7 @@
       <el-table-column
         prop="ligne_libelle"
         label="Ligne Budgétaire"
-        width="300"
+        width="345"
       >
         <template slot-scope="scope">
             {{ scope.row.chapitre_libelle }} // {{ scope.row.rubrique_libelle }} // {{ scope.row.ligne_libelle }}
@@ -114,27 +114,23 @@
         prop="montant_ttc"
         :formatter="numFormatter"
         label="Montant TTC"
-        width="150"
+        width="125"
       />
       <el-table-column
         prop="devise"
         label="Devise"
         width="75"
       />
+      
       <el-table-column
-        prop="nature"
-        label="Nature"
-        width="75"
+        prop="saisisseur_name"
+        label="Saisi par"
+        width="120"
       />
       <el-table-column
         prop="type"
         label="Type"
         width="75"
-      />
-      <el-table-column
-        prop="saisisseur_name"
-        label="Saisi par"
-        width="120"
       />
       <el-table-column
         fixed="right"
@@ -285,20 +281,41 @@ export default class EngagementsList extends Vue {
     return column ? column.toLocaleString() : column
   }
 
-  dateFormatter(value: any, row: any, column: any) {
-    const currentDatetime = new Date(column)
-    const formattedDate = currentDatetime.getDate() +
-      '/' + (currentDatetime.getMonth() + 1) +
-      '/' + currentDatetime.getFullYear() +
-      ' ' + currentDatetime.getHours() + ':' + currentDatetime.getMinutes()
-    return formattedDate
+  dateFormatterShort(value: any, row: any, column: any) {
+    if (column !== undefined && column !== "") {
+      var myDate = new Date(column);
+      var month = [
+        "Jan",
+        "Fev",
+        "Mar",
+        "Avr",
+        "Mai",
+        "Jun",
+        "Jul",
+        "Aou",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ][myDate.getMonth()];
+      let d = myDate.getDate()
+      let dd = d<10 ? '0'+d: d
+      var str =  dd + " " + month + " " + myDate.getFullYear();
+      return str;
+    }
+    return "";
   }
 
-  dateFormatterShort(value: any, row: any, column: any) {
-    const currentDatetime = new Date(column)
-    const formattedDate = currentDatetime.getDate() +
-      '/' + (currentDatetime.getMonth() + 1) +
-      '/' + currentDatetime.getFullYear()
+  dateFormatter(value: any, row: any, column: any) {
+    const str = this.dateFormatterShort(value, row, column)
+    const myDate = new Date(column)
+    let h = myDate.getHours()
+    let hh = h<10 ? '0'+h: h
+    let m = myDate.getMinutes()
+    let mm = m<10 ? '0'+m: m
+
+    const formattedDate = str +
+      '|' + hh + ':' + mm
     return formattedDate
   }
 
