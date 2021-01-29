@@ -6,11 +6,11 @@
       style="margin: 0.5em 0px"
     >
       <el-col :span="13">
-        <h1 
+        <h2 
           v-if="showTitle"
           style="margin-top: 0px">
           {{ title ? title : libelleEtat[etat].title }}
-        </h1>
+        </h2>
         <span v-else>
           .
         </span>
@@ -19,28 +19,7 @@
         
       </el-col>
       <el-col
-        v-if="canCreateEngagement && displayCreateButton"
         :span="9"
-        :offset="4"
-      >
-        <el-button-group>
-          <create-eng-button
-            :inactive="!canCreateEngagement || !displayCreateButton"
-            :createEngAction="createEngagement"
-          >
-          </create-eng-button>
-          <el-button
-            type="success"
-            v-if="displayExportButton"
-            @click="handleExport"
-          >
-            Exporter la liste <i class="el-icon-download el-icon-right"></i>
-          </el-button>
-        </el-button-group>
-      </el-col>
-      <el-col
-        v-else
-        :span="4"
         :offset="6"
       >
         <el-button-group>
@@ -163,7 +142,7 @@
 import { Component, Vue, Prop, Watch} from 'vue-property-decorator'
 import { formatJson } from '@/utils'
 import { exportJson2Excel } from '@/utils/excel'
-import { getEngagements, createEngagement } from '@/api/engagements'
+import { getEngagements } from '@/api/engagements'
 import { getSoldeLigne } from '@/api/lignes'
 import { IEngagementData } from '@/api/types'
 import { AppModule } from '@/store/modules/app'
@@ -171,12 +150,11 @@ import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
 import { getBudgetStructure } from '@/api/variables'
 import Pagination from '@/components/Pagination/index.vue'
-import CreateEngButton from '@/views/engagement/components/createengbutton.vue'
 
 @Component({
   name: 'EngagementsList',
   components: {
-    Pagination, CreateEngButton
+    Pagination
   }
 })
 
@@ -184,7 +162,6 @@ export default class EngagementsList extends Vue {
   @Prop() private title!: string
   @Prop({ default : true }) private showTitle!: boolean
   @Prop() private displayEtatRadio!: boolean
-  @Prop({ required: true }) private displayCreateButton!: boolean
   @Prop({ default: true }) private displayExportButton!: boolean
   @Prop({ default: false }) private displayFilter!: boolean
   @Prop() private icon!: string
@@ -360,7 +337,7 @@ export default class EngagementsList extends Vue {
     if (this.statut) {
       this.listQuery.latest_statut = this.statut
     } else {
-      delete this.listQuery.statut
+      delete this.listQuery.latest_statut
     }
     if (this.nature) {
       this.listQuery.nature = this.nature
@@ -397,15 +374,6 @@ export default class EngagementsList extends Vue {
       this.paginationTotal = response.total
       this.initiatedEngagements = response.data
       this.listLoading = false
-    })
-  }
-
-  private createEngagement(engagement: any) {
-    console.log('engagement ', engagement)
-    createEngagement(engagement).then((response) => {
-      const newEngagement = response.data
-      this.initiatedEngagements.push(newEngagement)
-      this.initiatedEngagements.sort((a, b) => b.id - a.id)
     })
   }
 }

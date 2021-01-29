@@ -129,7 +129,6 @@
           :valideursS = "operateurs.VALIDS"
           :valideursF = "operateurs.VALIDF"
           :tableHeight="'72vh'"
-          :displayCreateButton="false"
         />
       </div>
     </div>

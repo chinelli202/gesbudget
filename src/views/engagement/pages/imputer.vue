@@ -5,7 +5,6 @@
         <EngagementsList
           :etat="etat"
           :title="title"
-          :displayCreateButton="false"
         />
       </div>
     </div>
