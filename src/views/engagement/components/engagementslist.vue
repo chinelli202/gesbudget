@@ -231,15 +231,18 @@ export default class EngagementsList extends Vue {
     return UserModule.permissions.filter(item => item.code === permission).length > 0
   }
 
-  private handleExport() {
+  private async handleExport() {
     this.listLoading = true
     const tHeader = ['Code', 'Date', 'Dernière mise à Jour le', 'Etat', 'Statut', 'Libellé', 'Domaine', 'Ligne budgétaire', 'Rubrique du Budget', 'Chapitre du Budget'
       , 'Devise', 'Montant TTC', 'Cumul des imputations', 'Cumul des apurements', 'Type engagement', 'Saisi par', 'Saisi le', 'Validé au 1er niveau par', 'Validé au 2nd niveau par', 'Validé au niveau final par']
     const filterVal = ['code', 'eng_date', 'latest_edited_at', 'etat_libelle', 'latest_statut', 'libelle', 'domaine', 'ligne_libelle', 'rubrique_libelle', 'chapitre_libelle'
       , 'devise', 'montant_ttc', 'cumul_imputations', 'cumul_apurements' ,'type_libelle', 'saisisseur_name', 'created_at', 'valideurp_name', 'valideurs_name', 'valideurf_name']
-    const list = this.initiatedEngagements
-    const fileNameSuffix = Object.keys(this.listQuery).reduce((all: string, newKey: string) => {
-      return all + '--' + newKey + '_' + this.listQuery[newKey]
+    const { page, limit, ...fullQuery } = this.listQuery
+    let list: any
+    const response = await getEngagements(fullQuery)
+    list = response.data
+    const fileNameSuffix = Object.keys(fullQuery).reduce((all: string, newKey: string) => {
+      return all + '--' + newKey + '_' + fullQuery[newKey]
     }, '')
     const data = formatJson(filterVal, list)
     exportJson2Excel(tHeader, data, 'Liste des engagements '+ fileNameSuffix, undefined, undefined, true, 'xlsx')
