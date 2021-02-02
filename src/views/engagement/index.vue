@@ -98,6 +98,7 @@
               collapse-tags
               clearable
               filterable
+              :filter-method="cascadeFilter"
               @change="ligneChanged"
               >
             </el-cascader>
@@ -202,6 +203,10 @@ export default class extends Vue {
     this.lignes = [...new Set(this.lignesBudgetaire.map((el) => {
       return el[2]
     }))].join(',')
+  }
+
+  private cascadeFilter(node: any, keyword: string) {
+    return node.text.toLowerCase().includes(keyword.toLowerCase());
   }
 
   private domainChanged() {
