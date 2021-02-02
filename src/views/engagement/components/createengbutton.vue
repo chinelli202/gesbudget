@@ -66,6 +66,8 @@
                   :props="{expandTrigger: 'hover'}"
                   placeholder="Choisir la ligne budgétaire"
                   class="cascade-extra-lg"
+                  filterable
+                  :filter-method="cascadeFilter"
                   @change="cascadeChange"
                 />
               </el-form-item>
@@ -382,6 +384,10 @@ export default class CreateEngButton extends Vue {
     getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
       this.soldeLigne = response.data.solde_restant == 0 ? 'Solde nul' : response.data.solde_restant
     })
+  }
+
+  private cascadeFilter(node: any, keyword: string) {
+    return node.text.toLowerCase().includes(keyword.toLowerCase());
   }
 
   private resetForm() {
