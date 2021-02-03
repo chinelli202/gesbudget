@@ -855,7 +855,8 @@ export default class extends Vue {
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
       if(valid) {
         this.cardLoading = true
-        updateEngagement(this.engagement).then((response) => {
+        let { eng_date, ...eng } = this.engagement
+        updateEngagement({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng}).then((response) => {
           let { eng_date, ...eng } = response.data
           this.engagement = {eng_date: new Date(eng_date), ...eng}
           this.updateViewVariables()
@@ -875,8 +876,10 @@ export default class extends Vue {
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
       if(valid) {
         this.cardLoading = true
-        resendUpdateEngagement(this.engagement).then((response) => {
-          this.engagement = response.data
+        let { eng_date, ...eng } = this.engagement
+        resendUpdateEngagement({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng}).then((response) => {
+          let { eng_date, ...eng } = response.data
+          this.engagement = {eng_date: new Date(eng_date), ...eng}
           this.updateViewVariables()
           this.cardLoading = false
         }).catch(error => {
