@@ -47,9 +47,9 @@ export default class extends Vue {
 
   private getBreadcrumb() {
     let matched = this.$route.matched.filter((item) => item.meta && item.meta.title)
-    const first = matched[0]
+    const first = matched[1]
     if (!this.isDashboard(first)) {
-      matched = [{ path: '/home/dashboard', meta: { title: 'dashboard' } } as RouteRecord].concat(matched)
+      matched = [{ path: '/home/dashboard', meta: { title: 'engagementHomeDashboard' } } as RouteRecord].concat(matched)
     }
     this.breadcrumbs = matched.filter((item) => {
       return item.meta && item.meta.title && item.meta.breadcrumb !== false
@@ -61,7 +61,7 @@ export default class extends Vue {
     if (!name) {
       return false
     }
-    return name.trim().toLocaleLowerCase() === 'Dashboard'.toLocaleLowerCase()
+    return name.trim().toLocaleLowerCase() === 'engagementHomeDashboard'.toLocaleLowerCase()
   }
 
   private pathCompile(path: string) {
