@@ -489,10 +489,10 @@ export default class ApurementCard extends Vue {
   }
 
   private updateViewVariables() {
-    this.isCurrentUserSaisisseur = UserModule.matricule === this.apurement.saisisseur
-    this.isCurrentUserValideurp = UserModule.matricule === this.apurement.valideur_first
-    this.isCurrentUserValideurs = UserModule.matricule === this.apurement.valideur_second
-    this.isCurrentUserValideurf = UserModule.matricule === this.apurement.valideur_final
+    this.isCurrentUserSaisisseur = UserModule.loggedUser.matricule === this.apurement.saisisseur
+    this.isCurrentUserValideurp = UserModule.loggedUser.matricule === this.apurement.valideur_first
+    this.isCurrentUserValideurs = UserModule.loggedUser.matricule === this.apurement.valideur_second
+    this.isCurrentUserValideurf = UserModule.loggedUser.matricule === this.apurement.valideur_final
 
     this.nextEtatActionText = this.engagement.cumul_apurements_initie_ttc > 0 ? 'Nouvel apurement' : "Apurer l'engagement"
     if (this.engagement.cumul_apurements < this.engagement.montant_ttc) {

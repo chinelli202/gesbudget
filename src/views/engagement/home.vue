@@ -112,24 +112,24 @@ import CreateEngButton from '@/views/engagement/components/createengbutton.vue'
 })
 
 export default class Home extends Vue {
-  private permissions = UserModule.permissions
+  private permissions = UserModule.loggedUser.permissions
   private upperEngagementPermissions: any[] = []
   private writingEngagementPermissions: any[] = []
   private canCreateEngagement = true
   private keyForRefresh = 0
 
   created() {
-    this.canCreateEngagement = UserModule.permissions.filter(item => item.code === PermissionModule.permissionCodes.engagement.INIT.SAISI).length > 0
+    this.canCreateEngagement = UserModule.loggedUser.permissions.filter((item: any) => item.code === PermissionModule.permissionCodes.engagement.INIT.SAISI).length > 0
 
-    let engagementPermissions = UserModule.permissions.filter((value) => {
+    let engagementPermissions = UserModule.loggedUser.permissions.filter((value: any) => {
       return value.code.split('_')[0].trim() === 'ENG'
     })
 
-    this.upperEngagementPermissions = engagementPermissions.filter((value) => {
+    this.upperEngagementPermissions = engagementPermissions.filter((value: any) => {
       return value.code.split('_')[2].trim() === 'VALIDP' || value.code.split('_')[2].trim() === 'VALIDS' || value.code.split('_')[2].trim() === 'VALIDF'
     })
 
-    this.writingEngagementPermissions = engagementPermissions.filter((value) => {
+    this.writingEngagementPermissions = engagementPermissions.filter((value: any) => {
       return value.code.split('_')[2].trim() === 'SAISI'
     })
   }

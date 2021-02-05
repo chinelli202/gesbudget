@@ -228,7 +228,7 @@ export default class EngagementsList extends Vue {
   }
 
   private hasPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length > 0
+    return UserModule.loggedUser.permissions.filter(item => item.code === permission).length > 0
   }
 
   private async handleExport() {

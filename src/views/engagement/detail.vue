@@ -739,7 +739,7 @@ export default class extends Vue {
 
   created() {
     const id = this.$route.params && this.$route.params.id
-    this.permissions = UserModule.permissions
+    this.permissions = UserModule.loggedUser.permissions
     this.permissionCodes = PermissionModule.permissionCodes
     this.fetchData(parseInt(id))
   }
@@ -1008,11 +1008,11 @@ export default class extends Vue {
   }
 
   private hasPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length > 0
+    return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length > 0
   }
 
   private hasnotPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length === 0
+    return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length === 0
   }
 
   private engagementHasBeenValidatePOrMore() {
@@ -1020,10 +1020,10 @@ export default class extends Vue {
   }
 
   private updateViewVariables() {
-    this.isCurrentUserSaisisseur = UserModule.matricule === this.engagement.saisisseur
-    this.isCurrentUserValideurp = UserModule.matricule === this.engagement.valideur_first
-    this.isCurrentUserValideurs = UserModule.matricule === this.engagement.valideur_second
-    this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
+    this.isCurrentUserSaisisseur = UserModule.loggedUser.matricule === this.engagement.saisisseur
+    this.isCurrentUserValideurp = UserModule.loggedUser.matricule === this.engagement.valideur_first
+    this.isCurrentUserValideurs = UserModule.loggedUser.matricule === this.engagement.valideur_second
+    this.isCurrentUserValideurf = UserModule.loggedUser.matricule === this.engagement.valideur_final
 
     this.nextEtatActionText = this.engagement.cumul_imputations_initie_ttc > 0 ? 'Nouvelle imputation' : "Imputer l'engagement"
     if (this.engagement.cumul_imputations < this.engagement.montant_ttc) {

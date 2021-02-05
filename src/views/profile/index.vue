@@ -76,11 +76,11 @@ export default class extends Vue {
   private activeTab = 'activity'
 
   get name() {
-    return UserModule.name
+    return UserModule.loggedUser.name
   }
 
   get email() {
-    return UserModule.email
+    return UserModule.loggedUser.email
   }
 
   get avatar() {

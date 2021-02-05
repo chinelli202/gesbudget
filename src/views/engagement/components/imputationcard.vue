@@ -751,10 +751,10 @@ export default class ImputationCard extends Vue {
   }
 
   private updateViewVariables() {
-    this.isCurrentUserSaisisseur = UserModule.matricule === this.imputation.saisisseur
-    this.isCurrentUserValideurp = UserModule.matricule === this.imputation.valideur_first
-    this.isCurrentUserValideurs = UserModule.matricule === this.imputation.valideur_second
-    this.isCurrentUserValideurf = UserModule.matricule === this.imputation.valideur_final
+    this.isCurrentUserSaisisseur = UserModule.loggedUser.matricule === this.imputation.saisisseur
+    this.isCurrentUserValideurp = UserModule.loggedUser.matricule === this.imputation.valideur_first
+    this.isCurrentUserValideurs = UserModule.loggedUser.matricule === this.imputation.valideur_second
+    this.isCurrentUserValideurf = UserModule.loggedUser.matricule === this.imputation.valideur_final
 
     this.nextEtatActionText = this.engagement.cumul_apurements_initie_ttc > 0 ? 'Nouvel apurement' : "Apurer l'engagement"
     if (this.engagement.cumul_apurements < this.engagement.montant_ttc) {

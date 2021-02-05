@@ -31,7 +31,7 @@ export default class extends Vue {
   }
 
   get name() {
-    return UserModule.name
+    return UserModule.loggedUser.name
   }
 
   get avatar() {
