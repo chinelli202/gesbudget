@@ -15,6 +15,8 @@
 
     <el-table
       :data="recapData.collection"
+      header-cell-class-name="headerStyler"
+      :header-cell-style="headerCellStyle"
 
       border
       :summary-method="getSummaries"
@@ -120,6 +122,8 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
     limit: 10
   }
   private headerPrevision:string = ""
+
+  private headerCellStyle = {"word-break": "break-word", "color": "green"}
 
   @Watch('recapData', { immediate: true, deep: true })
   onRecapDataChanged(val: IRecapData, oldVal: IRecapData) {
@@ -245,6 +249,11 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
     console.log("displaying values. row : ",row)
     return column.toLocaleString("fr-FR");
   }
+
+  private headerStyler(row:any, column:any, rowIndex: any, columnIndex:any){
+    return "wrapper"
+  }
+
 }
 
 </script>
@@ -252,6 +261,8 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
 <style>
 
 .wrapper{
+  display:block;
   word-break: break-word;
+  color:green;
 }
 </style>

@@ -26,12 +26,8 @@
           <div class="card-panel-text">
             Prévisions
           </div>
-          <count-to
-            :start-val="0"
-            :end-val="recapData.prevision"
-            :duration="3600"
-            class="card-panel-num"
-          />
+          
+          <div class="card-panel-num">{{formatter(recapData.prevision)}}</div>
         </div>
       </div>
     </el-col>
@@ -58,12 +54,8 @@
           <div class="card-panel-text">
             Exécution
           </div>
-          <count-to
-            :start-val="0"
-            :end-val="recapData.execution"
-            :duration="3000"
-            class="card-panel-num"
-          />
+ 
+          <div class="card-panel-num">{{formatter(recapData.execution)}}</div>
         </div>
       </div>
     </el-col>
@@ -93,12 +85,13 @@
           <div class="card-panel-text">
             Solde
           </div>
-          <count-to
+          <!-- <count-to
             :start-val="0"
             :end-val="recapData.solde"
-            :duration="3200"
+            :duration="500"
             class="card-panel-num"
-          />
+          /> -->
+          <div class="card-panel-num">{{formatter(recapData.solde)}}</div>
         </div>
       </div>
     </el-col>
@@ -148,6 +141,11 @@ export default class extends Vue {
   private handleSetLineChartData(type: string) {
     this.$emit('handleSetLineChartData', type)
   }
+
+  private formatter (value: Number) : string{
+    return value.toLocaleString("fr-Fr")
+  }
+
 }
 </script>
 

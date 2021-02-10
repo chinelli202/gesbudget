@@ -73,7 +73,7 @@
       private rubriquesRecettesCascadeOptions: any [] = []
       private groupesCascadeOptions: any [] = [
         {label: "Charges de personnel", value: 10, groupname: "SALAIRE+DE+PERSONNEL"},
-        {label: "missions ", value: 11, groupname: "MISSIONS"},
+        {label: "Missions ", value: 11, groupname: "MISSIONS"},
         {label: "Diverses représentations", value: 12, groupname: "DIVERSES+REPRESENTATIONS"},
         {label: "Charges diverses de fonctionnement", value: 13, groupname: "CHARGES+DIVERSES+DE+FONCTIONNEMENT"},
         {label: "Honoraires", value: 14, groupname: "HONORAIRES"},

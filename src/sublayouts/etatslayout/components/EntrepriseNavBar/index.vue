@@ -23,123 +23,7 @@
       @click="handleGenerauxClicked()">
         Général
       </el-menu-item> 
-      <el-submenu 
-        v-if="domaine == 'fonctionnement'"
-        index="1445">
-        <template slot="title">
-          Dépenses
-        </template>
-        <!-- <router-link to="/tab/custom/rubrique/chargespersonnel"> -->
-          <!-- <router-link :to="{name: 'depenses.grouperubrique', params: {groupname: 'chargespersonnel'}}"> -->
-        <!-- <el-menu-item index="2-1">
-          Charges de personnel
-        </el-menu-item> -->
-        <!-- <router-link :to="{name: 'depenses.grouperubrique', params: {groupname: 'missions'}}"> -->
-        <!-- <el-menu-item index="2-2">
-          Missions
-        </el-menu-item> -->
-
-        <el-submenu v-for="(section, index) in depensesMap"
-            :key="section.label"
-            :index="1445-index"
-            >
-          <template slot="title">
-            {{section.label}}
-          </template>
-          <div v-if="section.groupes && section.groupes.length > 0">
-            <el-menu-item v-for="(element, index) in section.groupes"
-              :key="154449-index"
-              :label="element.label"
-              @click="handleMenuItemClicked(element)">
-              <template slot="title">
-                {{element.label}}
-              </template>
-            </el-menu-item>
-          </div>
-          <div v-else>
-            <el-menu-item v-for="chapitre in section.chapitres"
-            :key="chapitre.id"
-            :index="chapitre.id"
-            @click="handleMenuItemClicked(chapitre)">
-            {{chapitre.label}}
-          </el-menu-item>
-          </div>
-        </el-submenu>
-
-
-        <!-- <el-submenu index="2-4">
-          <template slot="title">
-            Fonctionnement
-          </template>
-          <el-menu-item index="2-4-1" @click="handleClick">
-            Charges de personnel
-          </el-menu-item>
-          <el-menu-item index="2-4-2">
-            Missions
-          </el-menu-item>
-          <el-menu-item index="2-4-3">
-            Diverses Représentations
-          </el-menu-item>
-          <el-menu-item index="2-4-4">
-            Charges diverses de fonctionnement
-          </el-menu-item>
-          <el-menu-item index="2-4-5">
-            Honoraires
-          </el-menu-item>
-          <el-menu-item index="2-4-6">
-            Dons - subventions
-          </el-menu-item>
-          <el-menu-item index="2-4-7">
-            Formations
-          </el-menu-item>
-          <el-menu-item index="2-4-8">
-            Imprévus
-          </el-menu-item>
-        </el-submenu>
-        <el-submenu index="2-5">
-          <template slot="title">
-            Investissement
-          </template>
-          <el-menu-item index="2-5-1">
-            Equipements-Immobilisations
-          </el-menu-item>
-          <el-menu-item index="2-5-2">
-            Dépenses d'Hydrocarbures
-          </el-menu-item>
-          <el-menu-item index="2-5-3">
-            Investissements  Financiers
-          </el-menu-item>
-        </el-submenu>-->
-      </el-submenu> 
-      <el-submenu 
       
-      v-else
-      index="18">
-          <template slot="title">
-            Depenses
-          </template>
-          <el-menu-item 
-            v-for="chapitre in depensesMap"
-            :key="chapitre.value"
-            :index="chapitre.value"
-            @click="handleMenuItemClicked(chapitre)"
-            >
-            {{chapitre.label}}
-          </el-menu-item>
-      </el-submenu>
-      <el-submenu index="13">
-          <template slot="title">
-            Recettes
-          </template>
-          <el-menu-item 
-          v-for="chapitre in recettesMap"
-          :key="chapitre.value"
-          :index="chapitre.index"
-          @click="handleMenuItemClicked(chapitre)"
-          >
-            {{chapitre.label}}
-          </el-menu-item>
-      </el-submenu>
       <el-menu-item @click="handleNavigate">
         Aller à...
       </el-menu-item>
@@ -175,14 +59,14 @@ import {getFonctionnementTree, getMandatTree, getSectionsFonctionnementTree} fro
   
 
   @Component({
-    name: 'EtatNavbar',
+    name: 'EntrepriseNavbar',
     components: {
       NavigateurEtats
     }
   })
 
 export default class extends Vue {
-@Prop({ default: 'fonctionnement' }) private domaine!: string
+@Prop({ default: 'CPSP' }) private entreprise!: string
 private navTitle:String = "Fonctionnement"
 private activeIndex2 : any = "dd"
 private input2 : string = ""
@@ -224,14 +108,14 @@ private exportMap: any [] = []
     this.isGeneraux = path.split("/")[3] == 'generaux';
 
     //set nav title and styling
-    this.navTitle = this.domaine == 'fonctionnement'? "Fonctionnement":"Mandat"
+    this.navTitle = this.entreprise == 'fonctionnement'? "Fonctionnement":"Mandat"
 
-    this.paramNavTree()
+    //this.paramNavTree()
     //get NavTree and pass it as prop
   }
 
   private async paramNavTree(){
-    if(this.domaine=='fonctionnement'){
+    if(this.entreprise=='fonctionnement'){
       this.navTitle = "Fonctionnement"
       const {data} = await getSectionsFonctionnementTree(this.listQuery)
       this.maquetteTree = data
@@ -250,7 +134,7 @@ private exportMap: any [] = []
     //let depensesOption = this.maquetteTree.depenses.chapitres
     let recettesOption = this.maquetteTree.recettes.chapitres
 
-    if(this.domaine == 'fonctionnement'){
+    if(this.entreprise == 'fonctionnement'){
       let depensesOption = this.maquetteTree.depenses
       this.depensesMap= depensesOption.sections.map((section : any)=>{
         let mappedSection = {label: section.section, value: section.section, groupes:section.groupes.map((groupe:any)=>{
@@ -337,7 +221,7 @@ private exportMap: any [] = []
     //test full, domaine or simple section
     var url
     if(map.type == 'domaine'){
-      window.location.href = process.env.VUE_APP_BASE_API+'/export/domaine/'+this.domaine+'?'//'http://192.:8000/api/export/domaine/'+this.domaine+'?'
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/domaine/'+this.entreprise+'?'//'http://192.:8000/api/export/domaine/'+this.domaine+'?'
           +'critere='+periode+'&'
           +'param='+param+'&'
           +'mois='+etatsmodule.moisPeriodeMois+'&'
@@ -346,7 +230,7 @@ private exportMap: any [] = []
     }
     else if(map.type == 'full'){
       
-      window.location.href = process.env.VUE_APP_BASE_API+'/export/section/full/'+map.value+'/'+this.domaine+'?'//'http://localhost:8000/api/export/section/full/'+map.value+'/'+this.domaine+'?'
+      window.location.href = process.env.VUE_APP_BASE_API+'/export/section/full/'+map.value+'/'+this.entreprise+'?'//'http://localhost:8000/api/export/section/full/'+map.value+'/'+this.domaine+'?'
           +'critere='+periode+'&'
           +'param='+param+'&'
           +'mois='+etatsmodule.moisPeriodeMois+'&'
@@ -364,9 +248,9 @@ private exportMap: any [] = []
     console.log("this is the index of the clicked item")
     //will be routed to chapitre subsection with given id
     var routename
-    if(this.domaine == 'fonctionnement')
+    if(this.entreprise == 'fonctionnement')
     routename = 'element-fonctionnement'
-    if(this.domaine == 'mandat')
+    if(this.entreprise == 'mandat')
     routename = 'element-mandat'
       
       // console.log("at this point, the component will navigate to : " + this.chosenEntity + " with the index : " + this.chosenEntityId) 
@@ -378,9 +262,9 @@ private exportMap: any [] = []
 
   private handleGenerauxClicked(){
     var routename
-    if(this.domaine == 'fonctionnement')
+    if(this.entreprise == 'fonctionnement')
     routename = 'fonctionnement-generaux'
-    if(this.domaine == 'mandat')
+    if(this.entreprise == 'mandat')
     routename = 'mandat-generaux'
     this.$router.push({ name: routename})
   }
