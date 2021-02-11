@@ -4,9 +4,9 @@ import {
   , setSidebarStatus, setLanguage, setSize
 } from '@/utils/cookies'
 import {
-  setDevises, setEtatsEngagement, setNaturesEngagement
+  setDevises, setTypesPaiement, setEtatsEngagement, setNaturesEngagement
   , setStatutsEngagement, setTva, setTypesEngagement, getTva
-  , getDevises, getTypesEngagement, getNaturesEngagement
+  , getDevises, getTypesPaiement, getTypesEngagement, getNaturesEngagement
   , getEtatsEngagement, getStatutsEngagement
   , getLocaldbBudgetStructure, setLocaldbBudgetStructure
 } from '@/utils/localdb'
@@ -29,6 +29,7 @@ export interface IAppState {
   size: string
   tva: number
   devises: string[]
+  typesPaiement: string[]
   typesEngagement: string[]
   naturesEngagement: string[]
   etatsEngagement: string[]
@@ -46,18 +47,61 @@ class App extends VuexModule implements IAppState {
   public language = getLocale()
   public size = getSize() || 'medium'
   public tva = parseFloat(getTva());
-  public devises : string[] = getDevises()
+  public devises : any = getDevises()
+  public typesPaiement : string[] = getTypesPaiement()
   public typesEngagement = getTypesEngagement()
   public naturesEngagement = getNaturesEngagement()
   public etatsEngagement = getEtatsEngagement()
   public statutsEngagement = getStatutsEngagement()
 
   public budgetStructure: any = getLocaldbBudgetStructure()
+  public tageffect = {
+    INIT: {
+      NEW: { type: 'info', effect: 'plain' },
+      SAISI: { type: 'info', effect: 'plain' },
+      VALIDP: { type: 'info', effect: 'plain' },
+      VALIDS: { type: 'info', effect: 'light' },
+      VALIDF: { type: 'info', effect: 'dark' }
+    },
+    PEG: {
+      NEW: { type: '', effect: 'plain' },
+      SAISI: { type: '', effect: 'plain' },
+      VALIDP: { type: '', effect: 'plain' },
+      VALIDS: { type: '', effect: 'light' },
+      VALIDF: { type: '', effect: 'dark' }
+    },
+    IMP: {
+      NEW: { type: 'success', effect: 'plain' },
+      SAISI: { type: 'success', effect: 'plain' },
+      VALIDP: { type: 'success', effect: 'plain' },
+      VALIDS: { type: 'success', effect: 'light' },
+      VALIDF: { type: 'success', effect: 'dark' }
+    },
+    APUR: {
+      NEW: { type: 'success', effect: 'plain' },
+      SAISI: { type: 'success', effect: 'plain' },
+      VALIDP: { type: 'success', effect: 'plain' },
+      VALIDS: { type: 'success', effect: 'light' },
+      VALIDF: { type: 'success', effect: 'dark' }
+    },
+    CLOT: {
+      SAISI: { type: 'danger', effect: '' },
+      VALIDP: { type: 'danger', effect: '' },
+      VALIDS: { type: 'danger', effect: '' },
+      VALIDF: { type: 'danger', effect: '' }
+    }
+  }
 
   @Action
   public async fetchEngagementVariables() {
     let response = await getVariables({ cle: 'DEVISE' })
     this.SET_DEVISES(response.data.reduce(function(all: any, obj: any) {
+      all[obj.code] = { code: obj.code, libelle: obj.libelle }
+      return all
+    }, {}))
+    
+    response = await getVariables({ cle: 'TYPE_PAIEMENT' })
+    this.SET_TYPES_PAIEMENT(response.data.reduce(function(all: any, obj: any) {
       all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
     }, {}))
@@ -90,53 +134,52 @@ class App extends VuexModule implements IAppState {
     this.SET_TVA(parseFloat(response.data[0].valeur))
 
     const budget: Record<string, any> = {
-      fonctionnement: {},
-      mandat: {}
+      fonctionnement: [],
+      mandat: []
     }
 
     const respBudget: Record<string, any> = {
-      fonctionnement: {},
-      mandat: {}
+      fonctionnement: [],
+      mandat: []
     }
+    
+    response = await getBudgetStructure({ domain: 'fonctionnement' })
+    budget.fonctionnement = response.data
 
-    getBudgetStructure({ domain: 'fonctionnement' }).then((response) => {
-      budget.fonctionnement = response.data
-    })
-    getBudgetStructure({ domain: 'mandat' }).then((response) => {
-      budget.mandat = response.data
+    response = await getBudgetStructure({ domain: 'mandat' })
+    budget.mandat = response.data
 
-      for (const domain in budget) {
-        let chapts:Record<string, any>[] = []
-        for (const section in budget[domain]) {
-          chapts = chapts.concat(budget[domain][section].chapitres)
-        }
-        respBudget[domain] = chapts.map(
-          (chapitre) => {
-            return {
-              label: chapitre.label,
-              value: chapitre.id,
-              children: chapitre.rubriques.map(
-                (rubrique: any) => {
-                  return {
-                    label: rubrique.label,
-                    value: rubrique.id,
-                    children: rubrique.lignes.map(
-                      (ligne: any) => {
-                        return {
-                          label: ligne.label,
-                          value: ligne.id
-                        }
-                      }
-                    )
-                  }
-                }
-              )
-            }
-          }
-        )
+    for (const domain in budget) {
+      let chapts:Record<string, any>[] = []
+      for (const section in budget[domain]) {
+        chapts = chapts.concat(budget[domain][section].chapitres)
       }
-      this.SET_BUDGET_STRUCTURE(respBudget)
-    })
+      respBudget[domain] = chapts.map(
+        (chapitre) => {
+          return {
+            label: chapitre.label,
+            value: chapitre.id,
+            children: chapitre.rubriques.map(
+              (rubrique: any) => {
+                return {
+                  label: rubrique.label,
+                  value: rubrique.id,
+                  children: rubrique.lignes.map(
+                    (ligne: any) => {
+                      return {
+                        label: ligne.label,
+                        value: ligne.id
+                      }
+                    }
+                  )
+                }
+              }
+            )
+          }
+        }
+      )
+    }
+    this.SET_BUDGET_STRUCTURE(respBudget)
   }
 
   @Mutation
@@ -184,6 +227,12 @@ class App extends VuexModule implements IAppState {
   private SET_DEVISES(devises: string[]) {
     this.devises = devises
     setDevises(this.devises)
+  }
+  
+  @Mutation
+  private SET_TYPES_PAIEMENT(typesPaiement: string[]) {
+    this.typesPaiement = typesPaiement
+    setTypesPaiement(this.typesPaiement)
   }
 
   @Mutation

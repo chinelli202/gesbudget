@@ -10,3 +10,23 @@ export const uploadMaquette = (data: any) =>
     },
     data
   })
+
+export const processMaquette = (data:any) => 
+request({
+  url: `/elaboration/draft/maquette/load`,
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+})
+
+export const watchProgress = (data:any) => 
+request({
+  url: `/elaboration/draft/maquette/loadprogress`,
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+})

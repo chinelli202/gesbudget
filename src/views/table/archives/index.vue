@@ -10,8 +10,7 @@
     <panel-group :recapData="recapData" @handleSetLineChartData="handleSetLineChartData" />
     <!-- Bar Chart, Line Chart -->
     <el-row :gutter="8">
-      <!-- <el-col :offset="chartOffset" :span="12" -->
-      <el-col :offset="6" :span="12"
+      <el-col :offset="chartOffset" :span="12"
         
       >
         <bar-chart :recapMonths="monthsRecapCollection"/>  

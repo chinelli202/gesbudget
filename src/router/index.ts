@@ -75,7 +75,7 @@ export const constantRoutes: RouteConfig[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/etats'
+    redirect: '/home'
   },
   {
     path: '/profile',
@@ -96,6 +96,94 @@ export const constantRoutes: RouteConfig[] = [
     ]
   },
   {
+    path: '/home',
+    component: Layout,
+    redirect: '/home/dashboard/',
+    name: 'engagementHome',
+    meta: {
+      title: 'engagementHome',
+      icon: 'component'
+    },
+    children : [
+      {
+        path: 'dashboard',
+        component: () => import(/* webpackChunkName: "home" */ '@/views/engagement/home.vue'),
+        //redirect: '/consulter/list/',
+        name: 'engagementHomeDashboard',
+        meta: {
+          title: 'engagementHomeDashboard',
+          icon: 'component'
+        }
+      }
+    ]
+  },
+  {
+    path: '/engagement',
+    component: Layout,
+    redirect: '/engagement/list',
+    name: 'engagement',
+    meta: {
+      title: 'engagement',
+      icon: 'list'
+    },
+    children : [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "engagementlist" */ '@/views/engagement/index.vue'),
+        name: 'EngagementList',
+        meta: {
+          title: 'engagementList',
+          activeMenu: '/engagement/list',
+          icon: 'search'
+        }
+      }
+    ]
+  },
+  {
+    path: '/detail',
+    component: Layout,
+    redirect: '/detail/engagement',
+    name: 'engagementDetail',
+    meta: {
+      title: 'engagementDetail',
+      icon: 'form',
+      hidden: true
+    },
+    children : [
+      {
+        path: 'engagement/:id(\\d+)',
+        component: () => import(/* webpackChunkName: "engagement-detail" */ '@/views/engagement/detail.vue'),
+        name: 'engagementDetailView',
+        meta: {
+          title: 'engagementDetailView',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/corbeille',
+    component: Layout,
+    redirect: '/corbeille/list',
+    name: 'corbeille',
+    meta: {
+      title: 'corbeille',
+      icon: 'list'
+    },
+    children : [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "corbeille" */ '@/views/engagement/pages/corbeille.vue'),
+        name: 'corbeilleList',
+        meta: {
+          title: 'corbeilleList',
+          icon: 'bug'
+        }
+      }
+    ]
+  },
+  
+  {
     path: '/etats',
     component: Layout,
     redirect: '/etats/fonctionnement',
@@ -106,7 +194,7 @@ export const constantRoutes: RouteConfig[] = [
     children: [
       {
         path: 'fonctionnement',
-        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        component: () => import(/* webpackChunkName: "etatslayout-fonctionnement" */ '@/sublayouts/etatslayout/index.vue'),
         name: 'Fonctionnement',
         children: [
           {
@@ -143,7 +231,7 @@ export const constantRoutes: RouteConfig[] = [
       },
       {
         path: 'mandat',
-        component: () => import(/* webpackChunkName: "tab" */ '@/sublayouts/etatslayout/index.vue'),
+        component: () => import(/* webpackChunkName: "etatslayout-mandat" */ '@/sublayouts/etatslayout/index.vue'),
         name: 'Mandat',
         children: [
           {
@@ -167,79 +255,6 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsMandat',
           icon: 'tab'
-        }
-      }
-    ]
-  },
-  {
-    path: '/engagement',
-    component: Layout,
-    redirect: '/engagement/list',
-    meta: {
-      title: 'engagement',
-      icon: 'form'
-    },
-    children: [
-      {
-        path: 'detail/:id(\\d+)',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/detail.vue'),
-        name: 'DetailEngagement',
-        meta: {
-          title: 'detailEngagement',
-          noCache: true,
-          activeMenu: '/engagement/list',
-          hidden: true
-        }
-      },
-      {
-        path: 'list',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/index.vue'),
-        name: 'EngagementList',
-        meta: {
-          title: 'engagementList',
-          activeMenu: '/engagement/list',
-          icon: 'list'
-        }
-      },
-      {
-        path: 'imputer',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/imputer.vue'),
-        name: 'EngagementImputer',
-        meta: {
-          title: 'engagementImputer',
-          icon: 'edit'
-        }
-      },
-      {
-        path: 'apurer',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/apurer.vue'),
-        name: 'EngagementApurer',
-        meta: {
-          title: 'engagementApurer',
-          icon: 'edit'
-        }
-      }
-    ]
-  },
-  {
-    path: '/consulter',
-    component: Layout,
-    redirect: '/consulter/list/',
-    name: 'consulter',
-    meta: {
-      title: 'consulter',
-      icon: 'search',
-      hidden: true
-    },
-    children : [
-      {
-        path: 'list',
-        component: () => import(/* webpackChunkName: "engagement-edit" */ '@/views/engagement/pages/consulter.vue'),
-        //redirect: '/consulter/list/',
-        name: 'consulterList',
-        meta: {
-          title: 'consulterList',
-          icon: 'search'
         }
       }
     ]
@@ -270,41 +285,6 @@ export const constantRoutes: RouteConfig[] = [
           title: 'maquetteActiveBudget',
           icon: 'setting'
         }
-      }
-    ]
-  },
-  {
-    path: '/excel',
-    component: Layout,
-    redirect: '/excel/export-excel',
-    meta: {
-      title: 'excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'export-excel',
-        component: () => import(/* webpackChunkName: "export-excel" */ '@/views/excel/export-excel.vue'),
-        name: 'ExportExcel',
-        meta: { title: 'exportExcel' }
-      },
-      {
-        path: 'export-selected-excel',
-        component: () => import(/* webpackChunkName: "select-excel" */ '@/views/excel/select-excel.vue'),
-        name: 'SelectExcel',
-        meta: { title: 'selectExcel' }
-      },
-      {
-        path: 'export-merge-header',
-        component: () => import(/* webpackChunkName: "merge-header" */ '@/views/excel/merge-header.vue'),
-        name: 'MergeHeader',
-        meta: { title: 'mergeHeader' }
-      },
-      {
-        path: 'upload-excel',
-        component: () => import(/* webpackChunkName: "upload-excel" */ '@/views/excel/upload-excel.vue'),
-        name: 'UploadExcel',
-        meta: { title: 'uploadExcel' }
       }
     ]
   },

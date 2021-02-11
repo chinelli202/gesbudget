@@ -1,5 +1,7 @@
 <template>
   <div class="login-container">
+    <div class="backgound-container">
+    </div>
     <el-form
       ref="loginForm"
       :model="loginForm"
@@ -12,18 +14,28 @@
         <h3 class="title">
           {{ $t('login.title') }}
         </h3>
-        <lang-select class="set-language" />
+        <el-row type="flex" class="row-bg" justify="center">
+          <el-col :span="5">
+            <el-image
+              style="width: 100px; height: 100px; margin-bottom: 1em; border-radius: 4px"
+              :src="'/img/logo-snh.jpg'"
+              :fit="'cover'">
+              <div slot="error" class="image-slot">
+              </div>
+            </el-image>
+          </el-col>
+        </el-row>
       </div>
 
-      <el-form-item prop="email">
+      <el-form-item prop="matricule">
         <span class="svg-container">
           <svg-icon name="user" />
         </span>
         <el-input
-          ref="email"
-          v-model="loginForm.email"
-          :placeholder="$t('login.email')"
-          name="email"
+          ref="matricule"
+          v-model="loginForm.matricule"
+          :placeholder="$t('login.matricule')"
+          name="matricule"
           type="text"
           tabindex="1"
           autocomplete="on"
@@ -70,25 +82,6 @@
       >
         {{ $t('login.logIn') }}
       </el-button>
-
-      <div style="position:relative">
-        <div class="tips">
-          <span>{{ $t('login.email') }} : admin </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
-        </div>
-        <div class="tips">
-          <span>{{ $t('login.email') }} : editor </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
-        </div>
-
-        <el-button
-          class="thirdparty-button"
-          type="primary"
-          @click="showDialog=true"
-        >
-          {{ $t('login.thirdparty') }}
-        </el-button>
-      </div>
     </el-form>
 
     <el-dialog
@@ -111,7 +104,6 @@ import { Dictionary } from 'vue-router/types/router'
 import { Form as ElForm, Input } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
-import { isValidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect/index.vue'
 import SocialSign from './components/SocialSignin.vue'
 
@@ -123,30 +115,34 @@ import SocialSign from './components/SocialSignin.vue'
   }
 })
 export default class extends Vue {
+  private isNumeric(value: any) {
+    return /^\d+$/.test(value)
+  }
+
   private validateUsername = (rule: any, value: string, callback: Function) => {
-    if (!isValidUsername(value)) {
-      callback(new Error('Please enter the correct user name'))
+    if (value.length < 5 || !this.isNumeric(value)) {
+      callback(new Error('Veuillez saisir un matricule valide'))
     } else {
       callback()
     }
   }
 
   private validatePassword = (rule: any, value: string, callback: Function) => {
-    // if (value.length < 6) {
-    //   callback(new Error('The password can not be less than 6 digits'))
-    // } else {
-    //   callback()
-    // }
+    if (value.length < 5) {
+      callback(new Error('Le mot de passe doit avoir au moins 5 caractères'))
+    } else {
+      callback()
+    }
     callback()
   }
 
   private loginForm = {
-    email: 'user@app.com',
+    matricule: '00005',
     password: '12345'
   }
 
   private loginRules = {
-    email: [{ validator: this.validateUsername, trigger: 'blur' }],
+    matricule: [{ validator: this.validateUsername, trigger: 'blur' }],
     password: [{ validator: this.validatePassword, trigger: 'blur' }]
   }
 
@@ -156,6 +152,7 @@ export default class extends Vue {
   private capsTooltip = false
   private redirect?: string
   private otherQuery: Dictionary<string> = {}
+  private imageurl = ''
 
   @Watch('$route', { immediate: true })
   private onRouteChange(route: Route) {
@@ -169,7 +166,7 @@ export default class extends Vue {
   }
 
   mounted() {
-    if (this.loginForm.email === '') {
+    if (this.loginForm.matricule === '') {
       (this.$refs.email as Input).focus()
     } else if (this.loginForm.password === '') {
       (this.$refs.password as Input).focus()
@@ -233,8 +230,8 @@ export default class extends Vue {
 // References: https://www.zhangxinxu.com/wordpress/2018/01/css-caret-color-first-line/
 @supports (-webkit-mask: none) and (not (cater-color: $loginCursorColor)) {
   .login-container .el-input {
-    input { color: $loginCursorColor; }
-    input::first-line { color: $lightGray; }
+    input { color: $white; }
+    input::first-line { color: $white; }
   }
 }
 
@@ -250,8 +247,9 @@ export default class extends Vue {
       border: 0px;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
-      color: $lightGray;
-      caret-color: $loginCursorColor;
+      color: $white;
+      cursor: pointer;
+      caret-color: $white;
       -webkit-appearance: none;
 
       &:-webkit-autofill {
@@ -262,8 +260,8 @@ export default class extends Vue {
   }
 
   .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 5px;
     color: #454545;
   }
@@ -271,19 +269,40 @@ export default class extends Vue {
 </style>
 
 <style lang="scss" scoped>
+.backgound-container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  // background-color: $loginBg;
+  background-image: url("/snh-bg.jpg");
+
+  /* Add the blur effect */
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1;
+}
+
 .login-container {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: $loginBg;
+  background-color: transparent;
 
   .login-form {
-    position: relative;
+    position: absolute;
+    top: 5%;
+    left: 35%;
     width: 520px;
     max-width: 100%;
     padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
+    z-index: 1;
   }
 
   .tips {
@@ -300,7 +319,7 @@ export default class extends Vue {
 
   .svg-container {
     padding: 6px 5px 6px 15px;
-    color: $darkGray;
+    color: $white;
     vertical-align: middle;
     width: 30px;
     display: inline-block;
@@ -311,7 +330,7 @@ export default class extends Vue {
 
     .title {
       font-size: 26px;
-      color: $lightGray;
+      color: $darkGray;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
@@ -332,7 +351,7 @@ export default class extends Vue {
     right: 10px;
     top: 7px;
     font-size: 16px;
-    color: $darkGray;
+    color: $white;
     cursor: pointer;
     user-select: none;
   }

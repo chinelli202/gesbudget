@@ -2,7 +2,7 @@
   <div class="dashboard-editor-container">
     <div class="clearfix">
       <div class="app-container">
-        <PreEngagements
+        <EngagementsList
           :etat="etat"
           :title="title"
           :displayCreateButton="false"
@@ -16,12 +16,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
-import PreEngagements from '../components/preengagements'
+import EngagementsList from '@/views/engagement/components/engagementslist.vue'
 
 @Component({
   name: 'DashboardEditor',
   components: {
-    PreEngagements
+    EngagementsList
   }
 })
 export default class extends Vue {

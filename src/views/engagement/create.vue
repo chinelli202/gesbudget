@@ -232,7 +232,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import {
   detailEngagement
-  , updateEngagement, validationpPreeng, validationPreeng, cancelValidationPreeng, cancelValidationpPreeng, validationsPreeng
+  , updateEngagement, validationPreeng, cancelValidationPreeng
   , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
 } from '@/api/engagements'
 import { AppModule } from '@/store/modules/app'
@@ -245,7 +245,7 @@ import { PermissionModule } from '@/store/modules/permission'
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.fallbackUrl = from.path
+      (vm as any).fallbackUrl = from.path
     })
   }
 })

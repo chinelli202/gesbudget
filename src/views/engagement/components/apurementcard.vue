@@ -3,7 +3,7 @@
     <el-container>
       <el-header>
         <h2 align="center">
-          Apurement {{ apurement.id }} (Eng:{{ engagement.id }})
+          Apurement de l'Engagement {{ engagement.code }}
         </h2>
       </el-header>
       <el-main
@@ -20,7 +20,7 @@
         />
         <el-form
           ref="form"
-          :model="engagement"
+          :model="apurement"
           label-width="100px"
         >
           <el-form-item label="Engagement">
@@ -29,20 +29,33 @@
               :disabled="true"
             />
           </el-form-item>
-          <el-form-item label="Reference">
+          <el-form-item
+            label="Reference"
+            prop="reference_paiement"
+            :rules="[{ validator: validateReferenceApurement, trigger: 'blur' }]"
+          >
             <el-input
               v-model="apurement.reference_paiement"
               :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+              @input="formAttributeChange"
             />
           </el-form-item>
-          <el-form-item label="Libelle">
+          <el-form-item
+            label="Libelle"
+            prop="libelle"
+            :rules="[{ validator: validateLibelleApurement, trigger: 'blur' }]"
+          >
             <el-input
               v-model="apurement.libelle"
               :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
               @input="formAttributeChange"
             />
           </el-form-item>
-          <el-form-item label="Observations">
+          <el-form-item
+            label="Observations"
+            prop="observations"
+            :rules="[{ validator: validateObservationApurement, trigger: 'blur' }]"
+          >
             <el-input
               v-model="apurement.observations"
               type="textarea"
@@ -51,47 +64,61 @@
               @input="formAttributeChange"
             />
           </el-form-item>
-          <el-form-item label="Montant HT">
+          <el-form-item label="Montant TTC">
             <el-row :gutter="10">
               <el-col :span="3">
-                <el-form-item label="">
-                  <el-select
-                    v-model="apurement.devise"
-                    placeholder="Devise"
-                    :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
-                  >
-                    <el-option
-                      v-for="(obj) in deviseOptions"
-                      :key="obj.code"
-                      :label="obj.code"
-                      :value="obj.code"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="18">
-                <el-input
-                  v-model="apurement.montant_ht"
+                <el-select
+                  v-model="apurement.devise"
+                  placeholder="Devise"
+                  filterable
+                  remote
+                  :remote-method="selectDevise"
+                  :loading="deviseLoading"
                   :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
-                  @input="changeMontantHT"
-                />
+                  @change="formAttributeChange"
+                >
+                  <el-option
+                    v-for="(obj) in deviseOptions"
+                    :key="obj.code"
+                    :label="obj.libelle"
+                    :value="obj.code"
+                  />
+                </el-select>
+              </el-col>
+              <el-col :span="5">
+                <el-select
+                  style="width: 100%"
+                  v-model="apurement.type_paiement"
+                  placeholder="Type de paiement"
+                  :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                  @change="formAttributeChange"
+                >
+                  <el-option
+                    v-for="(obj) in typesPaiementOptions"
+                    :key="obj.code"
+                    :label="obj.libelle"
+                    :value="obj.code"
+                  />
+                </el-select>
+              </el-col>
+              <el-col :span="15">
+                <el-form-item
+                  prop="montant_ttc"
+                  :rules="[{ validator: validateMontantApurement, trigger: 'blur' }]"
+                >
+                  <el-input-number
+                    style="width: 100%"
+                    v-model="apurement.montant_ttc"
+                    :min="0"
+                    :controls="false"
+                    :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
+                    @input="formAttributeChange"
+                  />
+                </el-form-item>
               </el-col>
             </el-row>
           </el-form-item>
 
-          <el-form-item label="Montant TTC">
-            <el-row :gutter="10">
-              <el-col :span="3">
-                <strong>TVA {{ tva.toLocaleString('fr-FR') }}%</strong>
-              </el-col>
-              <el-col :span="20">
-                <el-input
-                  v-model="apurement.montant_ttc"
-                  :disabled="true"
-                />
-              </el-col>
-            </el-row>
-          </el-form-item>
           <el-form-item label="Statut">
             <el-input
               v-model="apurement.statut_libelle"
@@ -208,12 +235,13 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
+import { Form as ElForm } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
-import FooterButtons from './footerbuttons'
+import FooterButtons from '@/views/engagement/components/footerbuttons.vue'
 import {
   updateApurement, resendUpdateApurement, addComment
   , closeApurement, restoreApurement, sendBack, validationApurement
-  , apurerEngagement, cancelValidationApurement
+  , cancelValidationApurement
 } from '@/api/apurements'
 
 @Component({
@@ -226,9 +254,51 @@ import {
 export default class ApurementCard extends Vue {
   @Prop({ required: true }) private engagement!: any
   @Prop({ required: true }) private apurement!: any
-  @Prop({ required: true }) private deviseOptions!: any
+  @Prop({ required: true }) private listeDevises!: any
+  @Prop({ required: true }) private typesPaiementOptions!: any
   @Prop({ required: true }) private tva!: any
   @Prop({ required: true }) private fallbackUrl!: any
+
+  private validateReferenceApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une référence de paiement à cette opération.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateLibelleApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir un libellé à cet engagement.'))
+    } else if(value.length < 4) {
+      callback(new Error('Le libellé saisi doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+  
+  private validateObservationApurement = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une observation à cette imputation.'))
+    } else if(value.length < 4) {
+      callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMontantApurement = (rule: any, value: number, callback: Function) => {
+    if (value < 1) {
+      callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
+    } else if (this.maxMontant() < value ) {
+      callback(new Error(
+        `Le montant ${this.engagement.cumul_apurements === 0 ? 'imputé' : 'qu\'il reste à réaliser/apurer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.engagement.devise}.
+        Vous ne pouvez pas effectuer une réalisation au delà de cette somme.`
+      ))
+    } else {
+      callback()
+    }
+  }
 
   private cardLoading = false
   private cardActive = false
@@ -247,6 +317,9 @@ export default class ApurementCard extends Vue {
   private nextEtatActionText = "Apurer l'engagement"
   private isNextEtatAction = false
 
+  private deviseLoading: boolean = false
+  private deviseOptions: string[] = []
+
   created() {
     this.cardLoading = true
     this.updateViewVariables()
@@ -259,6 +332,10 @@ export default class ApurementCard extends Vue {
     }, { immediate: true })
   }
 
+  private maxMontant() {
+    return this.engagement.montant_ttc - this.engagement.cumul_imputations
+  }
+
   private initializeCard() {
     this.cardLoading = true
     this.updateViewVariables()
@@ -267,6 +344,17 @@ export default class ApurementCard extends Vue {
 
   private onCancel() {
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+  }
+
+  private selectDevise(query: string) {
+    if (query !== '') {
+      this.deviseLoading = true;
+      this.deviseLoading = false;
+      this.deviseOptions = this.listeDevises.filter((item: any) => {
+        return item.libelle.toLowerCase()
+          .indexOf(query.toLowerCase()) > -1;
+      });
+    }
   }
 
   private optionsAnnulerValider() {
@@ -281,27 +369,39 @@ export default class ApurementCard extends Vue {
   }
 
   private async updateSubmit() {
-    this.cardLoading = true
-    updateApurement(this.apurement).then((response) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error update', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        updateApurement(this.apurement).then((response) => {
+          this.$emit('engagementChanged', response.data)
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error update', error)
+        })
+        // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
+      } else {
+          return false
+      }
     })
-    // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
   }
 
   private async resendUpdate() {
-    this.cardLoading = true
-    resendUpdateApurement(this.apurement).then((response) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.cardLoading = false
-    }).catch(error => {
-      this.cardLoading = false
-      console.log('Error resendUpdate', error)
+    (this.$refs.form as ElForm).validate(async(valid: boolean) => {
+      if(valid) {
+        this.cardLoading = true
+        resendUpdateApurement(this.apurement).then((response) => {
+          this.$emit('engagementChanged', response.data)
+          this.updateViewVariables()
+          this.cardLoading = false
+        }).catch(error => {
+          this.cardLoading = false
+          console.log('Error resendUpdate', error)
+        })
+      } else {
+          return false
+      }
     })
   }
 
@@ -355,7 +455,6 @@ export default class ApurementCard extends Vue {
     this.apurement = {
       engagement_id: '',
       reference_paiement: '',
-      montant_ht: 0,
       montant_ttc: 0,
       devise: 'XAF',
       observations: '',
@@ -366,29 +465,9 @@ export default class ApurementCard extends Vue {
   }
 
   private launchImputer() {
-    this.apurement.montant_ht = this.engagement.montant_ht
     this.apurement.montant_ttc = this.engagement.montant_ttc
     this.apurement.devise = this.engagement.devise
     this.apurerFormVisible = true
-  }
-
-  private apurerEngagement() {
-    console.log('Apurement de lengagement avec fichiers ' + this.apurement.files)
-    this.apurerFormLoading = true
-    this.apurement.engagement_id = this.engagement.code
-    apurerEngagement(this.apurement).then((response:any) => {
-      this.$emit('engagementChanged', response.data)
-      this.updateViewVariables()
-      this.apurerFormLoading = false
-      this.apurerFormVisible = false
-      this.resetApurerForm()
-    }).catch(error => {
-      this.apurerFormLoading = false
-      this.apurerFormVisible = false
-      console.log('Erreur lors de l\'apurement de l\'engagement ', error)
-    })
-    // TODO : handle file upload
-    this.updateViewVariables()
   }
 
   private async fbcloseApurement(id: number, comment: string) {

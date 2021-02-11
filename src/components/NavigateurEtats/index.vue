@@ -77,7 +77,7 @@
         {label: "Diverses représentations", value: 12, groupname: "DIVERSES+REPRESENTATIONS"},
         {label: "Charges diverses de fonctionnement", value: 13, groupname: "CHARGES+DIVERSES+DE+FONCTIONNEMENT"},
         {label: "Honoraires", value: 14, groupname: "HONORAIRES"},
-        {label: "Dons - Subventions", value: 15, groupname: "DONS+-+SUBVENTIONS"},
+        {label: "Dons - Subventions", value: 15, groupname: "DONS-SUBVENTIONS"},
         {label: "Formation", value: 16, groupname: "FORMATION"},
         {label: "Imprévus", value: 17, groupname: "IMPREVUS"},
       ]

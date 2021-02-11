@@ -7,9 +7,13 @@
       type="flex"
       class="row-bg"
       justify="end"
+      :gutter="10"
     >
       <el-col :span="9">
-        <el-button @click="onCancel">
+        <el-button
+          @click="onCancel"
+          style="margin-right:1em"
+        >
           Retour
         </el-button>
         <el-button
@@ -36,26 +40,53 @@
           Annuler ma validation
         </el-button>
         <el-button
-          v-if="isbtnValiderp"
+          v-if="isbtnValiderp && !isbtnValiderCombined"
           type="primary"
           @click="validerpSubmit"
         >
           Valider au 1er niveau
         </el-button>
         <el-button
-          v-if="isbtnValiders"
+          v-if="isbtnValiders && !isbtnValiderCombined"
           type="primary"
           @click="validersSubmit"
         >
           Valider au second niveau
         </el-button>
         <el-button
-          v-if="isbtnValiderf"
+          v-if="isbtnValiderf && !isbtnValiderCombined"
           type="primary"
-          @click="validerfSubmit"
+          @click="preValiderF"
         >
           Valider au niveau final
         </el-button>
+        <el-dropdown
+          v-if="isbtnValiderCombined"
+          split-button type="primary"
+          @command="handleCommandValider"
+        >
+            Valider l'engagement
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-if="isbtnValiderp"
+              command="validerp"
+            >
+              Valider au 1er niveau
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-if="isbtnValiders"
+              command="validers"
+            >
+              Valider au 2nd niveau
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-if="isbtnValiderf"
+              command="validerf"
+            >
+              Valider au niveau final
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
         <el-button
           v-if="isNextEtatAction && isbtnNextEtatAction"
           type="primary"
@@ -125,6 +156,24 @@
         :model="plusDactionsForm"
         :rules="rulesPlusDactionsForm"
       >
+        <el-form-item
+          v-if="isbtnClose"
+          label="Raison de la clôture"
+        >
+          <el-select
+              v-model="plusDactionsForm.reason"
+              style="width: 20vw"
+              clearable
+              placeholder="Choisir une raison"
+            >
+              <el-option
+                v-for="item in raisonsCloseList"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key">
+              </el-option>
+            </el-select>
+        </el-form-item>
         <el-form-item label="Ajouter un commentaire">
           <el-input
             v-model="plusDactionsForm.commentaire"
@@ -142,7 +191,7 @@
           </el-button>
           <el-button
             type="info"
-            :disabled="sendCommentDisabled"
+            :disabled="plusDactionsForm.commentaire === '' || plusDactionsForm.reason !== ''"
             @click="preCommentaireSubmit"
           >
             Envoyer un commentaire
@@ -150,7 +199,7 @@
           <el-button
             v-if="isbtnClose"
             type="primary"
-            :disabled="sendCommentDisabled"
+            :disabled="plusDactionsForm.commentaire === '' || plusDactionsForm.reason === ''"
             @click="preClosePreeng"
           >
             Clôturer {{ entityLabel() }}
@@ -234,6 +283,7 @@ export default class FooterButtons extends Vue {
   private isbtnValiderp = false; // Display 'ValiderP' button, for the first level of validation
   private isbtnValiders = false; // Display 'ValiderS' button, for the second level of validation
   private isbtnValiderf = false; // Display 'ValiderF' button, for the final level of validation
+  private isbtnValiderCombined = false; // To display multiple validation button
   private isbtnOk = false; // Display 'Ok' button, which does nothing. A redirection to the previous route.
   private isbtnClose = false; // Display 'Clôturer le pré-engagement' button to close the pre-engagement
   private isbtnRestaurer = false; // Display 'Restaurer le pré-engagement' button to restore closed pre-engagement
@@ -250,10 +300,15 @@ export default class FooterButtons extends Vue {
 
   private plusDactionsDialogVisible = false
   private plusDactionsForm = {
+    reason: '',
     commentaire: '',
     used: false
   }
 
+  private raisonsCloseList = [
+    {key: 'ENG_NON_VALID', label: 'Engagement non validé par la hiérarchie'},
+    {key: 'ENG_ERR_CREA', label: 'Erreur dans la création de l\'engagement'}
+  ]
   private rulesPlusDactionsForm = {
     commentaire: [
       { required: true, message: 'Veuillez saisir un commentaire.', trigger: 'blur' }
@@ -322,6 +377,7 @@ export default class FooterButtons extends Vue {
     this.isbtnValiderp = false
     this.isbtnValiders = false
     this.isbtnValiderf = false
+    this.isbtnValiderCombined = false
     this.isbtnOk = false
     this.isbtnClose = false
     this.isbtnRestaurer = false
@@ -343,7 +399,7 @@ export default class FooterButtons extends Vue {
 
     // The engagement is closed
     this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code
-
+    console.log('evaluateVariables ', this.isCurrentUserValideurp)
     this.annulerValiderLabel()
   }
 
@@ -389,7 +445,7 @@ export default class FooterButtons extends Vue {
       }
     ).then(_ => {
       this.footerLoading = true
-      this.close(this.entity.id, this.plusDactionsForm.commentaire).then((response:any) => {
+      this.close(this.entity.id, this.plusDactionsForm.commentaire, this.plusDactionsForm.reason).then((response:any) => {
         this.plusDactionsDialogVisible = false
         this.plusDactionsForm.commentaire = ''
         this.plusDactionsForm.used = true
@@ -457,6 +513,33 @@ export default class FooterButtons extends Vue {
       })
   }
 
+  private preValiderF() {
+    this.$confirm('L\'opération que vous voulez effectuez ne pourra pas être annulée plus tard. Êtes vous sûr(e) de vouloir valider au niveau final ?'
+        , 'Validation finale'
+        , {
+          confirmButtonText: 'Oui, Valider au niveau final',
+          cancelButtonText: 'Annuler',
+          type: 'warning'
+        }
+      ).then(_ => {
+        this.validerfSubmit.call()
+      })
+        .catch(error => {
+          console.log('Erreur lors de la confirmation de la validation finale', error)
+        })
+  }
+
+  private handleCommandValider(command: any) {
+    console.log('commande ', command)
+    if (command === 'validerp') {
+      this.validerpSubmit.call()
+    } else if (command === 'validers') {
+      this.validersSubmit.call()
+    } else if (command === 'validerf') {
+      this.preValiderF()
+    }
+  }
+
   private preCancelValiderSubmit() {
     this.$confirm('Voulez-vous vraiment annuler votre validation ?'
       , 'Annulation de validation'
@@ -506,6 +589,7 @@ export default class FooterButtons extends Vue {
   }
 
   private userPerformedCurrentStatut() {
+    console.log('userPerformedCurrentStatut ',this.isCurrentUserSaisisseur, this.isCurrentUserValideurp )
     switch (this.entity.statut) {
       case AppModule.statutsEngagement.SAISI.code:
         return this.isCurrentUserSaisisseur
@@ -522,16 +606,19 @@ export default class FooterButtons extends Vue {
 
   private activateBtnForNextAction() {
     const nextStatut:string[] = this.nextStatut(this.entity.statut)
-    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDP.code) !== -1) {
+    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDP.code) !== -1
+        && this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDP)) {
       this.isbtnValiderp = true
       return null
-    } else if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDS.code) !== -1) {
+    }
+    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDS.code) !== -1
+        && this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDS)) {
       this.isbtnValiders = true
-      return null
-    } else if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDF.code) !== -1) {
+    }
+
+    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDF.code) !== -1
+        && this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDF)) {
       this.isbtnValiderf = true
-      return null
-    } else {
       return null
     }
   }
@@ -587,8 +674,8 @@ export default class FooterButtons extends Vue {
     if (nextStatut.length === 0) {
       return false
     }
+    
     let canNextStatut = false
-    console.log('PermissionModule.permissionCodes.engagement ', this.entity.etat,  PermissionModule.permissionCodes.engagement)
 
     if(this.entity.etat === AppModule.etatsEngagement.CLOT.code) {
       return false
@@ -597,6 +684,7 @@ export default class FooterButtons extends Vue {
     nextStatut.forEach(statut => {
       canNextStatut = canNextStatut || this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat][statut])
     })
+    console.log('nexStatut ', nextStatut, canNextStatut)
     // Test if the user has the permission
     return canNextStatut
   }
@@ -656,6 +744,11 @@ export default class FooterButtons extends Vue {
       this.activateBtnForNextAction()
       this.isbtnRenvoyer = true
     }
+    // Since the activateBtnForNextAction() function can activate multiple buttons, for user who have multiple validation permissions,
+    // we'll display either the combined validation button or the single button
+    if ((this.isbtnValiderp? 1:0) + (this.isbtnValiders?1:0) + (this.isbtnValiderf?1:0) >= 2) {
+      this.isbtnValiderCombined = true
+    }
 
     // 7.The current user has performed the current statut and one of n++ action has been performed
     if (this.userPerformedCurrentStatut() && this.superiorActionHasBeenPerformed()) {
@@ -706,7 +799,9 @@ export default class FooterButtons extends Vue {
     }
 
     // 11.Si l'un des boutons principaux est activé, désactiver le bouton Ok
-    if (this.isbtnNextEtatAction || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp || this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider) {
+    if (this.isbtnNextEtatAction || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp
+        || this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider
+        || this.isbtnValiderCombined) {
       this.isbtnOk = false
     }
   }

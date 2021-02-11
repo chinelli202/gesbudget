@@ -2,31 +2,11 @@
   <div class="dashboard-editor-container">
     <div class="clearfix">
       <div class="app-container">
-        <el-row
-          type="flex"
-          justify="center"
-          style="margin-bottom: 1.5em"
-        >
-          <el-col
-            :span="12"
-            :offset="2"
-          >
-            <el-radio-group
-              v-model="etatLibelle"
-              size="small"
-              @change="etatChange"
-            >
-              <el-radio-button label="Initiés"/>
-              <el-radio-button label="Pré Engagés"/>
-              <el-radio-button label="Imputés"/>
-              <el-radio-button label="Apurés"/>
-              <el-radio-button label="Clôturés"/>
-            </el-radio-group>
-          </el-col>
-        </el-row>
         <EngagementsList
           :etat="etat"
           :title="title"
+          :displayCreateButton="false"
+          :display-export-button="false"
         />
       </div>
     </div>
@@ -40,25 +20,14 @@ import { UserModule } from '@/store/modules/user'
 import EngagementsList from '@/views/engagement/components/engagementslist.vue'
 
 @Component({
-  name: 'DashboardEditor',
+  name: 'Corbeille',
   components: {
     EngagementsList
   }
 })
 export default class extends Vue {
-  private etat = 'INIT'
-  private etatLibelle = 'Initiés'
-  private title = 'Pré engagements initiés'
-  private etatsLibelle: Record<string, any> = {
-    'Initiés': {code: 'INIT', title: 'Pré engagements initiés', icon: ''},
-    'Pré Engagés': {code: 'PEG', title: 'Liste des engagements', icon: ''},
-    'Imputés': {code: 'IMP', title: 'Engagements imputés', icon: ''},
-    'Apurés': {code: 'APUR', title: 'Engagements apurés', icon: ''},
-    'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés', icon: ''}
-  }
-
-  created() {
-  }
+  private etat = 'CLOT'
+  private title = 'Préengagements supprimés'
 
   get name() {
     return UserModule.name
@@ -70,11 +39,6 @@ export default class extends Vue {
 
   get roles() {
     return UserModule.roles
-  }
-
-  private etatChange() {
-    this.etat = this.etatsLibelle[this.etatLibelle].code
-    this.title = this.etatsLibelle[this.etatLibelle].title
   }
 }
 </script>

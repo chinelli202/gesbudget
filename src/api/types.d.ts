@@ -114,6 +114,11 @@ export interface IRecapData {
   tauxExecution: number
 }
 
+export interface IMaquetteData {
+  label: string
+  montant: number
+  description: string
+}
 export interface IMonthRecapCollection {
   months : IMonthRecapData[]
 }

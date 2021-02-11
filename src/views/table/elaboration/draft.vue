@@ -63,6 +63,17 @@
 
             </el-card>
         </el-row>
+        <el-tabs type="border-card">
+            <el-tab-pane label="Dépenses">
+                <maquette-table/>
+                <maquette-table/>
+            </el-tab-pane>
+            <el-tab-pane label="Recettes">
+                <maquette-table/>
+            </el-tab-pane>
+            
+        </el-tabs>
+        
         <el-button style="margin-top: 12px;" @click="next">Prochaine étape</el-button>
     </div>
 </template>
@@ -71,12 +82,14 @@
 
 import {Vue, Component} from 'vue-property-decorator'
 import UploadExcel from '@/components/UploadExcel/index.vue'
+import MaquetteTable from './maquette-table.vue'
 
 
 @Component({
     name: 'DraftBudget',
     components:{
-        UploadExcel
+        UploadExcel, 
+        MaquetteTable
     }
 })
 

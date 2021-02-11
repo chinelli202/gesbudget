@@ -22,7 +22,7 @@
       style="width: 100%"
     >
       <el-table-column
-        prop="libelleParent"
+        prop="libelle"
         :label="recapData.header.labelLabel"
         width="200"
       />
