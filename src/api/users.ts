@@ -14,8 +14,9 @@ export const logout = (data: any) =>
     url: '/user-logout',
     method: 'get',
     headers: {
-      Authorization: `Bearer ${data.token}`
-    }
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
   })
 
 // Get user info
@@ -24,8 +25,9 @@ export const getUserInfo = (data: any) =>
     url: '/user-detail',
     method: 'get',
     headers: {
-      Authorization: `Bearer ${data.token}`
-    }
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
   })
 
 export const getUsers = (params: any) =>

@@ -12,6 +12,19 @@
     />
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+        <div style="display: inline-block;padding: 0 1em; vertical-align: text-bottom;">
+          <el-radio-group
+            v-model="team"
+            size="small"
+            @change="teamChanged"
+          >
+            <el-radio-button
+              v-for="(obj) in teams"
+              :key="obj.id"
+              :label="obj.id"
+            >{{ obj.display_name }}</el-radio-button>
+          </el-radio-group>
+        </div>
         <div style="display: inline-block;padding: 0 8px;vertical-align: text-bottom;"><strong>{{ userName }}</strong></div>
         <error-log class="errLog-container right-menu-item hover-effect" />
         <screenfull class="right-menu-item hover-effect" />
@@ -98,8 +111,22 @@ import SizeSelect from '@/components/SizeSelect/index.vue'
   }
 })
 export default class extends Vue {
+  private team: String = ""
+  created(){
+    this.team = this.currentTeam.id
+    console.log(this.team)
+  }
+
   get userName() {
     return UserModule.loggedUser.name
+  }
+
+  get teams() {
+    return UserModule.loggedUser.teams
+  }
+
+  get currentTeam() {
+    return UserModule.loggedUser.team
   }
 
   get sidebar() {
@@ -121,6 +148,11 @@ export default class extends Vue {
   private async logout() {
     await UserModule.LogOut()
     this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+  }
+
+  private teamChanged() {
+    console.log("teamChanged ")
+    //UserModule.updateSession(UserModule.loggedUser.teams[this.team])
   }
 }
 </script>
@@ -156,6 +188,11 @@ export default class extends Vue {
     vertical-align: top;
   }
 
+  .center-menu {
+    float: right;
+    height: 100%;
+    line-height: 50px;
+  }
   .right-menu {
     float: right;
     height: 100%;
