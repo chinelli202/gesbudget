@@ -118,6 +118,7 @@ export interface IMaquetteData {
   label: string
   montant: number
   description: string
+  children:IMaquetteData[]
 }
 export interface IMonthRecapCollection {
   months : IMonthRecapData[]
