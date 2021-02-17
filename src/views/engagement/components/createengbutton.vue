@@ -47,7 +47,7 @@
               <el-radio-button
                 v-for="dom in domaines"
                 :key="dom"
-                :label="dom"
+                :label="capitalizeFirstLetter(dom)"
               />
             </el-radio-group>
           </el-col>
@@ -295,7 +295,7 @@ export default class CreateEngButton extends Vue {
   }
 
   /** Cascader variables */
-  private domain = AppModule.budgetStructure.domaines[0]
+  private domain = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.domaines[0] : null
   private domaines = AppModule.budgetStructure.domaines
   private chapitresOptions: any = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
   private budgetLevels: any = AppModule.budgetStructure.levels
@@ -456,6 +456,10 @@ export default class CreateEngButton extends Vue {
   public getEngagement() {
     console.log('return engagement')
     return this.engagement
+  }
+
+  private capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }
 </script>
