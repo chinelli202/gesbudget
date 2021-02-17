@@ -1,4 +1,5 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
+import { Message } from 'element-ui'
 import {
   getSidebarStatus, getSize
   , setSidebarStatus, setLanguage, setSize
@@ -97,11 +98,9 @@ class App extends VuexModule implements IAppState {
 
   @Action
   public async fetchEngagementVariables(team: any = null) {
-    console.log('fetchEngagementVariables ', team)
     if(!team) {
       console.log('!team')
       if(Object.keys(UserModule.loggedUser).length === 0) {
-        console.log('!UserModule.loggedUser')
         try {
           await UserModule.GetUserInfo()
           const roles = UserModule.roles
@@ -116,9 +115,95 @@ class App extends VuexModule implements IAppState {
       }
       team = UserModule.loggedUser.team
     }
-    console.log('fetchEngagementVariables ', team, UserModule.loggedUser)
 
-    let response = await getVariables({ cle: 'DEVISE' })
+    let response
+    let levels = 0
+    let budget: Record<string, any> = {}
+    let respBudget: Record<string, any> = {
+      content: {}
+    }
+    
+    try {
+      response = await getBudgetStructure({})
+    } catch (error) {
+      console.error(error)
+      return  
+    }
+    
+    budget = response.data.content
+    levels = response.data.levels
+
+    try {
+      if (levels == 4) {
+        respBudget['domaines'] = Object.keys(budget)
+        for (const domain in budget) {
+          let chapts = budget[domain].chapitres
+          respBudget['content'][domain] = chapts.map(
+            (chapitre: any) => {
+              return {
+                label: chapitre.label,
+                value: chapitre.id,
+                children: chapitre.rubriques.map(
+                  (rubrique: any) => {
+                    return {
+                      label: rubrique.label,
+                      value: rubrique.id,
+                      children: rubrique.lignes.map(
+                        (ligne: any) => {
+                          return {
+                            label: ligne.label,
+                            value: ligne.id
+                          }
+                        }
+                      )
+                    }
+                  }
+                )
+              }
+            }
+          )
+        }
+      }
+      else {
+        respBudget['content'] = budget.map(
+          (chapitre: any) => {
+            return {
+              label: chapitre.label,
+              value: chapitre.id,
+              children: chapitre.rubriques.map(
+                (rubrique: any) => {
+                  return {
+                    label: rubrique.label,
+                    value: rubrique.id,
+                    children: rubrique.lignes.map(
+                      (ligne: any) => {
+                        return {
+                          label: ligne.label,
+                          value: ligne.id
+                        }
+                      }
+                    )
+                  }
+                }
+              )
+            }
+          }
+        )
+      }
+    } catch (error) {
+      Message({
+        message: 'Erreur lors de la récupération du buget',
+        type: 'error',
+        duration: 7 * 1000
+      })
+      respBudget['error'] = "ERREUR_RECUPERATION"
+      return
+    }
+    
+    respBudget['levels'] = levels
+    this.SET_BUDGET_STRUCTURE(respBudget)
+
+    response = await getVariables({ cle: 'DEVISE' })
     this.SET_DEVISES(response.data.reduce(function(all: any, obj: any) {
       all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
@@ -156,54 +241,6 @@ class App extends VuexModule implements IAppState {
 
     response = await getVariables({ cle: 'CONSTANTE', code: 'TVA' })
     this.SET_TVA(parseFloat(response.data[0].valeur))
-
-    const budget: Record<string, any> = {
-      fonctionnement: [],
-      mandat: []
-    }
-
-    const respBudget: Record<string, any> = {
-      fonctionnement: [],
-      mandat: []
-    }
-    
-    response = await getBudgetStructure({ domain: 'fonctionnement', entreprise_code: team.entreprise_code })
-    budget.fonctionnement = response.data
-
-    response = await getBudgetStructure({ domain: 'mandat', entreprise_code: team.entreprise_code })
-    budget.mandat = response.data
-
-    for (const domain in budget) {
-      let chapts:Record<string, any>[] = []
-      for (const section in budget[domain]) {
-        chapts = chapts.concat(budget[domain][section].chapitres)
-      }
-      respBudget[domain] = chapts.map(
-        (chapitre) => {
-          return {
-            label: chapitre.label,
-            value: chapitre.id,
-            children: chapitre.rubriques.map(
-              (rubrique: any) => {
-                return {
-                  label: rubrique.label,
-                  value: rubrique.id,
-                  children: rubrique.lignes.map(
-                    (ligne: any) => {
-                      return {
-                        label: ligne.label,
-                        value: ligne.id
-                      }
-                    }
-                  )
-                }
-              }
-            )
-          }
-        }
-      )
-    }
-    this.SET_BUDGET_STRUCTURE(respBudget)
   }
 
   @Mutation
