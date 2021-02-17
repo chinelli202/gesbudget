@@ -65,12 +65,12 @@ class User extends VuexModule {
   }
 
   @Action
-  public async GetUserInfo() {
-    console.log("GetUserInfo")
+  public async GetUserInfo(team: any = null) {
     if (this.token === '') {
       throw Error('GetUserInfo: token is undefined!')
     }
-    const { data } = await getUserInfo({ token: this.token })
+    let teamId = team ? team.id : this.loggedUser.team.id
+    const { data } = await getUserInfo({ teamId:  teamId})
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
@@ -81,6 +81,11 @@ class User extends VuexModule {
     }
     this.SET_USER(data)
     this.SET_ROLES(data.roles)
+  }
+
+  @Action
+  public async UpdateSession(team: any) {
+    await this.GetUserInfo(team)
   }
 
   @Action
@@ -104,7 +109,7 @@ class User extends VuexModule {
     if (this.token === '') {
       throw Error('LogOut: token is undefined!')
     }
-    await logout({ token: this.token })
+    await logout({})
     removeToken()
     resetRouter()
     removeAllEngagementVariables()

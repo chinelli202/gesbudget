@@ -11,6 +11,7 @@ import {
   , getLocaldbBudgetStructure, setLocaldbBudgetStructure
 } from '@/utils/localdb'
 import { getVariables, getBudgetStructure } from '@/api/variables'
+import { UserModule } from '@/store/modules/user'
 import { getLocale } from '@/lang'
 import store from '@/store'
 
@@ -93,7 +94,9 @@ class App extends VuexModule implements IAppState {
   }
 
   @Action
-  public async fetchEngagementVariables() {
+  public async fetchEngagementVariables(team: any = null) {
+    team = team ? team : UserModule.loggedUser.team
+
     let response = await getVariables({ cle: 'DEVISE' })
     this.SET_DEVISES(response.data.reduce(function(all: any, obj: any) {
       all[obj.code] = { code: obj.code, libelle: obj.libelle }
@@ -143,10 +146,10 @@ class App extends VuexModule implements IAppState {
       mandat: []
     }
     
-    response = await getBudgetStructure({ domain: 'fonctionnement' })
+    response = await getBudgetStructure({ domain: 'fonctionnement', entreprise_code: team.entreprise_code })
     budget.fonctionnement = response.data
 
-    response = await getBudgetStructure({ domain: 'mandat' })
+    response = await getBudgetStructure({ domain: 'mandat', entreprise_code: team.entreprise_code })
     budget.mandat = response.data
 
     for (const domain in budget) {
