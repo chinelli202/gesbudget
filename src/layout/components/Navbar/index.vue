@@ -111,7 +111,7 @@ import SizeSelect from '@/components/SizeSelect/index.vue'
   }
 })
 export default class extends Vue {
-  private team: String = ""
+  private team = 0
   created(){
     this.team = this.currentTeam.id
     console.log(this.team)
@@ -152,7 +152,7 @@ export default class extends Vue {
 
   private teamChanged() {
     console.log("teamChanged ")
-    //UserModule.updateSession(UserModule.loggedUser.teams[this.team])
+    UserModule.UpdateSession(UserModule.loggedUser.teams[this.team])
   }
 }
 </script>
