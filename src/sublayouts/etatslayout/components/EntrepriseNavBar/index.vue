@@ -23,15 +23,25 @@
       @click="handleGenerauxClicked()">
         Général
       </el-menu-item> 
-      
+       
       <el-menu-item @click="handleNavigate">
         Aller à...
       </el-menu-item>
+
       <el-menu-item v-if="!isGeneraux" @click="handleExporter">
         <i class="el-icon-download"></i>
         <span>Exporter</span> 
       </el-menu-item>
-      <el-submenu v-if="isGeneraux">
+
+      <!-- group menus -->
+      <el-menu-item 
+        v-for="group in groupesMap"
+        :key="group.id"
+        @click="handleGroupClicked(group)">
+          {{group.label}}
+      </el-menu-item>
+
+      <!-- <el-submenu v-if="isGeneraux">
           <template slot="title">
             Exporter
           </template>
@@ -42,7 +52,7 @@
             >
               {{map.label}}
           </el-menu-item>
-      </el-submenu>
+      </el-submenu>  -->
     </el-menu>
 
     <el-dialog :visible.sync="dialogTableVisible">
@@ -55,7 +65,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import NavigateurEtats from '@/components/NavigateurEtats/index.vue'
 import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre-etats'
-import {getFonctionnementTree, getMandatTree, getSectionsFonctionnementTree} from '@/api/maquetteTree'
+import {getFonctionnementTree, getMandatTree, getSectionsFonctionnementTree, getEntrepriseTree} from '@/api/maquetteTree'
   
 
   @Component({
@@ -67,15 +77,18 @@ import {getFonctionnementTree, getMandatTree, getSectionsFonctionnementTree} fro
 
 export default class extends Vue {
 @Prop({ default: 'CPSP' }) private entreprise!: string
-private navTitle:String = "Fonctionnement"
+//collect user team and set title accordingly
+private navTitle:String = "CPSP"
 private activeIndex2 : any = "dd"
 private input2 : string = ""
 private dialogTableVisible: boolean = false
 private recettesTree:any = {}
 private depensesTree: any = {}
+private titleGroups:any = {}
 private listQuery = {
   id:1,
-  size:10
+  size:10,
+  entreprise_code:"CPSP"
 }
 
 private isGeneraux: boolean = true
@@ -86,6 +99,7 @@ private navbarstyles: any = {
   activeTextColor:""
 }
 
+private groupesMap:any[] = []
 private depensesMap: any [] = []
 private recettesMap: any [] = []
 private ssectionFonctionnementMap : any [] = []
@@ -101,71 +115,84 @@ fonctionnement: [{label:'Recettes', value: 'recettes', type: 'full'}
         ,{label:'Rapport Fonctionnement', value: 'rapport_fonctionnement', type: 'domaine'}],
 }
 private exportMap: any [] = []  
-  created(){
 
-    //test weither menu is generaux
-    const path = this.$router.currentRoute.path
-    this.isGeneraux = path.split("/")[3] == 'generaux';
+created(){
 
-    //set nav title and styling
-    this.navTitle = this.entreprise == 'fonctionnement'? "Fonctionnement":"Mandat"
+  //test weither menu is generaux
+  const path = this.$router.currentRoute.path
+  this.isGeneraux = path.split("/")[3] == 'generaux';
 
-    //this.paramNavTree()
-    //get NavTree and pass it as prop
-  }
+  //set nav title and styling
+  this.navTitle = this.entreprise == 'fonctionnement'? "Fonctionnement":"Mandat"
+  this.navTitle = "CPSP"
+  this.paramNavTree()
+  //get NavTree and pass it as prop
+}
 
   private async paramNavTree(){
-    if(this.entreprise=='fonctionnement'){
-      this.navTitle = "Fonctionnement"
-      const {data} = await getSectionsFonctionnementTree(this.listQuery)
-      this.maquetteTree = data
-      this.exportMap = this.exportTree.fonctionnement
+    // if(this.entreprise=='fonctionnement'){
+    //   this.navTitle = "Fonctionnement"
+    //   const {data} = await getSectionsFonctionnementTree(this.listQuery)
+    //   this.maquetteTree = data
+    //   this.exportMap = this.exportTree.fonctionnement
 
-      this.navbarstyles.backgroundColor = "#545c64"
-      this.navbarstyles.textColor = "#fff"
-      this.navbarstyles.activeTextColor = "#ffd04b"
-    }
-    else{
-      this.navTitle = "Mandat"
-      const {data} = await getMandatTree(this.listQuery)
+    //   this.navbarstyles.backgroundColor = "#545c64"
+    //   this.navbarstyles.textColor = "#fff"
+    //   this.navbarstyles.activeTextColor = "#ffd04b"
+    // }
+    // else{
+    //   this.navTitle = "Mandat"
+    //   const {data} = await getMandatTree(this.listQuery)
+    //   this.maquetteTree = data
+    //   this.exportMap = this.exportTree.mandat
+    // }
+
+      const {data} = await getEntrepriseTree(this.listQuery)
       this.maquetteTree = data
-      this.exportMap = this.exportTree.mandat
-    }
+
+    let groupesOption = this.maquetteTree.content.chapitres.rubriques
+    this.groupesMap = groupesOption.map((rubrique : any)=>{
+      let groupe = {label : rubrique.label, id : rubrique.id}
+      return groupe
+    })
+
+    console.log("this is the groupes map, ", this.groupesMap)
+    
     //let depensesOption = this.maquetteTree.depenses.chapitres
-    let recettesOption = this.maquetteTree.recettes.chapitres
+    // let recettesOption = this.maquetteTree.recettes.chapitres
 
-    if(this.entreprise == 'fonctionnement'){
-      let depensesOption = this.maquetteTree.depenses
-      this.depensesMap= depensesOption.sections.map((section : any)=>{
-        let mappedSection = {label: section.section, value: section.section, groupes:section.groupes.map((groupe:any)=>{
-          //make custom names
-          let urlname = groupe.label.split(" ").join("+")
-          let sectiongroup = {label: groupe.label, value:urlname, type:'groupe'}
-          return sectiongroup
-        }), chapitres:section.chapitres.map((chapitre:any)=>{
-          let mappedChapitre = {label: chapitre.label, value: chapitre.id, type:'chapitre'}
-          return mappedChapitre
-        })}
-        return mappedSection
-      })
+    // if(this.entreprise == 'fonctionnement'){
+    //   let depensesOption = this.maquetteTree.depenses
+    //   this.depensesMap= depensesOption.sections.map((section : any)=>{
+    //     let mappedSection = {label: section.section, value: section.section, groupes:section.groupes.map((groupe:any)=>{
+    //       //make custom names
+    //       let urlname = groupe.label.split(" ").join("+")
+    //       let sectiongroup = {label: groupe.label, value:urlname, type:'groupe'}
+    //       return sectiongroup
+    //     }), chapitres:section.chapitres.map((chapitre:any)=>{
+    //       let mappedChapitre = {label: chapitre.label, value: chapitre.id, type:'chapitre'}
+    //       return mappedChapitre
+    //     })}
+    //     return mappedSection
+    //   })
       
-      console.log("this is the depense map, ", this.depensesMap)
-    }
-    else{
-      let depensesOption = this.maquetteTree.depenses.chapitres
-      this.depensesMap= depensesOption.map((chapitre : any)=>{
-        let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:'chapitre'}
-        return mappedChapitre
-      })
-      console.log("this is the depense map, ", this.depensesMap)
-    }
+    //   console.log("this is the depense map, ", this.depensesMap)
+    // }
+    // else{
+    //   let depensesOption = this.maquetteTree.depenses.chapitres
+    //   this.depensesMap= depensesOption.map((chapitre : any)=>{
+    //     let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:'chapitre'}
+    //     return mappedChapitre
+    //   })
+    //   console.log("this is the depense map, ", this.depensesMap)
+    // }
 
     
 
-    this.recettesMap= recettesOption.map((chapitre : any)=>{
-      let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:'chapitre'}
-      return mappedChapitre
-    })
+    // this.recettesMap= recettesOption.map((chapitre : any)=>{
+    //   let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:'chapitre'}
+    //   return mappedChapitre
+    // })
   }
 
   private handleClick(element: any){
@@ -267,6 +294,11 @@ private exportMap: any [] = []
     if(this.entreprise == 'mandat')
     routename = 'mandat-generaux'
     this.$router.push({ name: routename})
+  }
+
+  private handleGroupClicked(data:any){
+    var routename = "etats-entreprise"
+    this.$router.push({ name: routename, params: { entitytype: "rubrique", entitykey: data.id } })
   }
 
   private handleAllerButtonClick(){
