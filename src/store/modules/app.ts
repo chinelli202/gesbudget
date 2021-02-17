@@ -14,6 +14,8 @@ import { getVariables, getBudgetStructure } from '@/api/variables'
 import { UserModule } from '@/store/modules/user'
 import { getLocale } from '@/lang'
 import store from '@/store'
+import router from '@/router'
+import { PermissionModule } from '@/store/modules/permission'
 
 export enum DeviceType {
   Mobile,
@@ -95,7 +97,26 @@ class App extends VuexModule implements IAppState {
 
   @Action
   public async fetchEngagementVariables(team: any = null) {
-    team = team ? team : UserModule.loggedUser.team
+    console.log('fetchEngagementVariables ', team)
+    if(!team) {
+      console.log('!team')
+      if(Object.keys(UserModule.loggedUser).length === 0) {
+        console.log('!UserModule.loggedUser')
+        try {
+          await UserModule.GetUserInfo()
+          const roles = UserModule.roles
+          // Generate accessible routes map based on role
+          PermissionModule.GenerateRoutes(roles)
+          // Dynamically add accessible routes
+          router.addRoutes(PermissionModule.dynamicRoutes)
+        } catch (error) {
+          console.error(error.message)
+          return
+        }
+      }
+      team = UserModule.loggedUser.team
+    }
+    console.log('fetchEngagementVariables ', team, UserModule.loggedUser)
 
     let response = await getVariables({ cle: 'DEVISE' })
     this.SET_DEVISES(response.data.reduce(function(all: any, obj: any) {
