@@ -98,6 +98,7 @@
               collapse-tags
               clearable
               filterable
+              :filter-method="cascadeFilter"
               @change="ligneChanged"
               >
             </el-cascader>
@@ -140,7 +141,6 @@
           :valideursS = "operateurs.VALIDS"
           :valideursF = "operateurs.VALIDF"
           :tableHeight="'72vh'"
-          :displayCreateButton="false"
           :display-export-button="true"
         />
       </div>
@@ -205,6 +205,10 @@ export default class extends Vue {
     }))].join(',')
   }
 
+  private cascadeFilter(node: any, keyword: string) {
+    return node.text.toLowerCase().includes(keyword.toLowerCase());
+  }
+
   private domainChanged() {
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
     console.log("New domain ", this.domain)
@@ -220,7 +224,7 @@ export default class extends Vue {
   }
 
   get name() {
-    return UserModule.name
+    return UserModule.loggedUser.name
   }
 
   get avatar() {

@@ -321,7 +321,7 @@ export default class FooterButtons extends Vue {
   created() {
     this.footerLoading = true
     const id = this.$route.params && this.$route.params.id
-    this.permissions = UserModule.permissions
+    this.permissions = UserModule.loggedUser.permissions
     this.permissionCodes = PermissionModule.permissionCodes
     this.footerLoading = false
   }
@@ -361,11 +361,11 @@ export default class FooterButtons extends Vue {
   }
 
   private hasPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length > 0
+    return UserModule.loggedUser.permissions.filter(item => item.code === permission).length > 0
   }
 
   private hasnotPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length === 0
+    return UserModule.loggedUser.permissions.filter(item => item.code === permission).length === 0
   }
 
   private resetButtons() {
@@ -392,10 +392,10 @@ export default class FooterButtons extends Vue {
   }
 
   private evaluateVariables() {
-    this.isCurrentUserSaisisseur = UserModule.matricule === this.entity.saisisseur
-    this.isCurrentUserValideurp = UserModule.matricule === this.entity.valideur_first
-    this.isCurrentUserValideurs = UserModule.matricule === this.entity.valideur_second
-    this.isCurrentUserValideurf = UserModule.matricule === this.entity.valideur_final
+    this.isCurrentUserSaisisseur = UserModule.loggedUser.matricule === this.entity.saisisseur
+    this.isCurrentUserValideurp = UserModule.loggedUser.matricule === this.entity.valideur_first
+    this.isCurrentUserValideurs = UserModule.loggedUser.matricule === this.entity.valideur_second
+    this.isCurrentUserValideurf = UserModule.loggedUser.matricule === this.entity.valideur_final
 
     // The engagement is closed
     this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code

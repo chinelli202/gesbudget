@@ -99,7 +99,7 @@ import SizeSelect from '@/components/SizeSelect/index.vue'
 })
 export default class extends Vue {
   get userName() {
-    return UserModule.name
+    return UserModule.loggedUser.name
   }
 
   get sidebar() {

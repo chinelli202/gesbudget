@@ -66,8 +66,34 @@
                   :props="{expandTrigger: 'hover'}"
                   placeholder="Choisir la ligne budgétaire"
                   class="cascade-extra-lg"
+                  filterable
+                  :filter-method="cascadeFilter"
                   @change="cascadeChange"
                 />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col
+              :span="3"
+              :offset="2"
+            >
+              <strong>Ligne budget</strong>
+            </el-col>
+            <el-col :span="17">
+              <el-form-item
+                prop="eng_date"
+                :rules="[{ validator: validateDate, trigger: 'blur' }]"
+              >
+                <el-date-picker
+                  style="width: 100%"
+                  v-model="engagement.eng_date"
+                  format="dd MMMM yyyy"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  type="date"
+                  placeholder="Choississez un jour"
+                  :picker-options="pickerOptions">
+                </el-date-picker>
               </el-form-item>
             </el-col>
           </el-row>
@@ -225,7 +251,6 @@ export default class CreateEngButton extends Vue {
   @Prop() private createEngAction!: CallableFunction
 
   private validateLigne = (rule: any, value: number, callback: Function) => {
-    console.log('validate ligne ', this.selectedLigne())
     if (this.selectedLigne().length === 0) {
       callback(new Error('Veuillez choisir une ligne budgétaire'))
     } else if (this.maxMontant() === 0) {
@@ -236,7 +261,6 @@ export default class CreateEngButton extends Vue {
   }
   
   private validateLibelle = (rule: any, value: string, callback: Function) => {
-    console.log('validate libelle')
     if (!value) {
       callback(new Error('Veuillez saisir un libellé à cet engagement'))
     } else if(value.length < 4) {
@@ -247,12 +271,19 @@ export default class CreateEngButton extends Vue {
   }
 
   private validateMontant = (rule: any, value: number, callback: Function) => {
-    console.log('validate montant limite', this.maxMontant())
     if (this.maxMontant() > 1 && value < 1) {
       callback(new Error('Veuillez saisir un montant non nul'))
     } else if (this.maxMontant() < value ) {
       callback(new Error(`Le solde restant pour cette ligne budgétaire est de ${this.maxMontant().toLocaleString()} XAF.
       Vous ne pouvez pas créer un engagement d'un montant supérieur à cette somme.`))
+    } else {
+      callback()
+    }
+  }
+  
+  private validateDate = (rule: any, value: number, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une date pour cet engagement'))
     } else {
       callback()
     }
@@ -278,15 +309,43 @@ export default class CreateEngButton extends Vue {
   private statutOptions = {}
   private tva = 0
   private submitDisabled = true
+  private todayDate = new Date()
 
   private engagement = {
     montant_ttc: 0,
+    eng_date: new Date(),
     nature: 'PEG',
     type: '',
     devise: 'XAF',
     ligne_id: 0,
     rubrique_id: 0,
     chapitre_id: 0
+  }
+
+  private pickerOptions = {
+    disabledDate(time: any) {
+      return time.getTime() > Date.now();
+    },
+    shortcuts: [{
+      text: 'Aujourd\'hui',
+      onClick(picker: any) {
+        picker.$emit('pick', new Date());
+      }
+    }, {
+      text: 'Hier',
+      onClick(picker: any) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24);
+        picker.$emit('pick', date);
+      }
+    }, {
+      text: 'Il y a une semaine',
+      onClick(picker: any) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+        picker.$emit('pick', date);
+      }
+    }]
   }
 
   created() {
@@ -327,11 +386,16 @@ export default class CreateEngButton extends Vue {
     })
   }
 
+  private cascadeFilter(node: any, keyword: string) {
+    return node.text.toLowerCase().includes(keyword.toLowerCase());
+  }
+
   private resetForm() {
     this.cascade = []
     this.soldeLigne = '0'
     this.engagement = {
       montant_ttc: 0,
+      eng_date: new Date(),
       nature: 'PEG',
       type: '',
       devise: 'XAF',
@@ -356,7 +420,9 @@ export default class CreateEngButton extends Vue {
     (this.$refs.engagementForm as ElForm).validate(async(valid: boolean) => {
       if(valid) {
         this.dialogFormLoading = true
-        this.createEngAction(this.engagement)
+        let { eng_date, ...eng } = this.engagement
+        console.log('eng_date ', eng_date, eng)
+        this.createEngAction({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng})
         this.resetForm()
         this.submitDisabled = true
         this.dialogFormLoading = false

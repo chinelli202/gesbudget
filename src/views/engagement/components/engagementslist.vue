@@ -6,11 +6,11 @@
       style="margin: 0.5em 0px"
     >
       <el-col :span="13">
-        <h1 
+        <h2 
           v-if="showTitle"
           style="margin-top: 0px">
           {{ title ? title : libelleEtat[etat].title }}
-        </h1>
+        </h2>
         <span v-else>
           .
         </span>
@@ -19,28 +19,7 @@
         
       </el-col>
       <el-col
-        v-if="canCreateEngagement && displayCreateButton"
         :span="9"
-        :offset="4"
-      >
-        <el-button-group>
-          <create-eng-button
-            :inactive="!canCreateEngagement || !displayCreateButton"
-            :createEngAction="createEngagement"
-          >
-          </create-eng-button>
-          <el-button
-            type="success"
-            v-if="displayExportButton"
-            @click="handleExport"
-          >
-            Exporter la liste <i class="el-icon-download el-icon-right"></i>
-          </el-button>
-        </el-button-group>
-      </el-col>
-      <el-col
-        v-else
-        :span="4"
         :offset="6"
       >
         <el-button-group>
@@ -65,13 +44,20 @@
         fixed
         prop="code"
         label="Code"
-        width="170"
+        width="120"
+      />
+      <el-table-column
+        fixed
+        prop="eng_date"
+        :formatter="dateFormatterShort"
+        label="Date engagement"
+        width="100"
       />
       <el-table-column
         fixed
         prop="latest_edited_at"
         :formatter="dateFormatter"
-        label="Mis à jour le"
+        label="Dernière mise à jour"
         width="130"
       />
       <el-table-column
@@ -97,7 +83,7 @@
       <el-table-column
         prop="ligne_libelle"
         label="Ligne Budgétaire"
-        width="300"
+        width="345"
       >
         <template slot-scope="scope">
             {{ scope.row.chapitre_libelle }} // {{ scope.row.rubrique_libelle }} // {{ scope.row.ligne_libelle }}
@@ -107,27 +93,23 @@
         prop="montant_ttc"
         :formatter="numFormatter"
         label="Montant TTC"
-        width="150"
+        width="125"
       />
       <el-table-column
         prop="devise"
         label="Devise"
         width="75"
       />
+      
       <el-table-column
-        prop="nature"
-        label="Nature"
-        width="75"
+        prop="saisisseur_name"
+        label="Saisi par"
+        width="120"
       />
       <el-table-column
         prop="type"
         label="Type"
         width="75"
-      />
-      <el-table-column
-        prop="saisisseur_name"
-        label="Saisi par"
-        width="100"
       />
       <el-table-column
         fixed="right"
@@ -160,7 +142,7 @@
 import { Component, Vue, Prop, Watch} from 'vue-property-decorator'
 import { formatJson } from '@/utils'
 import { exportJson2Excel } from '@/utils/excel'
-import { getEngagements, createEngagement } from '@/api/engagements'
+import { getEngagements } from '@/api/engagements'
 import { getSoldeLigne } from '@/api/lignes'
 import { IEngagementData } from '@/api/types'
 import { AppModule } from '@/store/modules/app'
@@ -168,12 +150,11 @@ import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
 import { getBudgetStructure } from '@/api/variables'
 import Pagination from '@/components/Pagination/index.vue'
-import CreateEngButton from '@/views/engagement/components/createengbutton.vue'
 
 @Component({
   name: 'EngagementsList',
   components: {
-    Pagination, CreateEngButton
+    Pagination
   }
 })
 
@@ -181,7 +162,6 @@ export default class EngagementsList extends Vue {
   @Prop() private title!: string
   @Prop({ default : true }) private showTitle!: boolean
   @Prop() private displayEtatRadio!: boolean
-  @Prop({ required: true }) private displayCreateButton!: boolean
   @Prop({ default: true }) private displayExportButton!: boolean
   @Prop({ default: false }) private displayFilter!: boolean
   @Prop() private icon!: string
@@ -248,18 +228,21 @@ export default class EngagementsList extends Vue {
   }
 
   private hasPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length > 0
+    return UserModule.loggedUser.permissions.filter(item => item.code === permission).length > 0
   }
 
-  private handleExport() {
+  private async handleExport() {
     this.listLoading = true
-    const tHeader = ['Code', 'Dernière mise à Jour le', 'Etat', 'Statut', 'Libellé', 'Domaine', 'Ligne budgétaire', 'Rubrique du Budget', 'Chapitre du Budget'
+    const tHeader = ['Code', 'Date', 'Dernière mise à Jour le', 'Etat', 'Statut', 'Libellé', 'Domaine', 'Ligne budgétaire', 'Rubrique du Budget', 'Chapitre du Budget'
       , 'Devise', 'Montant TTC', 'Cumul des imputations', 'Cumul des apurements', 'Type engagement', 'Saisi par', 'Saisi le', 'Validé au 1er niveau par', 'Validé au 2nd niveau par', 'Validé au niveau final par']
-    const filterVal = ['code', 'latest_edited_at', 'etat_libelle', 'latest_statut', 'libelle', 'domaine', 'ligne_libelle', 'rubrique_libelle', 'chapitre_libelle'
+    const filterVal = ['code', 'eng_date', 'latest_edited_at', 'etat_libelle', 'latest_statut', 'libelle', 'domaine', 'ligne_libelle', 'rubrique_libelle', 'chapitre_libelle'
       , 'devise', 'montant_ttc', 'cumul_imputations', 'cumul_apurements' ,'type_libelle', 'saisisseur_name', 'created_at', 'valideurp_name', 'valideurs_name', 'valideurf_name']
-    const list = this.initiatedEngagements
-    const fileNameSuffix = Object.keys(this.listQuery).reduce((all: string, newKey: string) => {
-      return all + '--' + newKey + '_' + this.listQuery[newKey]
+    const { page, limit, ...fullQuery } = this.listQuery
+    let list: any
+    const response = await getEngagements(fullQuery)
+    list = response.data
+    const fileNameSuffix = Object.keys(fullQuery).reduce((all: string, newKey: string) => {
+      return all + '--' + newKey + '_' + fullQuery[newKey]
     }, '')
     const data = formatJson(filterVal, list)
     exportJson2Excel(tHeader, data, 'Liste des engagements '+ fileNameSuffix, undefined, undefined, true, 'xlsx')
@@ -278,12 +261,41 @@ export default class EngagementsList extends Vue {
     return column ? column.toLocaleString() : column
   }
 
+  dateFormatterShort(value: any, row: any, column: any) {
+    if (column !== undefined && column !== "") {
+      var myDate = new Date(column);
+      var month = [
+        "Jan",
+        "Fev",
+        "Mar",
+        "Avr",
+        "Mai",
+        "Jun",
+        "Jul",
+        "Aou",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ][myDate.getMonth()];
+      let d = myDate.getDate()
+      let dd = d<10 ? '0'+d: d
+      var str =  dd + " " + month + " " + myDate.getFullYear();
+      return str;
+    }
+    return "";
+  }
+
   dateFormatter(value: any, row: any, column: any) {
-    const currentDatetime = new Date(column)
-    const formattedDate = currentDatetime.getDate() +
-      '/' + (currentDatetime.getMonth() + 1) +
-      '/' + currentDatetime.getFullYear() +
-      ' ' + currentDatetime.getHours() + ':' + currentDatetime.getMinutes()
+    const str = this.dateFormatterShort(value, row, column)
+    const myDate = new Date(column)
+    let h = myDate.getHours()
+    let hh = h<10 ? '0'+h: h
+    let m = myDate.getMinutes()
+    let mm = m<10 ? '0'+m: m
+
+    const formattedDate = str +
+      '|' + hh + ':' + mm
     return formattedDate
   }
 
@@ -328,7 +340,7 @@ export default class EngagementsList extends Vue {
     if (this.statut) {
       this.listQuery.latest_statut = this.statut
     } else {
-      delete this.listQuery.statut
+      delete this.listQuery.latest_statut
     }
     if (this.nature) {
       this.listQuery.nature = this.nature
@@ -365,15 +377,6 @@ export default class EngagementsList extends Vue {
       this.paginationTotal = response.total
       this.initiatedEngagements = response.data
       this.listLoading = false
-    })
-  }
-
-  private createEngagement(engagement: any) {
-    console.log('engagement ', engagement)
-    createEngagement(engagement).then((response) => {
-      const newEngagement = response.data
-      this.initiatedEngagements.push(newEngagement)
-      this.initiatedEngagements.sort((a, b) => b.id - a.id)
     })
   }
 }
