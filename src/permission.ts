@@ -4,6 +4,7 @@ import 'nprogress/nprogress.css'
 import { Message } from 'element-ui'
 import { Route } from 'vue-router'
 import { UserModule } from '@/store/modules/user'
+import { AppModule } from '@/store/modules/app'
 import { PermissionModule } from '@/store/modules/permission'
 import i18n from '@/lang' // Internationalization
 import settings from './settings'
@@ -38,6 +39,7 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
         try {
           // Note: roles must be a object array! such as: ['admin'] or ['developer', 'editor']
           await UserModule.GetUserInfo()
+          await AppModule.fetchEngagementVariables()
           const roles = UserModule.roles
           // Generate accessible routes map based on role
           PermissionModule.GenerateRoutes(roles)

@@ -66,11 +66,12 @@ class User extends VuexModule {
 
   @Action
   public async GetUserInfo(team: any = null) {
+    console.log('debut GetUserInfo')
     if (this.token === '') {
       throw Error('GetUserInfo: token is undefined!')
     }
-    let teamId = team ? team.id : this.loggedUser.team.id
-    const { data } = await getUserInfo({ teamId:  teamId})
+    let query = team ? { teamId : team.id } : ( this.loggedUser.team ? { teamId : this.loggedUser.team.id } : {})
+    const { data } = await getUserInfo(query)
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
