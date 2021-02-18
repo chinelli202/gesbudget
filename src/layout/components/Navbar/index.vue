@@ -167,7 +167,6 @@ export default class extends Vue {
         });
     console.log("teamChanged ")
     await AppModule.UpdateSession(UserModule.loggedUser.teams[this.team])
-    this.loading.close()
     this.$router.go(0);
   }
 }

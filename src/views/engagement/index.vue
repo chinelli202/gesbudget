@@ -3,9 +3,18 @@
     <div class="clearfix">
       <div class="app-container">
         <el-row :gutter="10" style="margin-bottom: 1em">
+          
           <el-col
             :span="3" 
-            :offset="3"
+          >
+            <h2
+              style="margin-top: 0px; margin-left: 1em; text-color: #606266"
+            >
+              {{ team.display_name }}
+            </h2>
+          </el-col>
+          <el-col
+            :span="3" 
           >
             <el-input v-model="code"
               placeholder="Code de l'engagement"
@@ -163,6 +172,7 @@ import EngagementsList from '@/views/engagement/components/engagementslist.vue'
   }
 })
 export default class extends Vue {
+  private team = UserModule.loggedUser.team
   private code: string = ''
   private codeFilter: string = ''
   private etat: string[] = []

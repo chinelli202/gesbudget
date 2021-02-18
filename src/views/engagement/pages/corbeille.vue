@@ -4,7 +4,7 @@
       <div class="app-container">
         <EngagementsList
           :etat="etat"
-          :title="title"
+          :title="title + ' - ' + team.display_name"
           :display-export-button="false"
         />
       </div>
@@ -25,6 +25,7 @@ import EngagementsList from '@/views/engagement/components/engagementslist.vue'
   }
 })
 export default class extends Vue {
+  private team = UserModule.loggedUser.team
   private etat = 'CLOT'
   private title = 'Préengagements supprimés'
 
