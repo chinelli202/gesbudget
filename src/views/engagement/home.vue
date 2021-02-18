@@ -11,7 +11,7 @@
             <h1
               style="margin-top: 0px; margin-left: 1em;"
             >
-              Tableau de bord
+              Tableau de bord - {{ team.display_name }}
             </h1>
           </el-col>
           <el-col :span="10">
@@ -112,6 +112,7 @@ import CreateEngButton from '@/views/engagement/components/createengbutton.vue'
 })
 
 export default class Home extends Vue {
+  private team = UserModule.loggedUser.team
   private permissions = UserModule.loggedUser.permissions
   private upperEngagementPermissions: any[] = []
   private writingEngagementPermissions: any[] = []
