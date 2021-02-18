@@ -15,6 +15,13 @@ import { IGroupeFonctionnement } from './types'
       params
     })
 
+    export const getEntrepriseTree = (params:any) =>
+    request({
+      url: '/maquettes/entreprise',
+      method: 'get',
+      params
+    })
+
     export const getSectionsFonctionnementTree = (params:any) =>
     request({
       url: '/maquettes/fonctionnement/sections',

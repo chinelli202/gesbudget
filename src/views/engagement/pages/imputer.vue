@@ -5,7 +5,6 @@
         <EngagementsList
           :etat="etat"
           :title="title"
-          :displayCreateButton="false"
         />
       </div>
     </div>
@@ -32,7 +31,7 @@ export default class extends Vue {
   }
 
   get name() {
-    return UserModule.name
+    return UserModule.loggedUser.name
   }
 
   get avatar() {

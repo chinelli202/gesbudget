@@ -1,6 +1,6 @@
 <template>
     <div>
-        <filtre-etats/>
+        <entreprise-nav-bar/>
         <groupe-rubrique/>
     </div>
 </template>
@@ -10,12 +10,13 @@
 import {Vue, Component} from 'vue-property-decorator'
 import FiltreEtats from '@/components/FiltreEtats/index.vue'
 import GroupeRubrique from './index.vue'
+import EntrepriseNavbar from '@/sublayouts/etatslayout/components/EntrepriseNavBar/index.vue'
 
 @Component({
       name: 'EtatsView',
       components: {
         GroupeRubrique,
-        FiltreEtats
+        EntrepriseNavbar
       }
     })
 

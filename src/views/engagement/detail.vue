@@ -124,6 +124,21 @@
                 />
               </el-form-item>
               <el-form-item
+                label="Date"
+                prop="eng_date"
+                :rules="[{ validator: validateDate, trigger: 'blur' }]"
+              >
+                <el-date-picker
+                  style="width: 50%"
+                  v-model="engagement.eng_date"
+                  format="dd MMMM yyyy"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  type="date"
+                  placeholder="Choississez un jour"
+                  :picker-options="pickerOptions">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item
                 label="Solde Ligne"
               >
                 <strong>{{ soldeLigne.toLocaleString() }}</strong>
@@ -610,6 +625,14 @@ export default class extends Vue {
     }
   }
 
+    private validateDate = (rule: any, value: number, callback: Function) => {
+    if (!value) {
+      callback(new Error('Veuillez saisir une date pour cet engagement'))
+    } else {
+      callback()
+    }
+  }
+
   /** Ligne budgetaire cascader */
   private domain = 'Fonctionnement'
   private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
@@ -650,6 +673,7 @@ export default class extends Vue {
   private engagement = {
     id: null,
     code: '',
+    eng_date: new Date(),
     montant_ttc: 0,
     cumul_imputations: 0,
     cumul_apurements_initie_ht: 0,
@@ -671,6 +695,32 @@ export default class extends Vue {
     imputations: []
   }
 
+  private pickerOptions = {
+    disabledDate(time: any) {
+      return time.getTime() > Date.now();
+    },
+    shortcuts: [{
+      text: 'Aujourd\'hui',
+      onClick(picker: any) {
+        picker.$emit('pick', new Date());
+      }
+    }, {
+      text: 'Hier',
+      onClick(picker: any) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24);
+        picker.$emit('pick', date);
+      }
+    }, {
+      text: 'Il y a une semaine',
+      onClick(picker: any) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+        picker.$emit('pick', date);
+      }
+    }]
+  }
+
   /** Variables for Imputation dialog form */
   private imputerFormVisible = false
   private imputerFormLoading = false
@@ -689,7 +739,7 @@ export default class extends Vue {
 
   created() {
     const id = this.$route.params && this.$route.params.id
-    this.permissions = UserModule.permissions
+    this.permissions = UserModule.loggedUser.permissions
     this.permissionCodes = PermissionModule.permissionCodes
     this.fetchData(parseInt(id))
   }
@@ -720,7 +770,8 @@ export default class extends Vue {
   private async fetchData(engagementId: number) {
     this.cardLoading = true
     detailEngagement({ id: engagementId }).then((response) => {
-      this.engagement = response.data
+      let { eng_date, ...eng } = response.data
+      this.engagement = {eng_date: new Date(eng_date), ...eng}
       let devises = AppModule.devises
       this.listeDevises = Object.keys(AppModule.devises).map(key => {return AppModule.devises[key];})
       this.typesPaiementOptions = AppModule.typesPaiement
@@ -804,8 +855,10 @@ export default class extends Vue {
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
       if(valid) {
         this.cardLoading = true
-        updateEngagement(this.engagement).then((response) => {
-          this.engagement = response.data
+        let { eng_date, ...eng } = this.engagement
+        updateEngagement({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng}).then((response) => {
+          let { eng_date, ...eng } = response.data
+          this.engagement = {eng_date: new Date(eng_date), ...eng}
           this.updateViewVariables()
           this.cardLoading = false
         }).catch(error => {
@@ -823,8 +876,10 @@ export default class extends Vue {
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
       if(valid) {
         this.cardLoading = true
-        resendUpdateEngagement(this.engagement).then((response) => {
-          this.engagement = response.data
+        let { eng_date, ...eng } = this.engagement
+        resendUpdateEngagement({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng}).then((response) => {
+          let { eng_date, ...eng } = response.data
+          this.engagement = {eng_date: new Date(eng_date), ...eng}
           this.updateViewVariables()
           this.cardLoading = false
         }).catch(error => {
@@ -953,11 +1008,11 @@ export default class extends Vue {
   }
 
   private hasPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length > 0
+    return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length > 0
   }
 
   private hasnotPermission(permission: string) {
-    return UserModule.permissions.filter(item => item.code === permission).length === 0
+    return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length === 0
   }
 
   private engagementHasBeenValidatePOrMore() {
@@ -965,10 +1020,10 @@ export default class extends Vue {
   }
 
   private updateViewVariables() {
-    this.isCurrentUserSaisisseur = UserModule.matricule === this.engagement.saisisseur
-    this.isCurrentUserValideurp = UserModule.matricule === this.engagement.valideur_first
-    this.isCurrentUserValideurs = UserModule.matricule === this.engagement.valideur_second
-    this.isCurrentUserValideurf = UserModule.matricule === this.engagement.valideur_final
+    this.isCurrentUserSaisisseur = UserModule.loggedUser.matricule === this.engagement.saisisseur
+    this.isCurrentUserValideurp = UserModule.loggedUser.matricule === this.engagement.valideur_first
+    this.isCurrentUserValideurs = UserModule.loggedUser.matricule === this.engagement.valideur_second
+    this.isCurrentUserValideurf = UserModule.loggedUser.matricule === this.engagement.valideur_final
 
     this.nextEtatActionText = this.engagement.cumul_imputations_initie_ttc > 0 ? 'Nouvelle imputation' : "Imputer l'engagement"
     if (this.engagement.cumul_imputations < this.engagement.montant_ttc) {

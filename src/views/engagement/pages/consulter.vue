@@ -129,7 +129,6 @@
           :valideursS = "operateurs.VALIDS"
           :valideursF = "operateurs.VALIDF"
           :tableHeight="'72vh'"
-          :displayCreateButton="false"
         />
       </div>
     </div>
@@ -202,7 +201,7 @@ export default class extends Vue {
   }
 
   get name() {
-    return UserModule.name
+    return UserModule.loggedUser.name
   }
 
   get avatar() {

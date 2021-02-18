@@ -82,6 +82,7 @@ export default {
     maquetteActiveBudget: 'Maquette Budget Actif',
     elaboration: 'Elaboration',
     rapports: 'Etats Entreprise',
+    etatsEntreprise: 'Etats Groupes',
     zip: 'Zip',
     pdf: 'PDF',
     exportZip: 'Export Zip',

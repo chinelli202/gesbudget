@@ -66,7 +66,6 @@
         <el-tabs type="border-card">
             <el-tab-pane label="Dépenses">
                 <maquette-table/>
-                <maquette-table/>
             </el-tab-pane>
             <el-tab-pane label="Recettes">
                 <maquette-table/>
@@ -83,6 +82,7 @@
 import {Vue, Component} from 'vue-property-decorator'
 import UploadExcel from '@/components/UploadExcel/index.vue'
 import MaquetteTable from './maquette-table.vue'
+import {getMaquetteActive} from '@/api/elaboration'
 
 
 @Component({
@@ -98,6 +98,11 @@ export default class extends Vue{
 
     private active:number = 0
     private budgetInfo : any = {}
+    private maquetteData: any = {}
+    private params:any = {}
+    created(){
+        this.loadMaquette()
+    }
 
     private next(){
         if (this.active++ > 2) this.active = 0;
@@ -121,6 +126,16 @@ export default class extends Vue{
     private handleSuccess({ results, header }: { results: any, header: string[]}) {
         this.tableData = results
         this.tableHeader = header
+    }
+
+    private loadMaquette(){
+        getMaquetteActive('SNHSIEGE', this.params).then((response) => {
+
+            this.maquetteData = response.data
+            //load fonctionnement maquette, then load mandat maquette
+            let maquetteFonctionnement = response.data.domaines[0]
+            let maquetteMandat = response.data.domaines[1]
+      })
     }
 }
 

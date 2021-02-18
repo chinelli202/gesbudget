@@ -276,7 +276,18 @@ export const constantRoutes: RouteConfig[] = [
         name: 'rapports',
         meta: {
           title: 'rapports',
-          icon: 'dashboard'
+          icon: 'dashboard',
+        }
+      },
+      {
+        path: ':entitytype/:entitykey',
+        component: () => import('@/views/table/groupe-rubrique/etat.vue'),
+        name: 'etats-entreprise',
+        meta: {
+          title: 'etatsEntreprise',
+          name:'etats-entreprise',
+          icon: 'dashboard',
+          hidden:true        
         }
       }
     ]

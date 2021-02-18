@@ -5,7 +5,6 @@
         <EngagementsList
           :etat="etat"
           :title="title"
-          :displayCreateButton="false"
           :display-export-button="false"
         />
       </div>
@@ -30,7 +29,7 @@ export default class extends Vue {
   private title = 'Préengagements supprimés'
 
   get name() {
-    return UserModule.name
+    return UserModule.loggedUser.name
   }
 
   get avatar() {

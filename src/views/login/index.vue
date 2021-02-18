@@ -137,8 +137,8 @@ export default class extends Vue {
   }
 
   private loginForm = {
-    matricule: '00005',
-    password: '12345'
+    matricule: '',
+    password: ''
   }
 
   private loginRules = {
@@ -167,7 +167,7 @@ export default class extends Vue {
 
   mounted() {
     if (this.loginForm.matricule === '') {
-      (this.$refs.email as Input).focus()
+      (this.$refs.matricule as Input).focus()
     } else if (this.loginForm.password === '') {
       (this.$refs.password as Input).focus()
     }
