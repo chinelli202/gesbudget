@@ -41,8 +41,9 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
           await UserModule.GetUserInfo()
           await AppModule.fetchEngagementVariables()
           const roles = UserModule.roles
+          const team = UserModule.loggedUser.team
           // Generate accessible routes map based on role
-          PermissionModule.GenerateRoutes(roles)
+          PermissionModule.GenerateRoutes(roles, team)
           // Dynamically add accessible routes
           router.addRoutes(PermissionModule.dynamicRoutes)
           // Hack: ensure addRoutes is complete

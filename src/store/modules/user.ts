@@ -30,6 +30,7 @@ class User extends VuexModule {
   public token = getToken() || ''
   public loggedUser = getLoggedUser()
   public roles: any[] = []
+  public teams: any[] = []
   public avatar = '/img/avatar-icon.png'
 
   @Mutation
@@ -47,6 +48,11 @@ class User extends VuexModule {
   @Mutation
   private SET_ROLES(roles: any) {
     this.roles = roles
+  }
+
+  @Mutation
+  private SET_TEAMS(teams: any) {
+    this.teams = teams
   }
 
   // Edit Login function
@@ -98,7 +104,7 @@ class User extends VuexModule {
     await this.GetUserInfo()
     resetRouter()
     // Generate dynamic accessible routes based on roles
-    PermissionModule.GenerateRoutes(this.roles)
+    PermissionModule.GenerateRoutes(this.roles, this.teams)
     // Add generated routes
     router.addRoutes(PermissionModule.dynamicRoutes)
     // Reset visited views and cached views

@@ -189,7 +189,8 @@ export const constantRoutes: RouteConfig[] = [
     redirect: '/etats/fonctionnement',
     meta: {
       title: 'etatsBudget',
-      icon: 'dashboard'
+      icon: 'dashboard',
+      teams: ['snh','snh_siege']
     },
     children: [
       {
@@ -226,7 +227,8 @@ export const constantRoutes: RouteConfig[] = [
         ],
         meta: {
           title: 'etatsFonctionnement',
-          icon: 'tab'
+          icon: 'tab',
+          teams: ['snh','snh_siege']
         }
       },
       {
@@ -254,7 +256,8 @@ export const constantRoutes: RouteConfig[] = [
         ],
         meta: {
           title: 'etatsMandat',
-          icon: 'tab'
+          icon: 'tab',
+          teams: ['snh','snh_siege']
         }
       }
     ]
@@ -267,7 +270,8 @@ export const constantRoutes: RouteConfig[] = [
     name: 'rapports',
     meta: {
       title: 'rapports',
-      icon: 'dashboard'
+      icon: 'dashboard',
+      teams: ['snh','snh_siege','teams']
     },
     children : [
       {
@@ -277,6 +281,7 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'rapports',
           icon: 'dashboard',
+          teams: ['snh','snh_siege','teams']
         }
       },
       {
@@ -287,6 +292,7 @@ export const constantRoutes: RouteConfig[] = [
           title: 'etatsEntreprise',
           name:'etats-entreprise',
           icon: 'dashboard',
+          teams: ['snh','snh_siege','teams'],
           hidden:true        
         }
       }

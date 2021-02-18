@@ -105,8 +105,9 @@ class App extends VuexModule implements IAppState {
         try {
           await UserModule.GetUserInfo()
           const roles = UserModule.roles
+          const teams = UserModule.teams
           // Generate accessible routes map based on role
-          PermissionModule.GenerateRoutes(roles)
+          PermissionModule.GenerateRoutes(roles,teams)
           // Dynamically add accessible routes
           router.addRoutes(PermissionModule.dynamicRoutes)
         } catch (error) {
