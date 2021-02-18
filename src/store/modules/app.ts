@@ -243,6 +243,12 @@ class App extends VuexModule implements IAppState {
     this.SET_TVA(parseFloat(response.data[0].valeur))
   }
 
+  @Action
+  public async UpdateSession(team: any) {
+    await UserModule.GetUserInfo(team)
+    await this.fetchEngagementVariables(team)
+  }
+
   @Mutation
   private TOGGLE_SIDEBAR(withoutAnimation: boolean) {
     this.sidebar.opened = !this.sidebar.opened

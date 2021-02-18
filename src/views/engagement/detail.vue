@@ -638,7 +638,7 @@ export default class extends Vue {
   }
 
   /** Ligne budgetaire cascader */
-  private domain = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.domaines[0] : null
+  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : null
   private domaines = AppModule.budgetStructure.domaines
   private chapitresOptions: any = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
   private cascade: number[] = []

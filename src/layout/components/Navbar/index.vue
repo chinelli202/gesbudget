@@ -17,6 +17,7 @@
             v-model="team"
             size="small"
             @change="teamChanged"
+            fill="#606266"
           >
             <el-radio-button
               v-for="(obj) in teams"
@@ -152,7 +153,7 @@ export default class extends Vue {
 
   private teamChanged() {
     console.log("teamChanged ")
-    UserModule.UpdateSession(UserModule.loggedUser.teams[this.team])
+    AppModule.UpdateSession(UserModule.loggedUser.teams[this.team])
   }
 }
 </script>
