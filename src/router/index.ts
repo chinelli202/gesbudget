@@ -200,7 +200,7 @@ export const constantRoutes: RouteConfig[] = [
           {
             path: 'generaux',
             component: () => import('@/views/table/etats-generaux.vue'),
-            name: 'Fonctionnement',
+            name: 'fonctionnement-generaux',
             meta: {
               title: 'fonctionnement',
             }
@@ -237,7 +237,7 @@ export const constantRoutes: RouteConfig[] = [
           {
             path: 'generaux',
             component: () => import('@/views/table/etats-generaux.vue'),
-            name: 'Mandat',
+            name: 'mandat-generaux',
             meta: {
               title: 'mandat',
             }
@@ -259,6 +259,29 @@ export const constantRoutes: RouteConfig[] = [
       }
     ]
   },
+
+  {
+    path: '/rapports',
+    component: Layout,
+    redirect: '/rapports/cpsp',
+    name: 'rapports',
+    meta: {
+      title: 'rapports',
+      icon: 'dashboard'
+    },
+    children : [
+      {
+        path: 'cpsp',
+        component: () => import('@/sublayouts/etatslayout/representation.vue'),
+        name: 'rapports',
+        meta: {
+          title: 'rapports',
+          icon: 'dashboard'
+        }
+      }
+    ]
+  },
+
   {
     path: '/elaboration',
     component: Layout,

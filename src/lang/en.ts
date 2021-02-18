@@ -81,6 +81,7 @@ export default {
     draftBudget: 'Brouillon',
     maquetteActiveBudget: 'Maquette Budget Actif',
     elaboration: 'Elaboration',
+    rapports: 'Etats Entreprise',
     zip: 'Zip',
     pdf: 'PDF',
     exportZip: 'Export Zip',
