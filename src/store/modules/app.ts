@@ -165,7 +165,7 @@ class App extends VuexModule implements IAppState {
         }
       }
       else {
-        respBudget['content'] = budget.map(
+        respBudget['content'] = budget.chapitres.map(
           (chapitre: any) => {
             return {
               label: chapitre.label,
@@ -197,6 +197,7 @@ class App extends VuexModule implements IAppState {
         duration: 7 * 1000
       })
       respBudget['error'] = "ERREUR_RECUPERATION"
+      console.log(error)
       return
     }
     
