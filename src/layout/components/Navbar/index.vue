@@ -17,7 +17,7 @@
             v-model="team"
             size="small"
             @change="teamChanged"
-            fill="#606266"
+            :fill="theme"
           >
             <el-radio-button
               v-for="(obj) in teams"
@@ -91,6 +91,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
+import { SettingsModule } from '@/store/modules/settings'
 import Breadcrumb from '@/components/Breadcrumb/index.vue'
 import ErrorLog from '@/components/ErrorLog/index.vue'
 import Hamburger from '@/components/Hamburger/index.vue'
@@ -120,6 +121,10 @@ export default class extends Vue {
     console.log(this.team)
   }
 
+  get theme() {
+    return SettingsModule.theme
+  }
+  
   get userName() {
     return UserModule.loggedUser.name
   }
