@@ -30,6 +30,7 @@
           </el-col>
         </el-row>
         <el-row
+          v-if="domaines"
           type="flex"
           justify="center"
           style="margin-bottom: 1.5em"
@@ -43,8 +44,11 @@
               size="small"
               @change="domainChange"
             >
-              <el-radio-button label="Fonctionnement" />
-              <el-radio-button label="Mandat" />
+              <el-radio-button
+                v-for="dom in domaines"
+                :key="dom"
+                :label="capitalizeFirstLetter(dom)"
+              />
             </el-radio-group>
           </el-col>
         </el-row>
@@ -238,6 +242,7 @@ import { createEngagement } from '@/api/engagements'
 import { Form as ElForm, Input } from 'element-ui'
 import { getSoldeLigne } from '@/api/lignes'
 import { AppModule } from '@/store/modules/app'
+import { UserModule } from '@/store/modules/user'
 
 @Component({
   name: 'CreateEngButton',
@@ -290,8 +295,10 @@ export default class CreateEngButton extends Vue {
   }
 
   /** Cascader variables */
-  private domain = 'Fonctionnement'
-  private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
+  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : null
+  private domaines = AppModule.budgetStructure.domaines
+  private chapitresOptions: any = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
+  private budgetLevels: any = AppModule.budgetStructure.levels
   private cascade: number[] = []
 
   /** Dialog Form Variables */
@@ -349,11 +356,11 @@ export default class CreateEngButton extends Vue {
   }
 
   created() {
-    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+    this.chapitresOptions = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
   }
 
   private domainChange() {
-    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+    this.chapitresOptions = AppModule.budgetStructure.content[this.domain.toLowerCase()]
   }
 
   private maxMontant() {
@@ -422,7 +429,11 @@ export default class CreateEngButton extends Vue {
         this.dialogFormLoading = true
         let { eng_date, ...eng } = this.engagement
         console.log('eng_date ', eng_date, eng)
-        this.createEngAction({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng})
+        this.createEngAction({
+          eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '),
+          entreprise_code: UserModule.loggedUser.team.entreprise_code,
+          ...eng
+        })
         this.resetForm()
         this.submitDisabled = true
         this.dialogFormLoading = false
@@ -445,6 +456,10 @@ export default class CreateEngButton extends Vue {
   public getEngagement() {
     console.log('return engagement')
     return this.engagement
+  }
+
+  private capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }
 </script>
