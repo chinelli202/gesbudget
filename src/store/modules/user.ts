@@ -8,6 +8,7 @@ import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
 import { TagsViewModule } from './tags-view'
 import store from '@/store'
+import { AppModule } from './app'
 
 export interface IUserState {
   token: string
@@ -30,6 +31,7 @@ class User extends VuexModule {
   public token = getToken() || ''
   public loggedUser = getLoggedUser()
   public roles: any[] = []
+  public teams: any[] = []
   public avatar = '/img/avatar-icon.png'
 
   @Mutation
@@ -47,6 +49,11 @@ class User extends VuexModule {
   @Mutation
   private SET_ROLES(roles: any) {
     this.roles = roles
+  }
+
+  @Mutation
+  private SET_TEAMS(teams: any) {
+    this.teams = teams
   }
 
   // Edit Login function
@@ -71,23 +78,21 @@ class User extends VuexModule {
       throw Error('GetUserInfo: token is undefined!')
     }
     let query = team ? { teamId : team.id } : ( this.loggedUser.team ? { teamId : this.loggedUser.team.id } : {})
+    console.log('getUserInfo ', query)
     const { data } = await getUserInfo(query)
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
-
+    
     // roles must be a non-empty array
     if (!data.roles || data.roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
     }
+    console.log('getUserInfo data ', data)
     this.SET_USER(data)
     this.SET_ROLES(data.roles)
   }
 
-  @Action
-  public async UpdateSession(team: any) {
-    await this.GetUserInfo(team)
-  }
 
   @Action
   public async ChangeRoles(role: string) {
@@ -98,7 +103,9 @@ class User extends VuexModule {
     await this.GetUserInfo()
     resetRouter()
     // Generate dynamic accessible routes based on roles
-    PermissionModule.GenerateRoutes(this.roles)
+    console.log("printed from change roles, user.ts")
+    const team = UserModule.loggedUser.team
+    PermissionModule.GenerateRoutes(this.roles, team.name)
     // Add generated routes
     router.addRoutes(PermissionModule.dynamicRoutes)
     // Reset visited views and cached views

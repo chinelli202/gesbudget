@@ -77,6 +77,7 @@
               label-width="100px"
             >
               <el-row
+                v-if="domaines"
                 type="flex"
                 justify="center"
                 style="margin-bottom: 1.5em"
@@ -91,8 +92,11 @@
                     size="small"
                     @change="domainChange"
                   >
-                    <el-radio-button label="Fonctionnement" />
-                    <el-radio-button label="Mandat" />
+                    <el-radio-button
+                      v-for="dom in domaines"
+                      :key="dom"
+                      :label="capitalizeFirstLetter(dom)"
+                    />
                   </el-radio-group>
                   <el-input
                     v-else
@@ -634,8 +638,9 @@ export default class extends Vue {
   }
 
   /** Ligne budgetaire cascader */
-  private domain = 'Fonctionnement'
-  private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
+  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : null
+  private domaines = AppModule.budgetStructure.domaines
+  private chapitresOptions: any = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
   private cascade: number[] = []
   private soldeLigne = 0
 
@@ -690,7 +695,7 @@ export default class extends Vue {
     ligne_id: 0,
     chapitre_id: 0,
     rubrique_id: 0,
-    domaine: 'Fonctionnement',
+    domaine: AppModule.budgetStructure.domaines ? AppModule.budgetStructure.domaines[0] : null,
     documents: [],
     imputations: []
   }
@@ -786,7 +791,7 @@ export default class extends Vue {
       /** Initialize cascader */
       this.cascade = [this.engagement.chapitre_id, this.engagement.rubrique_id, this.engagement.ligne_id]
       this.domain = this.engagement.domaine
-      this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+      this.chapitresOptions = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
 
       getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
         this.soldeLigne = response.data.solde_restant == 0 ? 'Solde nul' : response.data.solde_restant
@@ -1040,6 +1045,10 @@ export default class extends Vue {
       (!this.engagementHasBeenValidatePOrMore() || this.engagement.next_statut != null)) {
       this.toEdit = true
     }
+  }
+
+  private capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }
 

@@ -102,7 +102,8 @@ export const constantRoutes: RouteConfig[] = [
     name: 'engagementHome',
     meta: {
       title: 'engagementHome',
-      icon: 'component'
+      icon: 'component',
+      teams: ['snh','snh_siege','cpsp']
     },
     children : [
       {
@@ -112,7 +113,8 @@ export const constantRoutes: RouteConfig[] = [
         name: 'engagementHomeDashboard',
         meta: {
           title: 'engagementHomeDashboard',
-          icon: 'component'
+          icon: 'component',
+          teams: ['snh','snh_siege','cpsp']
         }
       }
     ]
@@ -124,7 +126,8 @@ export const constantRoutes: RouteConfig[] = [
     name: 'engagement',
     meta: {
       title: 'engagement',
-      icon: 'list'
+      icon: 'list',
+      teams: ['snh','snh_siege','cpsp']
     },
     children : [
       {
@@ -134,7 +137,8 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'engagementList',
           activeMenu: '/engagement/list',
-          icon: 'search'
+          icon: 'search',
+          teams: ['snh','snh_siege','cpsp']
         }
       }
     ]
@@ -147,6 +151,7 @@ export const constantRoutes: RouteConfig[] = [
     meta: {
       title: 'engagementDetail',
       icon: 'form',
+      teams: ['snh','snh_siege','cpsp'],
       hidden: true
     },
     children : [
@@ -156,6 +161,7 @@ export const constantRoutes: RouteConfig[] = [
         name: 'engagementDetailView',
         meta: {
           title: 'engagementDetailView',
+          teams: ['snh','snh_siege','cpsp'],
           noCache: true
         }
       }
@@ -183,13 +189,51 @@ export const constantRoutes: RouteConfig[] = [
     ]
   },
   
+  
+  // {
+  //   path: '/elaboration',
+  //   component: Layout,
+  //   name: 'elaboration',
+  //   meta: {
+  //     title: 'elaboration',
+  //     icon: 'edit',
+  //   }, 
+  //   children : [
+  //     {
+  //       path : 'draft',
+  //       component: () => import('@/views/table/elaboration/draft.vue'),
+  //       name: 'draftBudget',
+  //       meta: {
+  //         title: 'draftBudget',
+  //         icon: 'data'
+  //       }
+  //     },
+  //     {
+  //       path : 'active',
+  //       component: () => import('@/views/table/elaboration/maquette-active.vue'),
+  //       name: 'maquetteActiveBudget',
+  //       meta: {
+  //         title: 'maquetteActiveBudget',
+  //         icon: 'setting'
+  //       }
+  //     }
+  //   ]
+  // },
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+*/
+export const asyncRoutes: RouteConfig[] = [
   {
     path: '/etats',
     component: Layout,
     redirect: '/etats/fonctionnement',
     meta: {
       title: 'etatsBudget',
-      icon: 'dashboard'
+      icon: 'dashboard',
+      teams: ['snh','snh_siege']
     },
     children: [
       {
@@ -226,7 +270,8 @@ export const constantRoutes: RouteConfig[] = [
         ],
         meta: {
           title: 'etatsFonctionnement',
-          icon: 'tab'
+          icon: 'tab',
+          teams: ['snh','snh_siege']
         }
       },
       {
@@ -254,7 +299,8 @@ export const constantRoutes: RouteConfig[] = [
         ],
         meta: {
           title: 'etatsMandat',
-          icon: 'tab'
+          icon: 'tab',
+          teams: ['snh'],
         }
       }
     ]
@@ -267,7 +313,8 @@ export const constantRoutes: RouteConfig[] = [
     name: 'rapports',
     meta: {
       title: 'rapports',
-      icon: 'dashboard'
+      icon: 'dashboard',
+      teams: ['cpsp','snhdouala']
     },
     children : [
       {
@@ -277,6 +324,7 @@ export const constantRoutes: RouteConfig[] = [
         meta: {
           title: 'rapports',
           icon: 'dashboard',
+          teams: ['cpsp']
         }
       },
       {
@@ -287,49 +335,12 @@ export const constantRoutes: RouteConfig[] = [
           title: 'etatsEntreprise',
           name:'etats-entreprise',
           icon: 'dashboard',
+          teams: ['cpsp'],
           hidden:true        
         }
       }
     ]
   },
-
-  {
-    path: '/elaboration',
-    component: Layout,
-    name: 'elaboration',
-    meta: {
-      title: 'elaboration',
-      icon: 'edit',
-    }, 
-    children : [
-      {
-        path : 'draft',
-        component: () => import('@/views/table/elaboration/draft.vue'),
-        name: 'draftBudget',
-        meta: {
-          title: 'draftBudget',
-          icon: 'data'
-        }
-      },
-      {
-        path : 'active',
-        component: () => import('@/views/table/elaboration/maquette-active.vue'),
-        name: 'maquetteActiveBudget',
-        meta: {
-          title: 'maquetteActiveBudget',
-          icon: 'setting'
-        }
-      }
-    ]
-  },
-]
-
-/**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
-*/
-export const asyncRoutes: RouteConfig[] = [
-  
 ]
 
 const createRouter = () => new Router({

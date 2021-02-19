@@ -20,14 +20,14 @@ export const logout = (data: any) =>
   })
 
 // Get user info
-export const getUserInfo = (data: any) =>
+export const getUserInfo = (params: any) =>
   request({
     url: '/user-detail',
     method: 'get',
     headers: {
       Authorization: `Bearer ${getToken()}`
     },
-    data
+    params
   })
 
 export const getUsers = (params: any) =>

@@ -17,6 +17,7 @@
             v-model="team"
             size="small"
             @change="teamChanged"
+            :fill="theme"
           >
             <el-radio-button
               v-for="(obj) in teams"
@@ -90,6 +91,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
+import { SettingsModule } from '@/store/modules/settings'
 import Breadcrumb from '@/components/Breadcrumb/index.vue'
 import ErrorLog from '@/components/ErrorLog/index.vue'
 import Hamburger from '@/components/Hamburger/index.vue'
@@ -111,12 +113,18 @@ import SizeSelect from '@/components/SizeSelect/index.vue'
   }
 })
 export default class extends Vue {
-  private team: String = ""
+  private team = 0
+  private loading : any
+
   created(){
     this.team = this.currentTeam.id
     console.log(this.team)
   }
 
+  get theme() {
+    return SettingsModule.theme
+  }
+  
   get userName() {
     return UserModule.loggedUser.name
   }
@@ -150,9 +158,16 @@ export default class extends Vue {
     this.$router.push(`/login?redirect=${this.$route.fullPath}`)
   }
 
-  private teamChanged() {
+  private async teamChanged() {
+    this.loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
     console.log("teamChanged ")
-    //UserModule.updateSession(UserModule.loggedUser.teams[this.team])
+    await AppModule.UpdateSession(UserModule.loggedUser.teams[this.team])
+    this.$router.go(0);
   }
 }
 </script>
