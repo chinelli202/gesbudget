@@ -2,7 +2,7 @@ import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-dec
 import { RouteConfig } from 'vue-router'
 import { asyncRoutes, constantRoutes } from '@/router'
 import store from '@/store'
-import {AppModule} from '@/store/modules/app'
+import {UserModule} from '@/store/modules/user'
 
 const hasPermission = (roles: string[], route: RouteConfig) => {
   if (route.meta && route.meta.roles) {
@@ -12,21 +12,22 @@ const hasPermission = (roles: string[], route: RouteConfig) => {
   }
 }
 
-const belongsToTeam = (teams: string[], route: RouteConfig) => {
+const belongsToTeam = (team: string, route: RouteConfig) => {
+  if(route.meta)
   if (route.meta && route.meta.teams) {
-    return teams.some(team => route.meta.teams.includes(team))
+    return route.meta.teams.includes(team)
   } else {
     return true
   }
 }
 
-export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[], teams: string[]) => {
+export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[], team: string) => {
   const res: RouteConfig[] = []
   routes.forEach(route => {
     const r = { ...route }
-    if (hasPermission(roles, r) && belongsToTeam(teams, r)) {
+    if (belongsToTeam(team, r)) {
       if (r.children) {
-        r.children = filterAsyncRoutes(r.children, roles, teams)
+        r.children = filterAsyncRoutes(r.children, roles, team)
       }
       res.push(r)
     }
@@ -77,14 +78,12 @@ class Permission extends VuexModule implements IPermissionState {
   }
 
   @Action
-  public GenerateRoutes(roles: string[], teams: string[]) {
+  public GenerateRoutes(roles: string[], team: string) {
     let accessedRoutes
     if (roles.includes('admin')) {
       accessedRoutes = asyncRoutes
-      console.log("using normal routes")
     } else {
-      accessedRoutes = filterAsyncRoutes(asyncRoutes, roles, teams)
-      console.log("filtering async routes")
+      accessedRoutes = filterAsyncRoutes(asyncRoutes, roles, UserModule.loggedUser.team.name)
     }
     this.SET_ROUTES(accessedRoutes)
   }

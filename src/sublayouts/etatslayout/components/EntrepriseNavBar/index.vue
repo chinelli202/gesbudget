@@ -24,14 +24,11 @@
         Général
       </el-menu-item> 
        
-      <el-menu-item @click="handleNavigate">
+      <!-- <el-menu-item @click="handleNavigate">
         Aller à...
-      </el-menu-item>
+      </el-menu-item> -->
 
-      <el-menu-item v-if="!isGeneraux" @click="handleExporter">
-        <i class="el-icon-download"></i>
-        <span>Exporter</span> 
-      </el-menu-item>
+      
 
       <!-- group menus -->
       <el-menu-item 
@@ -41,6 +38,10 @@
           {{group.label}}
       </el-menu-item>
 
+      <el-menu-item v-if="!isGeneraux" @click="handleExporter">
+        <i class="el-icon-download"></i>
+        <span>Exporter</span> 
+      </el-menu-item>
       <!-- <el-submenu v-if="isGeneraux">
           <template slot="title">
             Exporter
@@ -69,7 +70,7 @@ import {getFonctionnementTree, getMandatTree, getSectionsFonctionnementTree, get
   
 
   @Component({
-    name: 'EntrepriseNavbar',
+    name: 'EntrepriseNavBar',
     components: {
       NavigateurEtats
     }
@@ -118,6 +119,7 @@ private exportMap: any [] = []
 
 created(){
 
+  console.log("creating entreprise nav bar")
   //test weither menu is generaux
   const path = this.$router.currentRoute.path
   this.isGeneraux = path.split("/")[3] == 'generaux';
@@ -130,6 +132,7 @@ created(){
 }
 
   private async paramNavTree(){
+    console.log('running param nav tree')
     // if(this.entreprise=='fonctionnement'){
     //   this.navTitle = "Fonctionnement"
     //   const {data} = await getSectionsFonctionnementTree(this.listQuery)
@@ -149,14 +152,15 @@ created(){
 
       const {data} = await getEntrepriseTree(this.listQuery)
       this.maquetteTree = data
+    console.log("this is maquettetree option", this.maquetteTree)
 
-    let groupesOption = this.maquetteTree.content.chapitres.rubriques
+    let groupesOption = this.maquetteTree.content.chapitres[0].rubriques  
     this.groupesMap = groupesOption.map((rubrique : any)=>{
       let groupe = {label : rubrique.label, id : rubrique.id}
       return groupe
     })
-
     console.log("this is the groupes map, ", this.groupesMap)
+
     
     //let depensesOption = this.maquetteTree.depenses.chapitres
     // let recettesOption = this.maquetteTree.recettes.chapitres

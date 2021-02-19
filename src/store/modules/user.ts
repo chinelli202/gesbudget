@@ -8,6 +8,7 @@ import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
 import { TagsViewModule } from './tags-view'
 import store from '@/store'
+import { AppModule } from './app'
 
 export interface IUserState {
   token: string
@@ -102,7 +103,9 @@ class User extends VuexModule {
     await this.GetUserInfo()
     resetRouter()
     // Generate dynamic accessible routes based on roles
-    PermissionModule.GenerateRoutes(this.roles, this.teams)
+    console.log("printed from change roles, user.ts")
+    const team = UserModule.loggedUser.team
+    PermissionModule.GenerateRoutes(this.roles, team.name)
     // Add generated routes
     router.addRoutes(PermissionModule.dynamicRoutes)
     // Reset visited views and cached views

@@ -103,10 +103,12 @@ class App extends VuexModule implements IAppState {
       if(Object.keys(UserModule.loggedUser).length === 0) {
         try {
           await UserModule.GetUserInfo()
+          console.log("after wollecting usermodule")
           const roles = UserModule.roles
-          const teams = UserModule.teams
+          const team = UserModule.loggedUser.team
           // Generate accessible routes map based on role
-          PermissionModule.GenerateRoutes(roles,teams)
+          console.log("watching user's team now : ",team)
+          PermissionModule.GenerateRoutes(roles,team.name)
           // Dynamically add accessible routes
           router.addRoutes(PermissionModule.dynamicRoutes)
         } catch (error) {

@@ -15,8 +15,7 @@
 
     <el-table
       :data="recapData.collection"
-      header-cell-class-name="headerStyler"
-      :header-cell-style="headerCellStyle"
+
 
       border
       :summary-method="getSummaries"
@@ -246,7 +245,7 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
   }
 
   private formatColumn(value: any, row: any, column: any){
-    console.log("displaying values. row : ",row)
+    //console.log("displaying values. row : ",row)
     return column.toLocaleString("fr-FR");
   }
 
@@ -263,6 +262,5 @@ import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre
 .wrapper{
   display:block;
   word-break: break-word;
-  color:green;
 }
 </style>
