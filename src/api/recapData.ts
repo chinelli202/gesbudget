@@ -66,6 +66,13 @@ export const defaultRecapData: IRecapData = {
       params
     })
 
+    export const getEntrepriseRecapData = (entreprise_code: string, params: any) =>
+    request({
+      url: `/etats/entreprise/'${entreprise_code}`,
+      method: 'get',
+      params
+    })
+
     export const getRecapData = (entitytype: string, entitykey: any, params: any) =>
     request({
       url: `/etats/fonctionnement/${entitytype}/${entitykey}`,
@@ -85,4 +92,4 @@ export const defaultRecapData: IRecapData = {
       url: `/etats/section/${sectionname}/${domainename}`,
       method: 'get',
       params
-  })
+    })

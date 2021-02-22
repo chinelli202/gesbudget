@@ -309,7 +309,7 @@ export const asyncRoutes: RouteConfig[] = [
   {
     path: '/rapports',
     component: Layout,
-    redirect: '/rapports/cpsp',
+    redirect: '/rapports/entreprise',
     name: 'rapports',
     meta: {
       title: 'rapports',
@@ -318,8 +318,8 @@ export const asyncRoutes: RouteConfig[] = [
     },
     children : [
       {
-        path: 'cpsp',
-        component: () => import('@/sublayouts/etatslayout/representation.vue'),
+        path: 'entreprise',
+        component: () => import('@/views/table/etats-entreprise.vue'),
         name: 'rapports',
         meta: {
           title: 'rapports',
