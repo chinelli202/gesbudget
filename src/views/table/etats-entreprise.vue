@@ -32,38 +32,38 @@ import EntrepriseNavBar from '@/sublayouts/etatslayout/components/EntrepriseNavB
   name: 'EtatsEntreprise',
   components:{
     CustomTable,
+    EntrepriseNavBar
   }
 })
 
 export default class extends Vue {
     private entrepriseData : IRecapData [] = []
 
+  created(){
 
-created(){
+    this.getEntrepriseRecapData()
+  }
 
-  this.getEntrepriseRecapData()
-}
+  private getEntrepriseRecapData() {
+    let queryParams = this.getQueryParams()
+    //load team code from user module
+    const code = UserModule.loggedUser.team.entreprise_code
+    //const entitytype = this.$route.params && this.$route.params.entitytype
+    getEntrepriseRecapData(code,  queryParams).then((response) => {
+      this.entrepriseData = response.data
+    })
+  }
 
-private getEntrepriseRecapData() {
-  let queryParams = this.getQueryParams()
-  //load team code from user module
-  const code = UserModule.loggedUser.team.entreprise_code
-  //const entitytype = this.$route.params && this.$route.params.entitytype
-  getEntrepriseRecapData(code,  queryParams).then((response) => {
-    this.entrepriseData = response.data
-  })
-}
+  private getQueryParams(){
+        var period = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? periodes.JOUR : 
+        (etatsmodule.periode == periodes.MOIS || etatsmodule.periode == periodes.CEMOIS)?periodes.MOIS:
+        (etatsmodule.periode == periodes.INTERVALLE)?periodes.INTERVALLE:'rapport_mensuel';
+      
+      var param = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? etatsmodule.jourPeriodeJour : 
+        etatsmodule.moisPeriodeMois
 
-private getQueryParams(){
-      var period = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? periodes.JOUR : 
-      (etatsmodule.periode == periodes.MOIS || etatsmodule.periode == periodes.CEMOIS)?periodes.MOIS:
-      (etatsmodule.periode == periodes.INTERVALLE)?periodes.INTERVALLE:'rapport_mensuel';
-    
-    var param = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? etatsmodule.jourPeriodeJour : 
-      etatsmodule.moisPeriodeMois
-
-      var startmonth = etatsmodule.debutPeriodeIntervalle
-      var endmonth = etatsmodule.finPeriodeIntervalle
-      return {'critere':period, param:param, startmonth:startmonth, endmonth:endmonth}
-}
+        var startmonth = etatsmodule.debutPeriodeIntervalle
+        var endmonth = etatsmodule.finPeriodeIntervalle
+        return {'critere':period, param:param, startmonth:startmonth, endmonth:endmonth}
+  }
 }

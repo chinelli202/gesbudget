@@ -320,7 +320,7 @@ export const asyncRoutes: RouteConfig[] = [
       {
         path: 'entreprise',
         component: () => import('@/views/table/etats-entreprise.vue'),
-        name: 'rapports',
+        name: 'rapports-generaux',
         meta: {
           title: 'rapports',
           icon: 'dashboard',
