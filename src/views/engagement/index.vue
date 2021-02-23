@@ -81,21 +81,20 @@
             :span="3" 
             :offset="3"
           >
-            <el-select v-model="domain"
+            <el-select
+              v-if="domaines"
+              v-model="domain"
               placeholder="Domaine"
               @change="domainChanged"
             >
               <el-option
-                key="Fonctionnement"
-                label="Fonctionnement"
-                value="Fonctionnement"
-              />
-              <el-option
-                key="Mandat"
-                label="Mandat"
-                value="Mandat"
+                v-for="dom in domaines"
+                :key="dom"
+                :label="capitalizeFirstLetter(dom)"
+                :value="capitalizeFirstLetter(dom)"
               />
             </el-select>
+            <span v-else>.</span>
           </el-col>
           <el-col :span="8">
             <el-cascader
@@ -197,11 +196,15 @@ export default class extends Vue {
   private monthrange = []
   private lignesBudgetaire = []
   private lignes = ''
-  private domain = 'Fonctionnement'
-  private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
+  private domain: any
+  private domaines: any
+  private chapitresOptions: any
 
   created() {
-    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+    this.domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : null
+    this.domaines = AppModule.budgetStructure.domaines
+    this.chapitresOptions = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
+    
     getUsers({}).then((response) => {
       this.usersList = response.data
     }).catch((error) => {
@@ -251,6 +254,10 @@ export default class extends Vue {
 
   get statutString() {
     return this.statut.join(',')
+  }
+
+  private capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   private etatSelect = [{
