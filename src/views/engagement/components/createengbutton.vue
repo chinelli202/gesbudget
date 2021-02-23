@@ -82,7 +82,7 @@
               :span="3"
               :offset="2"
             >
-              <strong>Ligne budget</strong>
+              <strong>Date</strong>
             </el-col>
             <el-col :span="17">
               <el-form-item
