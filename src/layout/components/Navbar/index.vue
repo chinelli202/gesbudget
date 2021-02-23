@@ -26,6 +26,16 @@
             >{{ obj.display_name }}</el-radio-button>
           </el-radio-group>
         </div>
+        <div style="display: inline-block;padding: 0 8px;vertical-align: text-bottom;">
+          <el-tooltip placement="bottom">
+            <div slot="content">Rafraîchir la session {{ currentTeam.display_name }}</div>
+            <el-button 
+              icon="el-icon-refresh"
+              @click="updateSession"
+              circle
+            ></el-button>
+          </el-tooltip>
+        </div>
         <div style="display: inline-block;padding: 0 8px;vertical-align: text-bottom;"><strong>{{ userName }}</strong></div>
         <error-log class="errLog-container right-menu-item hover-effect" />
         <screenfull class="right-menu-item hover-effect" />
@@ -158,16 +168,19 @@ export default class extends Vue {
     this.$router.push(`/login?redirect=${this.$route.fullPath}`)
   }
 
-  private async teamChanged() {
+  private async updateSession() {
     this.loading = this.$loading({
           lock: true,
           text: 'Loading',
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.7)'
         });
-    console.log("teamChanged ")
     await AppModule.UpdateSession(UserModule.loggedUser.teams[this.team])
     this.$router.go(0);
+  }
+
+  private async teamChanged() {
+    this.updateSession();
   }
 }
 </script>
