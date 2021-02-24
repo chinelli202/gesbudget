@@ -536,6 +536,7 @@ import {
   detailEngagement
   , updateEngagement, validationPreeng, cancelValidationPreeng
   , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
+  , getEngagementHistory
 } from '@/api/engagements'
 import { getSoldeLigne } from '@/api/lignes'
 import { imputerEngagement } from '@/api/imputations'
