@@ -638,10 +638,9 @@ export default class extends Vue {
   }
 
   /** Ligne budgetaire cascader */
-  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : null
+  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : 'null'
   private domaines = AppModule.budgetStructure.domaines
-  private chapitresOptions: any = AppModule.budgetStructure.domaines 
-    ? AppModule.budgetStructure.content[this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0])] : AppModule.budgetStructure.content
+  private chapitresOptions: any
   private cascade: number[] = []
   private soldeLigne = 0
 
@@ -696,7 +695,7 @@ export default class extends Vue {
     ligne_id: 0,
     chapitre_id: 0,
     rubrique_id: 0,
-    domaine: AppModule.budgetStructure.domaines ? AppModule.budgetStructure.domaines[0] : null,
+    domaine: AppModule.budgetStructure.domaines ? AppModule.budgetStructure.domaines[0] : 'null',
     documents: [],
     imputations: []
   }

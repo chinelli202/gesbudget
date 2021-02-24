@@ -361,11 +361,11 @@ export default class FooterButtons extends Vue {
   }
 
   private hasPermission(permission: string) {
-    return UserModule.loggedUser.permissions.filter(item => item.code === permission).length > 0
+    return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length > 0
   }
 
   private hasnotPermission(permission: string) {
-    return UserModule.loggedUser.permissions.filter(item => item.code === permission).length === 0
+    return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length === 0
   }
 
   private resetButtons() {
