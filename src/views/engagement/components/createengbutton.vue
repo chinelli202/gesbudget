@@ -295,10 +295,9 @@ export default class CreateEngButton extends Vue {
   }
 
   /** Cascader variables */
-  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : null
+  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : 'null'
   private domaines = AppModule.budgetStructure.domaines
-  private chapitresOptions: any = AppModule.budgetStructure.domaines 
-    ? AppModule.budgetStructure.content[this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0])] : AppModule.budgetStructure.content
+  private chapitresOptions: any
   private budgetLevels: any = AppModule.budgetStructure.levels
   private cascade: number[] = []
 
