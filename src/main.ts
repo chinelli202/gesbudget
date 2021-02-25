@@ -121,6 +121,10 @@ Vue.filter('tlItemType', function(item: any) {
  */
 Vue.filter('tlItemIcon', function(item: any) {
   if(item.description.includes('created') || item.description.includes('UPDATE') || item.description.includes('RESEND')){
+    return 'el-icon-edit-outline'
+  }
+  
+  if(item.description.includes('UPDATE') || item.description.includes('RESEND') || item.description.includes('RESTORE')){
     return 'el-icon-edit'
   }
 

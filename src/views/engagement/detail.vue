@@ -1,11 +1,11 @@
 <template>
-  <div class="clearfix">
+  <div class="clearfix detailview">
     <el-row :gutter="30">
       <el-col :span="17" :offset="1">
         <h1>Détail {{ engagement.code }}</h1>
       </el-col>
       <el-col :span="5">
-        <h1>Historique</h1>
+        <!-- <h1>Historique</h1> -->
       </el-col>
     </el-row>
     <el-row :gutter="30">
@@ -391,21 +391,31 @@
         </div>
       </el-col>
       <el-col :span="5" >
-        <el-timeline v-loading="timelineLoading">
-          <el-timeline-item
-            v-for="item in timelineItems"
-            :key="item.id"
-            :timestamp="item.created_at | dateFormatLong"
-            :type="item | tlItemType"
-            :icon="item | tlItemIcon"
-            placement="top">
-            <el-card v-if="item.description == 'ADD_COMMENT'">
-              <h4> Commentaire</h4>
-              <p>{{ item.comment }}</p>
-            </el-card>
-            <h4 v-else> {{ item.description }}</h4>
-          </el-timeline-item>
-        </el-timeline>
+        <h2 style="margin: 0 0 0.67em 0;">Historique</h2>
+        <el-container style="height: 82vh; border: 1px solid #eee">
+          <el-container>
+            <el-main>
+            <el-timeline v-loading="timelineLoading">
+              <el-timeline-item
+                v-for="item in timelineItems"
+                :key="item.id"
+                :timestamp="item.created_at | dateFormatLong"
+                :type="item | tlItemType"
+                :icon="item | tlItemIcon"
+                size="large"
+                placement="top">
+                <el-card v-if="item.comment">
+                  <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
+                  <p>{{ item.comment }}</p>
+                </el-card>
+                <span v-else>
+                  <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
+                </span>
+              </el-timeline-item>
+            </el-timeline>
+            </el-main>
+          </el-container>
+        </el-container>
       </el-col>
     </el-row>
 
@@ -576,6 +586,7 @@ import { Form as ElForm } from 'element-ui'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
+import { isNull } from 'lodash'
 
 @Component({
   name: 'DetailEngagement',
@@ -800,9 +811,12 @@ export default class extends Vue {
     return 0 < +this.soldeLigne ? +this.soldeLigne : 0
   }
 
-  private updateTimeLine() {
+  private updateTimeLine(engagementId: any = null) {
     this.timelineLoading = true
-    getEngagementTimeline({id : this.engagement.id }).then((response) => {
+    console.log('updateTimeLine before', engagementId)
+    if(isNull(engagementId)) engagementId = this.engagement.id
+    console.log('updateTimeLine ', engagementId)
+    getEngagementTimeline({id : engagementId }).then((response) => {
       this.timelineItems = response.data.reverse()
       this.timelineLoading = false
     }).catch(error => {
@@ -812,10 +826,10 @@ export default class extends Vue {
 
   private async fetchData(engagementId: number) {
     this.cardLoading = true
+    //this.updateTimeLine(engagementId)
     detailEngagement({ id: engagementId }).then((response) => {
       let { eng_date, ...eng } = response.data
       this.engagement = {eng_date: new Date(eng_date), ...eng}
-      this.updateTimeLine()
       let devises = AppModule.devises
       this.listeDevises = Object.keys(AppModule.devises).map(key => {return AppModule.devises[key];})
       this.typesPaiementOptions = AppModule.typesPaiement
@@ -1094,7 +1108,7 @@ export default class extends Vue {
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .app-container {
     padding: 0px;
 }
@@ -1103,22 +1117,19 @@ export default class extends Vue {
   box-shadow: 2px;
 }
 
-.el-timeline-item__node--normal {
-        left: -1px;
-        width: 21px;
-        height: 21px;
-    }
-
-
 .el-timeline {
     margin-block-start: 0em;
     margin-block-end: 0em;
     padding-inline-start: 0px;
     
     .el-timeline-item__node {
-        left: -1px;
+        left: 0px;
         width: 21px;
         height: 21px;
+    }
+
+    .el-timeline-item__tail {
+        left: 9px;
     }
 
     h4 {
@@ -1127,7 +1138,7 @@ export default class extends Vue {
     }
 
     .el-card__body {
-      padding: 5px;
+      padding: 15px;
 
       p {
         margin-block-start: 1em;
