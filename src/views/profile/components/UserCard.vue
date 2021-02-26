@@ -1,14 +1,14 @@
 <template>
   <el-card style="margin-bottom:20px;">
-    <div
+    <!-- <div
       slot="header"
       class="clearfix"
     >
       <span>About me</span>
-    </div>
+    </div> -->
 
     <div class="user-profile">
-      <div class="box-center">
+      <!-- <div class="box-center">
         <pan-thumb
           :image="user.avatar"
           :height="'100px'"
@@ -18,7 +18,7 @@
           <div>Hello</div>
           {{ user.roles }}
         </pan-thumb>
-      </div>
+      </div> -->
       <div class="box-center">
         <div class="user-name text-center">
           {{ user.name }}
@@ -30,6 +30,39 @@
     </div>
 
     <div class="user-bio">
+      <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <svg-icon name="education" /><span>{{$t('usercard.date_embauche')}}</span>
+        </div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.date_embauche || 'Non spécifiée' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <svg-icon name="education" /><span>{{$t('usercard.adresse')}}</span>
+        </div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.date_embauche || 'Non spécifiée' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <svg-icon name="education" /><span>{{$t('usercard.position')}}</span>
+        </div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.division || 'Non spécifiée' }} : {{ $t('user.fonction') || 'Fonction non spécifiée'}}
+          </div>
+        </div>
+      </div>
+
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
           <svg-icon name="education" /><span>Education</span>

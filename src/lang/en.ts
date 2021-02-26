@@ -139,6 +139,13 @@ export default {
     APUR_RESEND : 'Re-soumission apurement',
     APUR_ADD_COMMENT : 'Ajout commentaire apurement',
   },
+
+  usercard : {
+    adresse : 'Adresse',
+    date_embauche : 'Date d\'embauche',
+    position : 'Division',
+  },
+
   navbar: {
     logOut: 'Se déconnecter',
     dashboard: 'Dashboard',
