@@ -177,7 +177,8 @@ export default class extends Vue {
           background: 'rgba(0, 0, 0, 0.7)'
         });
     await AppModule.UpdateSession(UserModule.loggedUser.teams[this.team])
-    this.$router.go(0);
+    this.$router.push({path : '/'})
+    this.$router.go(0)
   }
 
   private async teamChanged() {

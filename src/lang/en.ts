@@ -138,6 +138,9 @@ export default {
     APUR_SEND_BACK : 'Renvoi apurement',
     APUR_RESEND : 'Re-soumission apurement',
     APUR_ADD_COMMENT : 'Ajout commentaire apurement',
+
+    ENG_NON_VALID: 'Non validé par la hiérarchie',
+    ENG_ERR_CREA: 'Erreur dans la création'
   },
 
   usercard : {
