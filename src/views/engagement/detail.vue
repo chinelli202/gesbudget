@@ -292,76 +292,6 @@
                       </el-col>
                     </el-row>
                   </el-form-item>
-
-                  <el-form-item
-                    class="notes"
-                    style="line-height: 25px;"
-                  >
-                    <el-row :gutter="10">
-                      <el-col
-                        :span="6"
-                        :offset="3"
-                      >
-                        Créé le
-                      </el-col>
-                      <el-col :span="15">
-                        {{ engagement.created_at | dateFormatLong }}
-                      </el-col>
-                    </el-row>
-                    <el-row :gutter="10">
-                      <el-col
-                        :span="6"
-                        :offset="3"
-                      >
-                        Saisi par
-                      </el-col>
-                      <el-col :span="15">
-                        {{ (isCurrentUserSaisisseur) ? "Vous même" : engagement.saisisseur_name }}
-                      </el-col>
-                    </el-row>
-                    <el-row
-                      v-if="engagement.valideur_first && engagement.valideur_first !== ''"
-                      :gutter="10"
-                    >
-                      <el-col
-                        :span="6"
-                        :offset="3"
-                      >
-                        Validation 1ère par
-                      </el-col>
-                      <el-col :span="15">
-                        {{ (isCurrentUserValideurp) ? "Vous même" : engagement.valideurp_name }}
-                      </el-col>
-                    </el-row>
-                    <el-row
-                      v-if="engagement.valideur_second && engagement.valideur_second !== ''"
-                      :gutter="10"
-                    >
-                      <el-col
-                        :span="6"
-                        :offset="3"
-                      >
-                        Validation 2nde par
-                      </el-col>
-                      <el-col :span="15">
-                        {{ (isCurrentUserValideurs) ? "Vous même" : engagement.valideurs_name }}
-                      </el-col>
-                    </el-row>
-                    <el-row
-                      v-if="engagement.valideur_final && engagement.valideur_final !== ''"
-                      :gutter="10"
-                    >
-                      <el-col
-                        :span="6"
-                        :offset="3"
-                      >
-                        Validation finale par
-                      </el-col>
-                      <el-col :span="15">
-                        {{ (isCurrentUserValideurf) ? "Vous même" : engagement.valideurf_name }}
-                      </el-col>
-                    </el-row>
-                  </el-form-item>
                 </el-form>
                 <footer-buttons
                   :entity="engagement"
@@ -411,7 +341,7 @@
                 >
                 <el-card v-if="item.comment">
                   <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
-                  <p>{{ item.comment }}</p>
+                  <p>{{ item.comment.split("|")[1] }}</p>
                 </el-card>
                 <span v-else>
                   <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
@@ -703,9 +633,6 @@ export default class extends Vue {
   private engagementIsClosed = false
 
   private isCurrentUserSaisisseur = false
-  private isCurrentUserValideurp = false
-  private isCurrentUserValideurs = false
-  private isCurrentUserValideurf = false
 
   private submitUpdateDisabled = true;
 
@@ -1085,9 +1012,6 @@ export default class extends Vue {
 
   private updateViewVariables() {
     this.isCurrentUserSaisisseur = UserModule.loggedUser.matricule === this.engagement.saisisseur
-    this.isCurrentUserValideurp = UserModule.loggedUser.matricule === this.engagement.valideur_first
-    this.isCurrentUserValideurs = UserModule.loggedUser.matricule === this.engagement.valideur_second
-    this.isCurrentUserValideurf = UserModule.loggedUser.matricule === this.engagement.valideur_final
 
     this.nextEtatActionText = this.engagement.cumul_imputations_initie_ttc > 0 ? 'Nouvelle imputation' : "Imputer l'engagement"
     if (this.engagement.cumul_imputations < this.engagement.montant_ttc) {
@@ -1159,9 +1083,6 @@ export default class extends Vue {
   width: 48.5vw;
 }
 
-.notes{
-  color:gray;
-}
 
 .no-margin-bottom{
   margin-bottom: 0px;
