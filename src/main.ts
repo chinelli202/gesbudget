@@ -120,11 +120,11 @@ Vue.filter('tlItemType', function(item: any) {
  * el-icon-refresh-left / SEND_BACK
  */
 Vue.filter('tlItemIcon', function(item: any) {
-  if(item.description.includes('created') || item.description.includes('UPDATE') || item.description.includes('RESEND')){
+  if(item.description.includes('created') || item.description.includes('CREATED') || item.description.includes('RESTORE')){
     return 'el-icon-edit-outline'
   }
   
-  if(item.description.includes('UPDATE') || item.description.includes('RESEND') || item.description.includes('RESTORE')){
+  if(item.description.includes('UPDATE') || item.description.includes('RESEND') ){
     return 'el-icon-edit'
   }
 
@@ -133,7 +133,7 @@ Vue.filter('tlItemIcon', function(item: any) {
   }
 
   if(item.description.includes('VALIDP')){
-    return 'el-icon-check'
+    return 'el-icon-arrow-up'
   }
 
   if(item.description.includes('VALIDS')){
@@ -152,7 +152,7 @@ Vue.filter('tlItemIcon', function(item: any) {
     return 'el-icon-refresh-left'
   }
 
-  return 'el-icon-minus'
+  return 'el-icon-plus'
 })
 
 new Vue({

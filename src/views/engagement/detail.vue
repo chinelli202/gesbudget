@@ -395,7 +395,10 @@
         <el-container style="height: 82vh; border: 1px solid #eee">
           <el-container>
             <el-main>
-            <el-timeline v-loading="timelineLoading">
+            <el-timeline
+              v-loading="timelineLoading"
+              :reverse="true"
+            >
               <el-timeline-item
                 v-for="item in timelineItems"
                 :key="item.id"
@@ -403,7 +406,9 @@
                 :type="item | tlItemType"
                 :icon="item | tlItemIcon"
                 size="large"
-                placement="top">
+                placement="top"
+                
+                >
                 <el-card v-if="item.comment">
                   <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
                   <p>{{ item.comment }}</p>
@@ -817,7 +822,9 @@ export default class extends Vue {
     if(isNull(engagementId)) engagementId = this.engagement.id
     console.log('updateTimeLine ', engagementId)
     getEngagementTimeline({id : engagementId }).then((response) => {
-      this.timelineItems = response.data.reverse()
+      this.timelineItems = response.data.filter(function(item:any) {
+        return !['PREENGAGER','IMPUTATION', 'APUREMENT'].includes(item.description)
+      });
       this.timelineLoading = false
     }).catch(error => {
         console.error('Error while obtaining engagement details ', error)

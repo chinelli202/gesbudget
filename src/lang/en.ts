@@ -93,6 +93,8 @@ export default {
 
   action : {
     created : 'Création pré-engagement',
+    CREATED_IMP : 'Création Imputation',
+    CREATED_APUR : 'Création Apurement',
     LOGIN : 'Connexion à l\'application',
     LOGOUT : 'Connexion à l\'application',
 
