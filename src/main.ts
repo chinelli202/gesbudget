@@ -132,6 +132,10 @@ Vue.filter('tlItemIcon', function(item: any) {
     return 'el-icon-circle-close'
   }
 
+  if(item.description.includes('CANCEL')){
+    return 'el-icon-arrow-down'
+  }
+
   if(item.description.includes('VALIDP')){
     return 'el-icon-arrow-up'
   }

@@ -333,7 +333,7 @@ export default class ApurementCard extends Vue {
   }
 
   private maxMontant() {
-    return this.engagement.montant_ttc - this.engagement.cumul_apurements
+    return this.engagement.cumul_imputations - this.engagement.cumul_apurements
   }
 
   private initializeCard() {

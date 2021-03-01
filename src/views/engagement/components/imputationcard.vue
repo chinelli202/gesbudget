@@ -502,9 +502,9 @@ export default class ImputationCard extends Vue {
   private validateMontantApurement = (rule: any, value: number, callback: Function) => {
     if (value < 1) {
       callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
-    } else if (this.maxMontant() < value ) {
+    } else if (this.maxMontantApurement() < value ) {
       callback(new Error(
-        `Le montant ${this.engagement.cumul_apurements === 0 ? 'imputé' : 'qu\'il reste à réaliser/apurer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
+        `Le montant ${this.engagement.cumul_apurements === 0 ? 'imputé' : 'qu\'il reste à réaliser/apurer pour cet engagement'} est de ${this.maxMontantApurement().toLocaleString()} ${this.apurement.devise}.
         Vous ne pouvez pas effectuer une réalisation au delà de cette somme.`
       ))
     } else {
