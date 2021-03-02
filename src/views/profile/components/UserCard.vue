@@ -22,17 +22,37 @@
       <div class="box-center">
         <div class="user-name text-center">
           {{ user.name }}
-        </div>
-        <div class="user-role text-center text-muted">
-          {{ user.roles | uppercaseFirstChar }}
+          <br/>({{user.matricule}})
         </div>
       </div>
     </div>
 
     <div class="user-bio">
+       <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <i class="el-icon-s-cooperation"></i><span>{{$t('usercard.position')}}</span>
+        </div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ $t('user.division.'+user.division) || 'Division non spécifiée' }} : {{ $t('user.fonction.'+user.fonction) || 'Fonction non spécifiée'}}
+          </div>
+        </div>
+      </div>
+
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>{{$t('usercard.date_embauche')}}</span>
+          <i class="el-icon-message"></i><span>{{$t('usercard.email')}}</span>
+        </div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.email }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <i class="el-icon-user"></i><span>{{$t('usercard.date_embauche')}}</span>
         </div>
         <div class="user-bio-section-body">
           <div class="text-muted">
@@ -43,63 +63,16 @@
 
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>{{$t('usercard.adresse')}}</span>
+          <i class="el-icon-location-information"></i><span>{{$t('usercard.adresse')}}</span>
         </div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            {{ user.date_embauche || 'Non spécifiée' }}
+            {{ user.adresse || 'Non spécifiée' }}
           </div>
         </div>
       </div>
 
-      <div class="user-education user-bio-section">
-        <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>{{$t('usercard.position')}}</span>
-        </div>
-        <div class="user-bio-section-body">
-          <div class="text-muted">
-            {{ user.division || 'Non spécifiée' }} : {{ $t('user.fonction') || 'Fonction non spécifiée'}}
-          </div>
-        </div>
-      </div>
-
-      <div class="user-education user-bio-section">
-        <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>Education</span>
-        </div>
-        <div class="user-bio-section-body">
-          <div class="text-muted">
-            JS in Computer Science from the University of Technology
-          </div>
-        </div>
-      </div>
-
-      <div class="user-skills user-bio-section">
-        <div class="user-bio-section-header">
-          <svg-icon name="skill" /><span>Skills</span>
-        </div>
-        <div class="user-bio-section-body">
-          <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="51" />
-          </div>
-          <div class="progress-item">
-            <span>Typescript</span>
-            <el-progress :percentage="45" />
-          </div>
-          <div class="progress-item">
-            <span>Css</span>
-            <el-progress :percentage="4" />
-          </div>
-          <div class="progress-item">
-            <span>ESLint</span>
-            <el-progress
-              :percentage="100"
-              status="success"
-            />
-          </div>
-        </div>
-      </div>
+     
     </div>
   </el-card>
 </template>

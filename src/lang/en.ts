@@ -149,6 +149,36 @@ export default {
     adresse : 'Adresse',
     date_embauche : 'Date d\'embauche',
     position : 'Division',
+    email: 'Email',
+  },
+
+  profile : {
+    tab : {
+      passwordchange_label : 'Changer mon mot de passe',
+    }
+  },
+
+  user : {
+    fonction : {
+      cadre : 'Cadre',
+      directeur : 'Directeur',
+      secretaire_permanent : 'Sécrétaire Permanent',
+      secretaire_permanent_adjoint : 'Sécrétaire Permanent Adjoint',
+      sous_directeur : 'Sous-Directeur',
+      chef_service : 'Chef de Service/Département',
+      chef_section : 'Chef de Section/Cellule',
+      employe : 'Employé',
+      agent_maitrise : 'Agent de Maîtrise',
+      temporaire : 'Temporaire',
+      stagiaire : 'Stagiaire',
+    },
+    division : {
+      DBC : 'Direction du Budget',
+      DI : 'Division Informatique',
+      SP : 'Sécrétariat Permanent',
+      SCF : 'Section Comptabilité et Finances',
+      SAG : 'Section Administration Générale',
+    }
   },
 
   navbar: {
