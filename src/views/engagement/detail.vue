@@ -93,7 +93,7 @@
                     style="margin-bottom: 1.5em"
                   >
                     <el-col
-                      :span="4"
+                      :span="6"
                       :offset="2"
                     >
                       <el-radio-group
