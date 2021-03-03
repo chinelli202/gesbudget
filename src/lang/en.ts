@@ -158,6 +158,16 @@ export default {
     }
   },
 
+  passwordchange : {
+    label : {
+      old_password : "Ancien mot de passe",
+      new_password : "Nouveau mot de passe",
+      confirm_new_password : "Confirmer le nouveau mot de passe",
+      submit : "Changer mon mot de passe",
+      caps_is_on : "Attention la Majuscule est activée"
+    }
+  },
+
   user : {
     fonction : {
       cadre : 'Cadre',

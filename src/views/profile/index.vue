@@ -36,7 +36,7 @@
                 :label="$t('profile.tab.passwordchange_label')"
                 name="passwordChange"
               >
-                <password-change :user="user" />
+                <password-change />
               </el-tab-pane>
             </el-tabs>
           </el-card>

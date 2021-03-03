@@ -66,3 +66,13 @@ export const register = (data: any) =>
     method: 'post',
     data
   })
+
+export const changePassword = (data: any) => 
+  request({
+    url: '/user/changepassword',
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data
+  })
