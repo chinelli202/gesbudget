@@ -2,7 +2,7 @@
   <div class="clearfix detailview">
     <el-row :gutter="30">
       <el-col :span="17" :offset="1">
-        <h1>Détail {{ engagement.code }}</h1>
+        <h1>Détail {{ engagement.code }} </h1>
       </el-col>
       <el-col :span="5">
         <!-- <h1>Historique</h1> -->
@@ -532,7 +532,7 @@ import { isNull } from 'lodash'
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      (vm as any).fallbackUrl = from.path
+      (vm as any).fromRoute = from;
     })
   }
 })
@@ -629,6 +629,7 @@ export default class extends Vue {
   private tva = 0
 
   private fallbackUrl = { path: '/' }
+  private fromRoute: Record<string, any> = { path: '/', params: {} }
 
   private engagementIsClosed = false
 
@@ -720,6 +721,14 @@ export default class extends Vue {
     this.fetchData(parseInt(id))
   }
 
+  get fallbackRoute() {
+    let finalRoute = this.fromRoute
+    if(this.$route.params && 'fallbackPayload' in this.$route.params){
+      finalRoute.params.payload =  this.$route.params.fallbackPayload
+    }
+    return finalRoute
+  }
+
   private selectDevise(query: string) {
     if (query !== '') {
       this.deviseLoading = true;
@@ -745,9 +754,7 @@ export default class extends Vue {
 
   private updateTimeLine(engagementId: any = null) {
     this.timelineLoading = true
-    console.log('updateTimeLine before', engagementId)
     if(isNull(engagementId)) engagementId = this.engagement.id
-    console.log('updateTimeLine ', engagementId)
     getEngagementTimeline({id : engagementId }).then((response) => {
       this.timelineItems = response.data.filter(function(item:any) {
         return !['PREENGAGER','IMPUTATION', 'APUREMENT'].includes(item.description)
@@ -974,7 +981,13 @@ export default class extends Vue {
   }
 
   private onCancel() {
-    this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+    // this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+    // this.$router.push({ 
+    //     name : this.fallbackRouteName ? this.fallbackRouteName : 'engagementHome'
+    //   , params : this.fallbackRouteParams
+    //   , query : this.fallbackRouteQuery
+    //   })
+    this.$router.push(this.fallbackRoute)
   }
 
   private formAttributeChange() {
@@ -1028,7 +1041,6 @@ export default class extends Vue {
       (!this.engagementHasBeenValidatePOrMore() || this.engagement.next_statut != null)) {
       this.toEdit = true
     }
-    console.log('updateViewVariables', this.engagement.id)
     this.updateTimeLine()
   }
 

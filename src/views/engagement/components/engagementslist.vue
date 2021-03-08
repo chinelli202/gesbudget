@@ -9,7 +9,7 @@
         <h2 
           v-if="showTitle"
           style="margin-top: 0px">
-          {{ title ? title : libelleEtat[etat].title }}
+          {{ title ? title : libelleEtat[etat].title }} 
         </h2>
         <span v-else>
           .
@@ -181,6 +181,7 @@ export default class EngagementsList extends Vue {
   @Prop() private valideursP!: string
   @Prop() private valideursS!: string
   @Prop() private valideursF!: string
+  @Prop() private fallbackPayload!: any
 
   private initiatedEngagements: IEngagementData[] = []
   private listLoading = true
@@ -252,7 +253,7 @@ export default class EngagementsList extends Vue {
   }
 
   detail(value: any, engagement: any) {
-    this.$router.push({ name: 'engagementDetailView', params: { id: engagement.id } })
+    this.$router.push({ name: 'engagementDetailView', params: { id: engagement.id , fallbackPayload : this.fallbackPayload} })
   }
 
   deleteRow(index: any, rows: any) {

@@ -99,7 +99,6 @@ class App extends VuexModule implements IAppState {
   @Action
   public async fetchEngagementVariables(team: any = null) {
     if(!team) {
-      console.log('!team')
       if(Object.keys(UserModule.loggedUser).length === 0) {
         try {
           await UserModule.GetUserInfo()

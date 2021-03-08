@@ -129,7 +129,6 @@ export default class extends Vue {
 
   created(){
     this.team = this.currentTeam.id
-    console.log(this.team)
   }
 
   get theme() {
