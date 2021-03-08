@@ -54,7 +54,6 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
           NProgress.done()
         }
       } else {
-        console.log("with roles")
         next()
       }
     }

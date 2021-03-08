@@ -89,10 +89,10 @@ class App extends VuexModule implements IAppState {
       VALIDF: { type: 'success', effect: 'dark' }
     },
     CLOT: {
-      SAISI: { type: 'danger', effect: '' },
-      VALIDP: { type: 'danger', effect: '' },
-      VALIDS: { type: 'danger', effect: '' },
-      VALIDF: { type: 'danger', effect: '' }
+      SAISI: { type: 'danger', effect: 'light' },
+      VALIDP: { type: 'danger', effect: 'light' },
+      VALIDS: { type: 'danger', effect: 'light' },
+      VALIDF: { type: 'danger', effect: 'light' }
     }
   }
 

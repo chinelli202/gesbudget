@@ -213,13 +213,16 @@ export default class extends Vue {
   }
 
   mounted() {
-    let payload = this.params.payload
-    this.domain = payload.domain,
-    this.code = payload.code,
-    this.etat = payload.etat,
-    this.statut = payload.statut,
-    this.lignesBudgetaire = payload.lignesBudgetaire
+    if(this.params.payload) {
+      let payload = JSON.parse(JSON.stringify(this.params.payload))
+      this.domain = payload.domain,
+      this.code = payload.code,
+      this.etat = payload.etat,
+      this.statut = payload.statut,
+      this.lignesBudgetaire = payload.lignesBudgetaire
+    }
   }
+
 
   private ligneChanged() {
     
