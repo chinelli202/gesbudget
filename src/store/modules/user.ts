@@ -73,12 +73,10 @@ class User extends VuexModule {
 
   @Action
   public async GetUserInfo(team: any = null) {
-    console.log('debut GetUserInfo')
     if (this.token === '') {
       throw Error('GetUserInfo: token is undefined!')
     }
     let query = team ? { teamId : team.id } : ( this.loggedUser.team ? { teamId : this.loggedUser.team.id } : {})
-    console.log('getUserInfo ', query)
     const { data } = await getUserInfo(query)
     if (!data) {
       throw Error('Verification failed, please Login again.')
@@ -88,7 +86,6 @@ class User extends VuexModule {
     if (!data.roles || data.roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
     }
-    console.log('getUserInfo data ', data)
     this.SET_USER(data)
     this.SET_ROLES(data.roles)
   }
@@ -96,7 +93,6 @@ class User extends VuexModule {
 
   @Action
   public async ChangeRoles(role: string) {
-    console.log("ChangeRoles")
     // Dynamically modify permissions
     const token = role + '-token'
     this.SET_TOKEN(token)

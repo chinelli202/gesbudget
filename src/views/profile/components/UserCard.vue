@@ -1,14 +1,14 @@
 <template>
   <el-card style="margin-bottom:20px;">
-    <div
+    <!-- <div
       slot="header"
       class="clearfix"
     >
       <span>About me</span>
-    </div>
+    </div> -->
 
     <div class="user-profile">
-      <div class="box-center">
+      <!-- <div class="box-center">
         <pan-thumb
           :image="user.avatar"
           :height="'100px'"
@@ -18,55 +18,61 @@
           <div>Hello</div>
           {{ user.roles }}
         </pan-thumb>
-      </div>
+      </div> -->
       <div class="box-center">
         <div class="user-name text-center">
           {{ user.name }}
-        </div>
-        <div class="user-role text-center text-muted">
-          {{ user.roles | uppercaseFirstChar }}
+          <br/>({{user.matricule}})
         </div>
       </div>
     </div>
 
     <div class="user-bio">
-      <div class="user-education user-bio-section">
+       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>Education</span>
+          <i class="el-icon-s-cooperation"></i><span>{{$t('usercard.position')}}</span>
         </div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            JS in Computer Science from the University of Technology
+            {{ $t('user.division.'+user.division) || 'Division non spécifiée' }} : {{ $t('user.fonction.'+user.fonction) || 'Fonction non spécifiée'}}
           </div>
         </div>
       </div>
 
-      <div class="user-skills user-bio-section">
+      <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="skill" /><span>Skills</span>
+          <i class="el-icon-message"></i><span>{{$t('usercard.email')}}</span>
         </div>
         <div class="user-bio-section-body">
-          <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="51" />
-          </div>
-          <div class="progress-item">
-            <span>Typescript</span>
-            <el-progress :percentage="45" />
-          </div>
-          <div class="progress-item">
-            <span>Css</span>
-            <el-progress :percentage="4" />
-          </div>
-          <div class="progress-item">
-            <span>ESLint</span>
-            <el-progress
-              :percentage="100"
-              status="success"
-            />
+          <div class="text-muted">
+            {{ user.email }}
           </div>
         </div>
       </div>
+      
+      <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <i class="el-icon-user"></i><span>{{$t('usercard.date_embauche')}}</span>
+        </div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.date_embauche || 'Non spécifiée' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <i class="el-icon-location-information"></i><span>{{$t('usercard.adresse')}}</span>
+        </div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.adresse || 'Non spécifiée' }}
+          </div>
+        </div>
+      </div>
+
+     
     </div>
   </el-card>
 </template>

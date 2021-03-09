@@ -306,7 +306,6 @@ export default class extends Vue {
  
 
   private onCancel() {
-    console.log("cancel", this.fallbackUrl)
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
   }
 

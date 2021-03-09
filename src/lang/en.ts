@@ -92,6 +92,107 @@ export default {
     externalLink: 'External Link',
     profile: 'Profile'
   },
+
+  action : {
+    created : 'Création pré-engagement',
+    CREATED_IMP : 'Création Imputation',
+    CREATED_APUR : 'Création Apurement',
+    LOGIN : 'Connexion à l\'application',
+    LOGOUT : 'Connexion à l\'application',
+
+    VALIDP : 'Validation 1er niv',
+    VALIDS : 'Validation 2nd niv',
+    VALIDF : 'Validation niv final',
+    CANCEL_VALIDP : 'Annul validation 1er niv',
+    CANCEL_VALIDS : 'Annul validation 2nd niv',
+    CANCEL_VALIDF : 'Annulation validation niv final',
+    UPDATE : 'Mise à jour pré-engagement',
+    CLOSE : 'Clôture pré-engagement',
+    RESTORE : 'Restauration pré-engagement',
+    SEND_BACK : 'Renvoi pré-engagement',
+    RESEND : 'Re-soumission pré-engagement',
+    ADD_COMMENT : 'Ajout commentaire',
+
+    PREENGAGER : 'Pré engagement',
+    IMPUTER : 'Imputation',
+    APURER : 'Apurement',
+
+    IMP_VALIDP : 'Validation Imputation 1er niv',
+    IMP_VALIDS : 'Validation Imputation 2nd niv',
+    IMP_VALIDF : 'Validation Imputation niv final',
+    IMP_CANCEL_VALIDP : 'Annulation validation Imputation 1er niv',
+    IMP_CANCEL_VALIDS : 'Annulation validation Imputation 2nd niv',
+    IMP_CANCEL_VALIDF : 'Annulation validation Imputation niv final',
+    IMP_UPDATE : 'Mise à jour Imputation',
+    IMP_CLOSE : 'Clôture Imputation',
+    IMP_RESTORE : 'Restauration Imputation',
+    IMP_SEND_BACK : 'Renvoi Imputation',
+    IMP_RESEND : 'Re-soumission Imputation',
+    IMP_ADD_COMMENT : 'Ajout commentaire Imputation',
+    
+    APUR_VALIDP : 'Validation apurement 1er niv',
+    APUR_VALIDS : 'Validation apurement 2nd niv',
+    APUR_VALIDF : 'Validation apurement niv final',
+    APUR_CANCEL_VALIDP : 'Annulation validation apurement 1er niv',
+    APUR_CANCEL_VALIDS : 'Annulation validation apurement 2nd niv',
+    APUR_CANCEL_VALIDF : 'Annulation validation apurement niv final',
+    APUR_UPDATE : 'Mise à jour apurement',
+    APUR_CLOSE : 'Clôture apurement',
+    APUR_RESTORE : 'Restauration apurement',
+    APUR_SEND_BACK : 'Renvoi apurement',
+    APUR_RESEND : 'Re-soumission apurement',
+    APUR_ADD_COMMENT : 'Ajout commentaire apurement',
+
+    ENG_NON_VALID: 'Non validé par la hiérarchie',
+    ENG_ERR_CREA: 'Erreur dans la création'
+  },
+
+  usercard : {
+    adresse : 'Adresse',
+    date_embauche : 'Date d\'embauche',
+    position : 'Division',
+    email: 'Email',
+  },
+
+  profile : {
+    tab : {
+      passwordchange_label : 'Changer mon mot de passe',
+    }
+  },
+
+  passwordchange : {
+    label : {
+      old_password : "Ancien mot de passe",
+      new_password : "Nouveau mot de passe",
+      confirm_new_password : "Confirmer le nouveau mot de passe",
+      submit : "Changer mon mot de passe",
+      caps_is_on : "Attention la Majuscule est activée"
+    }
+  },
+
+  user : {
+    fonction : {
+      cadre : 'Cadre',
+      directeur : 'Directeur',
+      secretaire_permanent : 'Sécrétaire Permanent',
+      secretaire_permanent_adjoint : 'Sécrétaire Permanent Adjoint',
+      sous_directeur : 'Sous-Directeur',
+      chef_service : 'Chef de Service/Département',
+      chef_section : 'Chef de Section/Cellule',
+      employe : 'Employé',
+      agent_maitrise : 'Agent de Maîtrise',
+      temporaire : 'Temporaire',
+      stagiaire : 'Stagiaire',
+    },
+    division : {
+      DBC : 'Direction du Budget',
+      DI : 'Division Informatique',
+      SP : 'Sécrétariat Permanent',
+      SCF : 'Section Comptabilité et Finances',
+      SAG : 'Section Administration Générale',
+    }
+  },
+
   navbar: {
     logOut: 'Se déconnecter',
     dashboard: 'Dashboard',

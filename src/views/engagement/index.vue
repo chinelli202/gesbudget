@@ -81,21 +81,20 @@
             :span="3" 
             :offset="3"
           >
-            <el-select v-model="domain"
+            <el-select
+              v-if="domaines"
+              v-model="domain"
               placeholder="Domaine"
               @change="domainChanged"
             >
               <el-option
-                key="Fonctionnement"
-                label="Fonctionnement"
-                value="Fonctionnement"
-              />
-              <el-option
-                key="Mandat"
-                label="Mandat"
-                value="Mandat"
+                v-for="dom in domaines"
+                :key="dom"
+                :label="capitalizeFirstLetter(dom)"
+                :value="capitalizeFirstLetter(dom)"
               />
             </el-select>
+            <span v-else>.</span>
           </el-col>
           <el-col :span="8">
             <el-cascader
@@ -151,6 +150,7 @@
           :valideursF = "operateurs.VALIDF"
           :tableHeight="'72vh'"
           :display-export-button="true"
+          :fallbackPayload="fallbackPayload"
         />
       </div>
     </div>
@@ -159,7 +159,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch} from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
 import { AppModule } from '@/store/modules/app'
 import { getUsers } from '@/api/users'
@@ -196,12 +196,15 @@ export default class extends Vue {
   private actionType = ''
   private monthrange = []
   private lignesBudgetaire = []
-  private lignes = ''
-  private domain = 'Fonctionnement'
-  private chapitresOptions: any = AppModule.budgetStructure.fonctionnement
+  private domain: any
+  private domaines: any
+  private chapitresOptions: any
 
   created() {
-    this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
+    this.domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : null
+    this.domaines = AppModule.budgetStructure.domaines
+    this.chapitresOptions = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
+
     getUsers({}).then((response) => {
       this.usersList = response.data
     }).catch((error) => {
@@ -209,10 +212,20 @@ export default class extends Vue {
     })
   }
 
+  mounted() {
+    if(this.params.payload) {
+      let payload = JSON.parse(JSON.stringify(this.params.payload))
+      this.domain = payload.domain,
+      this.code = payload.code,
+      this.etat = payload.etat,
+      this.statut = payload.statut,
+      this.lignesBudgetaire = payload.lignesBudgetaire
+    }
+  }
+
+
   private ligneChanged() {
-    this.lignes = [...new Set(this.lignesBudgetaire.map((el) => {
-      return el[2]
-    }))].join(',')
+    
   }
 
   private cascadeFilter(node: any, keyword: string) {
@@ -221,7 +234,6 @@ export default class extends Vue {
 
   private domainChanged() {
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
-    console.log("New domain ", this.domain)
   }
 
   private codeChanged() {
@@ -230,7 +242,20 @@ export default class extends Vue {
 
   private operationTypeChanged() {
     this.operateurs[this.operationType] = this.operateurSelect.join(',')
-    console.log('operationTypeChanged ', this.operateurs)
+  }
+
+  get fallbackPayload() {
+    return {
+      domain: this.domain,
+      code: this.code,
+      etat: this.etat,
+      statut: this.statut,
+      lignesBudgetaire: this.lignesBudgetaire
+    }
+  }
+
+  get params() {
+    return this.$route.params
   }
 
   get name() {
@@ -249,8 +274,18 @@ export default class extends Vue {
     return this.etat.join(',')
   }
 
+  get lignes() {
+    return [...new Set(this.lignesBudgetaire.map((el) => {
+      return el[2]
+    }))].join(',')
+  }
+
   get statutString() {
     return this.statut.join(',')
+  }
+
+  private capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   private etatSelect = [{

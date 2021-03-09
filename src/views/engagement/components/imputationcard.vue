@@ -107,75 +107,6 @@
               />
             </el-form-item>
 
-            <el-form-item
-              class="notes"
-              style="line-height: 25px;"
-            >
-              <el-row :gutter="10">
-                <el-col
-                  :span="6"
-                  :offset="3"
-                >
-                  Créé le
-                </el-col>
-                <el-col :span="15">
-                  {{ imputation.created_at | dateFormatLong }}
-                </el-col>
-              </el-row>
-              <el-row :gutter="10">
-                <el-col
-                  :span="6"
-                  :offset="3"
-                >
-                  Saisi par
-                </el-col>
-                <el-col :span="15">
-                  {{ (isCurrentUserSaisisseur) ? "Vous même" : imputation.saisisseur_name }}
-                </el-col>
-              </el-row>
-              <el-row
-                v-if="imputation.valideur_first && imputation.valideur_first !== ''"
-                :gutter="10"
-              >
-                <el-col
-                  :span="6"
-                  :offset="3"
-                >
-                  Validation 1ère par
-                </el-col>
-                <el-col :span="15">
-                  {{ (isCurrentUserValideurp) ? "Vous même" : imputation.valideurp_name }}
-                </el-col>
-              </el-row>
-              <el-row
-                v-if="imputation.valideur_second && imputation.valideur_second !== ''"
-                :gutter="10"
-              >
-                <el-col
-                  :span="6"
-                  :offset="3"
-                >
-                  Validation 2nde par
-                </el-col>
-                <el-col :span="15">
-                  {{ (isCurrentUserValideurs) ? "Vous même" : imputation.valideurs_name }}
-                </el-col>
-              </el-row>
-              <el-row
-                v-if="imputation.valideur_final && imputation.valideur_final !== ''"
-                :gutter="10"
-              >
-                <el-col
-                  :span="6"
-                  :offset="3"
-                >
-                  Validation finale par
-                </el-col>
-                <el-col :span="15">
-                  {{ (isCurrentUserValideurf) ? "Vous même" : imputation.valideurf_name }}
-                </el-col>
-              </el-row>
-            </el-form-item>
           </el-form>
           <footer-buttons
             :entity="imputation"
@@ -502,9 +433,9 @@ export default class ImputationCard extends Vue {
   private validateMontantApurement = (rule: any, value: number, callback: Function) => {
     if (value < 1) {
       callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
-    } else if (this.maxMontant() < value ) {
+    } else if (this.maxMontantApurement() < value ) {
       callback(new Error(
-        `Le montant ${this.engagement.cumul_apurements === 0 ? 'imputé' : 'qu\'il reste à réaliser/apurer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
+        `Le montant ${this.engagement.cumul_apurements === 0 ? 'imputé' : 'qu\'il reste à réaliser/apurer pour cet engagement'} est de ${this.maxMontantApurement().toLocaleString()} ${this.apurement.devise}.
         Vous ne pouvez pas effectuer une réalisation au delà de cette somme.`
       ))
     } else {
@@ -518,10 +449,6 @@ export default class ImputationCard extends Vue {
   private isResendUpdate = false
   private submitDisabled = true
 
-  private isCurrentUserSaisisseur = false
-  private isCurrentUserValideurp = false
-  private isCurrentUserValideurs = false
-  private isCurrentUserValideurf = false
 
   private nextEtatActionText = "Apurer l'engagement"
   private isNextEtatAction = false
@@ -751,10 +678,6 @@ export default class ImputationCard extends Vue {
   }
 
   private updateViewVariables() {
-    this.isCurrentUserSaisisseur = UserModule.loggedUser.matricule === this.imputation.saisisseur
-    this.isCurrentUserValideurp = UserModule.loggedUser.matricule === this.imputation.valideur_first
-    this.isCurrentUserValideurs = UserModule.loggedUser.matricule === this.imputation.valideur_second
-    this.isCurrentUserValideurf = UserModule.loggedUser.matricule === this.imputation.valideur_final
 
     this.nextEtatActionText = this.engagement.cumul_apurements_initie_ttc > 0 ? 'Nouvel apurement' : "Apurer l'engagement"
     if (this.engagement.cumul_apurements < this.engagement.montant_ttc) {

@@ -144,7 +144,6 @@ export default class Home extends Vue {
   }
 
   private createEngagement(engagement: any) {
-    console.log('engagement ', engagement)
     createEngagement(engagement).then((response) => {
       const newEngagement = response.data
       ++this.keyForRefresh

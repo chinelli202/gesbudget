@@ -136,5 +136,13 @@ export const cancelValidationPreeng = (data: any) =>
     data
   })
 
-
+  export const getEngagementTimeline = (params: any): Promise<any> =>
+  request({
+    url: `/engagement/timeline/${params.id}`,
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    params
+  })
 

@@ -1,384 +1,358 @@
 <template>
-  <div class="clearfix">
-    <div class="app-container max-w-600 center">
-      <div
-        v-for="(apurement) in engagement.apurements_labelled"
-        :key="apurement.id"
-        style="margin-bottom: 2em"
-      >
-        <apurement-card
-          :apurement="apurement"
-          :engagement="engagement"
-          :liste-devises="listeDevises"
-          :types-paiement-options="typesPaiementOptions"
-          :tva="tva"
-          :fallback-url="fallbackUrl"
-          @engagementChanged="engagementChanged"
-        />
-      </div>
-      <div
-        v-for="(imputation) in engagement.imputations_labelled"
-        :key="imputation.id"
-        style="margin-bottom: 2em"
-      >
-        <imputation-card
-          :imputation="imputation"
-          :engagement="engagement"
-          :liste-devises="listeDevises"
-          :types-paiement-options="typesPaiementOptions"
-          :tva="tva"
-          :fallback-url="fallbackUrl"
-          @engagementChanged="engagementChanged"
-        />
-      </div>
-      <el-card shadow="always">
-        <el-container>
-          <el-header>
-            <el-row
-              type="flex"
-              justify="center"
-              style="margin-bottom: 1.5em"
-            >
-              <el-col
-                :span="10"
-                :offset="2"
-              >
-                <h1 align="center">
-                  Engagement {{ engagement.code }}
-                </h1>
-              </el-col>
-            </el-row>
-          </el-header>
-          <el-main
-            v-loading="cardLoading"
+  <div class="clearfix detailview">
+    <el-row :gutter="30">
+      <el-col :span="17" :offset="1">
+        <h1>Détail {{ engagement.code }} </h1>
+      </el-col>
+      <el-col :span="5">
+        <!-- <h1>Historique</h1> -->
+      </el-col>
+    </el-row>
+    <el-row :gutter="30">
+      <el-col :span="17" :offset="1">    
+        <div class="app-container max-w-600 center">
+          <div
+            v-for="(apurement) in engagement.apurements_labelled"
+            :key="apurement.id"
+            style="margin-bottom: 2em"
           >
-            <el-alert
-              v-if="engagementIsClosed"
-              title="Ce pré-engagement a été clôturé."
-              type="info"
-              :closable="false"
-              effect="dark"
-              style="margin-bottom: 10px"
-              center
-              show-icon
+            <apurement-card
+              :apurement="apurement"
+              :engagement="engagement"
+              :liste-devises="listeDevises"
+              :types-paiement-options="typesPaiementOptions"
+              :tva="tva"
+              :fallback-url="fallbackUrl"
+              @engagementChanged="engagementChanged"
             />
-            <el-alert
-              v-else-if="engagement.next_statut !== null"
-              title="Ce pré-engagement a été renvoyé pour modification."
-              type="info"
-              :closable="false"
-              style="max-width: 400vw; margin-bottom: 10px"
-              center
-              show-icon
+          </div>
+          <div
+            v-for="(imputation) in engagement.imputations_labelled"
+            :key="imputation.id"
+            style="margin-bottom: 2em"
+          >
+            <imputation-card
+              :imputation="imputation"
+              :engagement="engagement"
+              :liste-devises="listeDevises"
+              :types-paiement-options="typesPaiementOptions"
+              :tva="tva"
+              :fallback-url="fallbackUrl"
+              @engagementChanged="engagementChanged"
             />
-            <el-form
-              ref="form"
-              :model="engagement"
-              label-width="100px"
-            >
-              <el-row
-                v-if="domaines"
-                type="flex"
-                justify="center"
-                style="margin-bottom: 1.5em"
-              >
-                <el-col
-                  :span="4"
-                  :offset="2"
+          </div>
+          <el-card shadow="always">
+            <el-container>
+              <el-header>
+                <el-row
+                  type="flex"
+                  justify="center"
+                  style="margin-bottom: 1.5em"
                 >
-                  <el-radio-group
-                    v-if="toEdit"
-                    v-model="domain"
-                    size="small"
-                    @change="domainChange"
+                  <el-col
+                    :span="14"
+                    :offset="2"
                   >
-                    <el-radio-button
-                      v-for="dom in domaines"
-                      :key="dom"
-                      :label="capitalizeFirstLetter(dom)"
-                    />
-                  </el-radio-group>
-                  <el-input
-                    v-else
-                    v-model="domain"
-                    :disabled="true"
-                  />
-                </el-col>
-              </el-row>
-              <el-form-item label="Code">
-                <el-input
-                  v-model="engagement.code"
-                  :disabled="true"
-                />
-              </el-form-item>
-              <el-form-item
-                label="Ligne"
-                prop="ligne_budgetaire"
-                :rules="[{ validator: validateLigne, trigger: 'blur' }]"
-              >
-                <el-cascader
-                  v-model="cascade"
-                  :options="chapitresOptions"
-                  :props="{expandTrigger: 'hover'}"
-                  :disabled="!toEdit"
-                  style="width: 100%"
-                  placeholder="Choisir la ligne budgétaire"
-                  class="cascade-extra-lg"
-                  @change="cascadeChange"
-                />
-              </el-form-item>
-              <el-form-item
-                label="Date"
-                prop="eng_date"
-                :rules="[{ validator: validateDate, trigger: 'blur' }]"
-              >
-                <el-date-picker
-                  style="width: 50%"
-                  v-model="engagement.eng_date"
-                  format="dd MMMM yyyy"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  type="date"
-                  placeholder="Choississez un jour"
-                  :picker-options="pickerOptions">
-                </el-date-picker>
-              </el-form-item>
-              <el-form-item
-                label="Solde Ligne"
-              >
-                <strong>{{ soldeLigne.toLocaleString() }}</strong>
-              </el-form-item>
-              <el-form-item
-                prop="libelle"
-                label="Libellé"
-                :rules="[{ validator: validateLibelle, trigger: 'blur' }]"
-              >
-                <el-input
-                  v-model="engagement.libelle"
-                  type="textarea"
-                  :rows="2"
-                  :disabled="!toEdit"
-                  @input="formAttributeChange"
-                />
-              </el-form-item>
-              <el-form-item label="Montant TTC">
-                <el-row :gutter="10">
-                  <el-col :span="3">
-                      <el-select
-                        v-model="engagement.devise"
-                        placeholder="Devise"
-                        filterable
-                        remote
-                        :remote-method="selectDevise"
-                        :loading="deviseLoading"
-                        :disabled="!toEdit"
-                      >
-                        <el-option
-                          v-for="(obj) in listeDevises"
-                          :key="obj.code"
-                          :label="obj.code"
-                          :value="obj.code"
-                        />
-                      </el-select>
-                  </el-col>
-                  <el-col :span="20">
-                    <el-form-item
-                      prop="montant_ttc"
-                      :rules="[{ validator: validateMontantEngagement, trigger: 'blur' }]"
-                    >
-                      <el-input-number
-                        style="width: 100%"
-                        v-model="engagement.montant_ttc"
-                        :min="0"
-                        :controls="false"
-                        :disabled="!toEdit"
-                        @input="formAttributeChange"
-                      />
-                    </el-form-item>
+                    <h1 align="center">
+                      Engagement {{ engagement.code }}
+                    </h1>
                   </el-col>
                 </el-row>
-              </el-form-item>
-
-              <el-form-item class="no-margin-bottom">
-                <el-row :gutter="10">
-                  <el-col
-                    :span="10"
-                    :offset="3"
+              </el-header>
+              <el-main
+                v-loading="cardLoading"
+              >
+                <el-alert
+                  v-if="engagementIsClosed"
+                  title="Ce pré-engagement a été clôturé."
+                  type="info"
+                  :closable="false"
+                  effect="dark"
+                  style="margin-bottom: 10px"
+                  center
+                  show-icon
+                />
+                <el-alert
+                  v-else-if="engagement.next_statut !== null"
+                  title="Ce pré-engagement a été renvoyé pour modification."
+                  type="info"
+                  :closable="false"
+                  style="max-width: 400vw; margin-bottom: 10px"
+                  center
+                  show-icon
+                />
+                <el-form
+                  ref="form"
+                  :model="engagement"
+                  label-width="100px"
+                >
+                  <el-row
+                    v-if="domaines"
+                    type="flex"
+                    justify="center"
+                    style="margin-bottom: 1.5em"
                   >
-                    <span class="span-label">Type
-                    </span>
-                  </el-col>
-                </el-row>
-                <el-row :gutter="10">
-                  <el-col
-                    :span="10"
-                    :offset="3"
-                  >
-                    <el-form-item
-                      prop="type"
-                      :rules="[{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change' }]"
+                    <el-col
+                      :span="6"
+                      :offset="2"
                     >
-                      <el-select
+                      <el-radio-group
                         v-if="toEdit"
-                        v-model="engagement.type"
-                        placeholder="Type"
-                        style="width: 100%"
-                        @change="formAttributeChange"
+                        v-model="domain"
+                        size="small"
+                        @change="domainChange"
                       >
-                        <el-option
-                          v-for="(obj) in typeOptions"
-                          :key="obj.code"
-                          :label="obj.libelle"
-                          :value="obj.code"
-                        >
-                          <span style="float: left">{{ obj.libelle }}</span>
-                          <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
-                        </el-option>
-                      </el-select>
+                        <el-radio-button
+                          v-for="dom in domaines"
+                          :key="dom"
+                          :label="capitalizeFirstLetter(dom)"
+                        />
+                      </el-radio-group>
                       <el-input
                         v-else
-                        v-model="engagement.type_libelle"
+                        v-model="domain"
                         :disabled="true"
                       />
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form-item>
-
-              <el-form-item>
-                <el-row :gutter="10">
-                  <el-col
-                    :span="10"
-                    :offset="3"
-                  >
-                    <span class="span-label">Nature
-                    </span>
-                  </el-col>
-                  <el-col
-                    :span="10"
-                    :offset="1"
-                  >
-                    <span class="span-label">Statut
-                    </span>
-                  </el-col>
-                </el-row>
-                <el-row :gutter="10">
-                  <el-col
-                    :span="10"
-                    :offset="3"
-                  >
+                    </el-col>
+                  </el-row>
+                  <el-form-item label="Code">
                     <el-input
-                      v-model="engagement.statut_libelle"
+                      v-model="engagement.code"
                       :disabled="true"
                     />
-                  </el-col>
-                  <el-col
-                    :span="10"
-                    :offset="1"
+                  </el-form-item>
+                  <el-form-item
+                    label="Ligne"
+                    prop="ligne_budgetaire"
+                    :rules="[{ validator: validateLigne, trigger: 'blur' }]"
+                  >
+                    <el-cascader
+                      v-model="cascade"
+                      :options="chapitresOptions"
+                      :props="{expandTrigger: 'hover'}"
+                      :disabled="!toEdit"
+                      style="width: 100%"
+                      placeholder="Choisir la ligne budgétaire"
+                      class="cascade-extra-lg"
+                      @change="cascadeChange"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    label="Date"
+                    prop="eng_date"
+                    :rules="[{ validator: validateDate, trigger: 'blur' }]"
+                  >
+                    <el-date-picker
+                      style="width: 50%"
+                      v-model="engagement.eng_date"
+                      format="dd MMMM yyyy"
+                      value-format="yyyy-MM-dd HH:mm:ss"
+                      type="date"
+                      placeholder="Choississez un jour"
+                      :picker-options="pickerOptions">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item
+                    label="Solde Ligne"
+                  >
+                    <strong>{{ soldeLigne.toLocaleString() }}</strong>
+                  </el-form-item>
+                  <el-form-item
+                    prop="libelle"
+                    label="Libellé"
+                    :rules="[{ validator: validateLibelle, trigger: 'blur' }]"
                   >
                     <el-input
-                      v-model="engagement.etat_libelle"
-                      :disabled="true"
+                      v-model="engagement.libelle"
+                      type="textarea"
+                      :rows="2"
+                      :disabled="!toEdit"
+                      @input="formAttributeChange"
                     />
-                  </el-col>
-                </el-row>
-              </el-form-item>
+                  </el-form-item>
+                  <el-form-item label="Montant TTC">
+                    <el-row :gutter="10">
+                      <el-col :span="3">
+                          <el-select
+                            v-model="engagement.devise"
+                            placeholder="Devise"
+                            filterable
+                            remote
+                            :remote-method="selectDevise"
+                            :loading="deviseLoading"
+                            :disabled="!toEdit"
+                          >
+                            <el-option
+                              v-for="(obj) in listeDevises"
+                              :key="obj.code"
+                              :label="obj.code"
+                              :value="obj.code"
+                            />
+                          </el-select>
+                      </el-col>
+                      <el-col :span="20">
+                        <el-form-item
+                          prop="montant_ttc"
+                          :rules="[{ validator: validateMontantEngagement, trigger: 'blur' }]"
+                        >
+                          <el-input-number
+                            style="width: 100%"
+                            v-model="engagement.montant_ttc"
+                            :min="0"
+                            :controls="false"
+                            :disabled="!toEdit"
+                            @input="formAttributeChange"
+                          />
+                        </el-form-item>
+                      </el-col>
+                    </el-row>
+                  </el-form-item>
 
-              <el-form-item
-                class="notes"
-                style="line-height: 25px;"
-              >
-                <el-row :gutter="10">
-                  <el-col
-                    :span="6"
-                    :offset="3"
-                  >
-                    Créé le
-                  </el-col>
-                  <el-col :span="15">
-                    {{ engagement.created_at | dateFormatLong }}
-                  </el-col>
-                </el-row>
-                <el-row :gutter="10">
-                  <el-col
-                    :span="6"
-                    :offset="3"
-                  >
-                    Saisi par
-                  </el-col>
-                  <el-col :span="15">
-                    {{ (isCurrentUserSaisisseur) ? "Vous même" : engagement.saisisseur_name }}
-                  </el-col>
-                </el-row>
-                <el-row
-                  v-if="engagement.valideur_first && engagement.valideur_first !== ''"
-                  :gutter="10"
+                  <el-form-item class="no-margin-bottom">
+                    <el-row :gutter="10">
+                      <el-col
+                        :span="10"
+                        :offset="3"
+                      >
+                        <span class="span-label">Type
+                        </span>
+                      </el-col>
+                    </el-row>
+                    <el-row :gutter="10">
+                      <el-col
+                        :span="10"
+                        :offset="3"
+                      >
+                        <el-form-item
+                          prop="type"
+                          :rules="[{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change' }]"
+                        >
+                          <el-select
+                            v-if="toEdit"
+                            v-model="engagement.type"
+                            placeholder="Type"
+                            style="width: 100%"
+                            @change="formAttributeChange"
+                          >
+                            <el-option
+                              v-for="(obj) in typeOptions"
+                              :key="obj.code"
+                              :label="obj.libelle"
+                              :value="obj.code"
+                            >
+                              <span style="float: left">{{ obj.libelle }}</span>
+                              <span style="float: right; color: #8492a6; font-size: 13px">{{ obj.code }}</span>
+                            </el-option>
+                          </el-select>
+                          <el-input
+                            v-else
+                            v-model="engagement.type_libelle"
+                            :disabled="true"
+                          />
+                        </el-form-item>
+                      </el-col>
+                    </el-row>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-row :gutter="10">
+                      <el-col
+                        :span="10"
+                        :offset="3"
+                      >
+                        <span class="span-label">Nature
+                        </span>
+                      </el-col>
+                      <el-col
+                        :span="10"
+                        :offset="1"
+                      >
+                        <span class="span-label">Statut
+                        </span>
+                      </el-col>
+                    </el-row>
+                    <el-row :gutter="10">
+                      <el-col
+                        :span="10"
+                        :offset="3"
+                      >
+                        <el-input
+                          v-model="engagement.statut_libelle"
+                          :disabled="true"
+                        />
+                      </el-col>
+                      <el-col
+                        :span="10"
+                        :offset="1"
+                      >
+                        <el-input
+                          v-model="engagement.etat_libelle"
+                          :disabled="true"
+                        />
+                      </el-col>
+                    </el-row>
+                  </el-form-item>
+                </el-form>
+                <footer-buttons
+                  :entity="engagement"
+                  type="engagement"
+                  :submit-disabled="submitUpdateDisabled"
+                  :fallback-url="fallbackUrl"
+                  :on-cancel="onCancel"
+                  :update="updateSubmit"
+                  :resend-update="resendUpdate"
+                  :validerp-submit="validerpSubmit"
+                  :validers-submit="validersSubmit"
+                  :validerf-submit="validerfSubmit"
+                  :restore="fbRestorePreeng"
+                  :options-annuler-valider="optionsAnnulerValider"
+                  :commentaire-submit="fbcommentaireSubmit"
+                  :close="fbclosePreeng"
+                  :send-back-submit="fbsendBackSubmit"
+                  :cancel-valider-submit="fbcancelValiderSubmit"
+                  :next-etat-action="launchImputer"
+                  :next-etat-action-text="nextEtatActionText"
+                  :is-next-etat-action="isNextEtatAction"
+                  @footerload="loadHandler($event)"
+                />
+              </el-main>
+            </el-container>
+          </el-card>
+        </div>
+      </el-col>
+      <el-col :span="5" >
+        <h2 style="margin: 0 0 0.67em 0;">Historique</h2>
+        <el-container style="height: 82vh; border: 1px solid #eee">
+          <el-container>
+            <el-main>
+            <el-timeline
+              v-loading="timelineLoading"
+              :reverse="true"
+            >
+              <el-timeline-item
+                v-for="item in timelineItems"
+                :key="item.id"
+                :timestamp="item.created_at | dateFormatLong"
+                :type="item | tlItemType"
+                :icon="item | tlItemIcon"
+                size="large"
+                placement="top"
+                
                 >
-                  <el-col
-                    :span="6"
-                    :offset="3"
-                  >
-                    Validation 1ère par
-                  </el-col>
-                  <el-col :span="15">
-                    {{ (isCurrentUserValideurp) ? "Vous même" : engagement.valideurp_name }}
-                  </el-col>
-                </el-row>
-                <el-row
-                  v-if="engagement.valideur_second && engagement.valideur_second !== ''"
-                  :gutter="10"
-                >
-                  <el-col
-                    :span="6"
-                    :offset="3"
-                  >
-                    Validation 2nde par
-                  </el-col>
-                  <el-col :span="15">
-                    {{ (isCurrentUserValideurs) ? "Vous même" : engagement.valideurs_name }}
-                  </el-col>
-                </el-row>
-                <el-row
-                  v-if="engagement.valideur_final && engagement.valideur_final !== ''"
-                  :gutter="10"
-                >
-                  <el-col
-                    :span="6"
-                    :offset="3"
-                  >
-                    Validation finale par
-                  </el-col>
-                  <el-col :span="15">
-                    {{ (isCurrentUserValideurf) ? "Vous même" : engagement.valideurf_name }}
-                  </el-col>
-                </el-row>
-              </el-form-item>
-            </el-form>
-            <footer-buttons
-              :entity="engagement"
-              type="engagement"
-              :submit-disabled="submitUpdateDisabled"
-              :fallback-url="fallbackUrl"
-              :on-cancel="onCancel"
-              :update="updateSubmit"
-              :resend-update="resendUpdate"
-              :validerp-submit="validerpSubmit"
-              :validers-submit="validersSubmit"
-              :validerf-submit="validerfSubmit"
-              :restore="fbRestorePreeng"
-              :options-annuler-valider="optionsAnnulerValider"
-              :commentaire-submit="fbcommentaireSubmit"
-              :close="fbclosePreeng"
-              :send-back-submit="fbsendBackSubmit"
-              :cancel-valider-submit="fbcancelValiderSubmit"
-              :next-etat-action="launchImputer"
-              :next-etat-action-text="nextEtatActionText"
-              :is-next-etat-action="isNextEtatAction"
-              @footerload="loadHandler($event)"
-            />
-          </el-main>
+                <el-card v-if="item.comment">
+                  <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
+                  <p>{{ item.comment.split("|")[1] }}</p>
+                </el-card>
+                <span v-else>
+                  <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
+                </span>
+              </el-timeline-item>
+            </el-timeline>
+            </el-main>
+          </el-container>
         </el-container>
-      </el-card>
-    </div>
+      </el-col>
+    </el-row>
 
     <el-dialog
       v-loading="imputerFormLoading"
@@ -536,6 +510,7 @@ import {
   detailEngagement
   , updateEngagement, validationPreeng, cancelValidationPreeng
   , resendUpdateEngagement, addComment, closePreeng, restorePreeng, sendBack
+  , getEngagementTimeline
 } from '@/api/engagements'
 import { getSoldeLigne } from '@/api/lignes'
 import { imputerEngagement } from '@/api/imputations'
@@ -546,6 +521,7 @@ import { Form as ElForm } from 'element-ui'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
+import { isNull } from 'lodash'
 
 @Component({
   name: 'DetailEngagement',
@@ -556,14 +532,13 @@ import { PermissionModule } from '@/store/modules/permission'
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      (vm as any).fallbackUrl = from.path
+      (vm as any).fromRoute = from;
     })
   }
 })
 
 export default class extends Vue {
   private validateReference = (rule: any, value: string, callback: Function) => {
-    console.log('validate reference', value, rule)
     if (!value) {
       callback(new Error('Veuillez saisir une référence à cette imputation.'))
     } else {
@@ -572,7 +547,6 @@ export default class extends Vue {
   }
   
   private validateObservation = (rule: any, value: string, callback: Function) => {
-    console.log('validate observation')
     if (!value) {
       callback(new Error('Veuillez saisir une observation à cette imputation.'))
     } else if(value.length < 4) {
@@ -583,7 +557,6 @@ export default class extends Vue {
   }
 
   private validateMontant = (rule: any, value: number, callback: Function) => {
-    console.log('validate montant limite', this.maxMontant())
     if (value < 1) {
       callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
     } else if (this.maxMontant() < value ) {
@@ -596,7 +569,6 @@ export default class extends Vue {
   }
 
   private validateMontantEngagement = (rule: any, value: number, callback: Function) => {
-    console.log('validate montant limite', this.maxMontantEngagement())
     if (this.maxMontantEngagement() > 1 && value < 1) {
       callback(new Error(`Veuillez saisir un montant différent de 0 et inférieur au solde de la ligne qui est de ${this.maxMontantEngagement().toLocaleString()} XAF.`))
     } else if (this.maxMontantEngagement() < value ) {
@@ -608,7 +580,6 @@ export default class extends Vue {
   }
 
   private validateLibelle = (rule: any, value: string, callback: Function) => {
-    console.log('validate libelle')
     if (!value) {
       callback(new Error('Veuillez saisir un libellé à cet engagement'))
     } else if(value.length < 4) {
@@ -619,7 +590,6 @@ export default class extends Vue {
   }
 
   private validateLigne = (rule: any, value: number, callback: Function) => {
-    console.log('validate ligne ', this.selectedLigne())
     if (this.selectedLigne().length === 0) {
       callback(new Error('Veuillez choisir une ligne budgétaire'))
     } else if (this.maxMontantEngagement() === 0) {
@@ -638,11 +608,15 @@ export default class extends Vue {
   }
 
   /** Ligne budgetaire cascader */
-  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : null
+  private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : 'null'
   private domaines = AppModule.budgetStructure.domaines
   private chapitresOptions: any = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
   private cascade: number[] = []
   private soldeLigne = 0
+
+  /** Right card form attributes */
+  private timelineLoading = true
+  private timelineItems = []
 
   /** Main card form attributes */
   private cardLoading = true
@@ -655,13 +629,11 @@ export default class extends Vue {
   private tva = 0
 
   private fallbackUrl = { path: '/' }
+  private fromRoute: Record<string, any> = { path: '/', params: {} }
 
   private engagementIsClosed = false
 
   private isCurrentUserSaisisseur = false
-  private isCurrentUserValideurp = false
-  private isCurrentUserValideurs = false
-  private isCurrentUserValideurf = false
 
   private submitUpdateDisabled = true;
 
@@ -695,7 +667,7 @@ export default class extends Vue {
     ligne_id: 0,
     chapitre_id: 0,
     rubrique_id: 0,
-    domaine: AppModule.budgetStructure.domaines ? AppModule.budgetStructure.domaines[0] : null,
+    domaine: AppModule.budgetStructure.domaines ? AppModule.budgetStructure.domaines[0] : 'null',
     documents: [],
     imputations: []
   }
@@ -749,6 +721,14 @@ export default class extends Vue {
     this.fetchData(parseInt(id))
   }
 
+  get fallbackRoute() {
+    let finalRoute = this.fromRoute
+    if(this.$route.params && 'fallbackPayload' in this.$route.params){
+      finalRoute.params.payload =  this.$route.params.fallbackPayload
+    }
+    return finalRoute
+  }
+
   private selectDevise(query: string) {
     if (query !== '') {
       this.deviseLoading = true;
@@ -772,8 +752,22 @@ export default class extends Vue {
     return 0 < +this.soldeLigne ? +this.soldeLigne : 0
   }
 
+  private updateTimeLine(engagementId: any = null) {
+    this.timelineLoading = true
+    if(isNull(engagementId)) engagementId = this.engagement.id
+    getEngagementTimeline({id : engagementId }).then((response) => {
+      this.timelineItems = response.data.filter(function(item:any) {
+        return !['PREENGAGER','IMPUTATION', 'APUREMENT'].includes(item.description)
+      });
+      this.timelineLoading = false
+    }).catch(error => {
+        console.error('Error while obtaining engagement details ', error)
+      })
+  }
+
   private async fetchData(engagementId: number) {
     this.cardLoading = true
+    //this.updateTimeLine(engagementId)
     detailEngagement({ id: engagementId }).then((response) => {
       let { eng_date, ...eng } = response.data
       this.engagement = {eng_date: new Date(eng_date), ...eng}
@@ -802,6 +796,7 @@ export default class extends Vue {
       .catch(error => {
         console.error('Error while obtaining engagement details ', error)
       })
+
   }
 
   /** Ligne budgetaire selector */
@@ -810,7 +805,6 @@ export default class extends Vue {
   }
 
   private cascadeChange() {
-    console.log(this.cascade)
     this.formAttributeChange()
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
     this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
@@ -824,6 +818,7 @@ export default class extends Vue {
   /** Imputation card utilities */
   private engagementChanged(newEngagement: any) {
     this.engagement = newEngagement
+    this.updateTimeLine()
   }
 
   /** footer button utitlities functions */
@@ -839,7 +834,6 @@ export default class extends Vue {
 
   private async fbclosePreeng(id: number, comment: string, reason: string) {
     this.cardLoading = true
-    console.log("cloturer engagement")
     const response = await closePreeng({ id: id, comment: comment, reason: reason })
     this.engagement = response.data
     this.updateViewVariables()
@@ -983,12 +977,17 @@ export default class extends Vue {
   }
 
   private optionsAnnulerValider() {
-    console.log('optionsAnnulerValider')
     this.updateViewVariables()
   }
 
   private onCancel() {
-    this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+    // this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
+    // this.$router.push({ 
+    //     name : this.fallbackRouteName ? this.fallbackRouteName : 'engagementHome'
+    //   , params : this.fallbackRouteParams
+    //   , query : this.fallbackRouteQuery
+    //   })
+    this.$router.push(this.fallbackRoute)
   }
 
   private formAttributeChange() {
@@ -1026,9 +1025,6 @@ export default class extends Vue {
 
   private updateViewVariables() {
     this.isCurrentUserSaisisseur = UserModule.loggedUser.matricule === this.engagement.saisisseur
-    this.isCurrentUserValideurp = UserModule.loggedUser.matricule === this.engagement.valideur_first
-    this.isCurrentUserValideurs = UserModule.loggedUser.matricule === this.engagement.valideur_second
-    this.isCurrentUserValideurf = UserModule.loggedUser.matricule === this.engagement.valideur_final
 
     this.nextEtatActionText = this.engagement.cumul_imputations_initie_ttc > 0 ? 'Nouvelle imputation' : "Imputer l'engagement"
     if (this.engagement.cumul_imputations < this.engagement.montant_ttc) {
@@ -1045,6 +1041,7 @@ export default class extends Vue {
       (!this.engagementHasBeenValidatePOrMore() || this.engagement.next_statut != null)) {
       this.toEdit = true
     }
+    this.updateTimeLine()
   }
 
   private capitalizeFirstLetter(str: string) {
@@ -1054,18 +1051,50 @@ export default class extends Vue {
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.app-container {
+    padding: 0px;
+}
+
 .el-container{
   box-shadow: 2px;
 }
+
+.el-timeline {
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    padding-inline-start: 0px;
+    
+    .el-timeline-item__node {
+        left: 0px;
+        width: 21px;
+        height: 21px;
+    }
+
+    .el-timeline-item__tail {
+        left: 9px;
+    }
+
+    h4 {
+      margin-block-start: 0.5em;
+      margin-block-end: 0.5em;
+    }
+
+    .el-card__body {
+      padding: 15px;
+
+      p {
+        margin-block-start: 1em;
+        margin-block-end: 0.5em;
+      }
+    }
+}
+
 
 .cascade-extra-lg{
   width: 48.5vw;
 }
 
-.notes{
-  color:gray;
-}
 
 .no-margin-bottom{
   margin-bottom: 0px;

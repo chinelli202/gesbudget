@@ -14,7 +14,7 @@
         >
           <el-card>
             <el-tabs v-model="activeTab">
-              <!-- <el-tab-pane
+              <el-tab-pane
                 label="Activity"
                 name="activity"
               >
@@ -31,12 +31,6 @@
                 name="account"
               >
                 <account :user="user" />
-              </el-tab-pane> -->
-              <el-tab-pane
-                :label="$t('profile.tab.passwordchange_label')"
-                name="passwordChange"
-              >
-                <password-change />
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -53,17 +47,18 @@ import Account from './components/Account.vue'
 import Activity from './components/Activity.vue'
 import Timeline from './components/Timeline.vue'
 import UserCard from './components/UserCard.vue'
-import PasswordChange from './components/PasswordChange.vue'
 
 export interface IProfile {
   name: string
   email: string
+  avatar: string
   roles: string
 }
 
 const defaultProfile: IProfile = {
   name: 'Loading...',
   email: 'Loading...',
+  avatar: 'Loading...',
   roles: 'Loading...'
 }
 
@@ -73,20 +68,40 @@ const defaultProfile: IProfile = {
     Account,
     Activity,
     Timeline,
-    UserCard,
-    PasswordChange
+    UserCard
   }
 })
 export default class extends Vue {
-  private user = UserModule.loggedUser
-  private activeTab = 'passwordChange'
+  private user = defaultProfile
+  private activeTab = 'activity'
+
+  get name() {
+    return UserModule.loggedUser.name
+  }
+
+  get email() {
+    return UserModule.loggedUser.email
+  }
+
+  get avatar() {
+    return UserModule.avatar
+  }
 
   get roles() {
     return UserModule.roles
   }
 
   created() {
-    this.user['roles'] = UserModule.roles
+    this.getUser()
+  }
+
+  private getUser() {
+    this.user = {
+      name: this.name,
+      email: this.email,
+      avatar: this.avatar,
+      roles: this.roles.join(' | ')
+    }
   }
 }
 </script>

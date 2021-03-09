@@ -361,11 +361,11 @@ export default class FooterButtons extends Vue {
   }
 
   private hasPermission(permission: string) {
-    return UserModule.loggedUser.permissions.filter(item => item.code === permission).length > 0
+    return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length > 0
   }
 
   private hasnotPermission(permission: string) {
-    return UserModule.loggedUser.permissions.filter(item => item.code === permission).length === 0
+    return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length === 0
   }
 
   private resetButtons() {
@@ -399,7 +399,6 @@ export default class FooterButtons extends Vue {
 
     // The engagement is closed
     this.entityIsClosed = this.entity.etat === AppModule.etatsEngagement.CLOT.code
-    console.log('evaluateVariables ', this.isCurrentUserValideurp)
     this.annulerValiderLabel()
   }
 
@@ -530,7 +529,6 @@ export default class FooterButtons extends Vue {
   }
 
   private handleCommandValider(command: any) {
-    console.log('commande ', command)
     if (command === 'validerp') {
       this.validerpSubmit.call()
     } else if (command === 'validers') {
@@ -550,7 +548,6 @@ export default class FooterButtons extends Vue {
       }
     ).then(_ => {
       this.footerLoading = true
-      console.log('Annuler valider statut:', this.entity.statut)
       this.cancelValiderSubmit(this.entity.id, this.plusDactionsForm.commentaire, this.entity.statut)
         .then((response:any) => {
           this.plusDactionsDialogVisible = false
@@ -589,7 +586,6 @@ export default class FooterButtons extends Vue {
   }
 
   private userPerformedCurrentStatut() {
-    console.log('userPerformedCurrentStatut ',this.isCurrentUserSaisisseur, this.isCurrentUserValideurp )
     switch (this.entity.statut) {
       case AppModule.statutsEngagement.SAISI.code:
         return this.isCurrentUserSaisisseur
@@ -684,7 +680,6 @@ export default class FooterButtons extends Vue {
     nextStatut.forEach(statut => {
       canNextStatut = canNextStatut || this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat][statut])
     })
-    console.log('nexStatut ', nextStatut, canNextStatut)
     // Test if the user has the permission
     return canNextStatut
   }
