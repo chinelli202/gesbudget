@@ -233,7 +233,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'etatsBudget',
       icon: 'dashboard',
-      teams: ['snh','snh_siege']
+      teams: ['snh','snh_yde']
     },
     children: [
       {
@@ -271,7 +271,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsFonctionnement',
           icon: 'tab',
-          teams: ['snh','snh_siege']
+          teams: ['snh','snh_yde']
         }
       },
       {
@@ -300,7 +300,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsMandat',
           icon: 'tab',
-          teams: ['snh'],
+          teams: ['snh_yde'],
         }
       }
     ]
@@ -314,7 +314,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'rapports',
       icon: 'dashboard',
-      teams: ['cpsp','snhdouala']
+      teams: ['cpsp']
     },
     children : [
       {
