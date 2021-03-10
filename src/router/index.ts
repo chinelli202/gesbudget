@@ -233,7 +233,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'etatsBudget',
       icon: 'dashboard',
-      teams: ['snh','snh_yde']
+      teams: ['snh','SNHSIEGE']
     },
     children: [
       {
@@ -271,7 +271,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsFonctionnement',
           icon: 'tab',
-          teams: ['snh','snh_yde']
+          teams: ['snh','SNHSIEGE']
         }
       },
       {
@@ -300,12 +300,11 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsMandat',
           icon: 'tab',
-          teams: ['snh_yde'],
+          teams: ['snh','SNHSIEGE']
         }
       }
     ]
   },
-
   {
     path: '/rapports',
     component: Layout,
@@ -314,7 +313,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'rapports',
       icon: 'dashboard',
-      teams: ['cpsp']
+      teams: ['CPSP']
     },
     children : [
       {
@@ -324,7 +323,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'rapports',
           icon: 'dashboard',
-          teams: ['cpsp']
+          teams: ['CPSP']
         }
       },
       {
@@ -335,12 +334,12 @@ export const asyncRoutes: RouteConfig[] = [
           title: 'etatsEntreprise',
           name:'etats-entreprise',
           icon: 'dashboard',
-          teams: ['cpsp'],
+          teams: ['CPSP'],
           hidden:true        
         }
       }
     ]
-  },
+  }, 
 ]
 
 const createRouter = () => new Router({

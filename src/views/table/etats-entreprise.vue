@@ -67,3 +67,4 @@ export default class extends Vue {
         return {'critere':period, param:param, startmonth:startmonth, endmonth:endmonth}
   }
 }
+</script>
