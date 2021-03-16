@@ -7,6 +7,8 @@ export default {
     guide: 'Guide',
     corbeille: 'Corbeille',
     corbeilleList: 'Corbeille',
+    configurations: 'Configurations',
+    manageEngagement: "Config engagements",
     engagementHome: 'Exécution du budget',
     engagementHomeDashboard: 'Tableau de bord',
     engagement: 'Engagements',
