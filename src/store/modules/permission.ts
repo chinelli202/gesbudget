@@ -1,6 +1,6 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import { RouteConfig } from 'vue-router'
-import { asyncRoutes, constantRoutes } from '@/router'
+import { asyncRoutes, configRoutes, constantRoutes } from '@/router'
 import store from '@/store'
 import {UserModule} from '@/store/modules/user'
 
@@ -82,6 +82,8 @@ class Permission extends VuexModule implements IPermissionState {
     let accessedRoutes
     if (roles.includes('admin')) {
       accessedRoutes = asyncRoutes
+    } else if (roles.includes('configurateur')) {
+      accessedRoutes = configRoutes
     } else {
       accessedRoutes = filterAsyncRoutes(asyncRoutes, roles, UserModule.loggedUser.team.name)
     }

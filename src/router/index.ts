@@ -342,6 +342,33 @@ export const asyncRoutes: RouteConfig[] = [
   }, 
 ]
 
+export const configRoutes: RouteConfig[] = [
+  {
+    path: '/configurations',
+    component: Layout,
+    redirect: '/configurations/engagement',
+    name: 'configurations',
+    meta: {
+      title: 'configurations',
+      icon: 'dashboard',
+      // roles: ['configurateur']
+    },
+    children : [
+      {
+        path: 'engagement',
+        // component: () => import('@/views/configuration/engagements.vue'),
+        component: () => import('@/views/icons/index.vue'),
+        name: 'manageEngagement',
+        meta: {
+          title: 'manageEngagement',
+          icon: 'example',
+          roles: ['configurateur']
+        }
+      }
+    ]
+  }
+]
+
 const createRouter = () => new Router({
   // mode: 'history',  // Disabled due to Github Pages doesn't support this, enable this if you need.
   scrollBehavior: (to, from, savedPosition) => {

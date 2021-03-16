@@ -7,6 +7,8 @@ export default {
     guide: 'Guide',
     corbeille: 'Corbeille',
     corbeilleList: 'Corbeille',
+    configurations: 'Configurations',
+    manageEngagement: "Config engagements",
     engagementHome: 'Exécution du budget',
     engagementHomeDashboard: 'Tableau de bord',
     engagement: 'Engagements',
@@ -297,11 +299,11 @@ export default {
     closeAll: 'Close All'
   },
   settings: {
-    title: 'Page style setting',
-    theme: 'Theme Color',
-    showTagsView: 'Open Tags-View',
-    showSidebarLogo: 'Sidebar Logo',
-    fixedHeader: 'Fixed Header',
+    title: 'Configurations de style',
+    theme: 'Couleur de thème',
+    showTagsView: 'Afficher les tags de navigation',
+    showSidebarLogo: 'Logo barre de menus gauche',
+    fixedHeader: 'Barre de navigation fixe',
     sidebarTextTheme: 'Sidebar Text Theme'
   }
 }
