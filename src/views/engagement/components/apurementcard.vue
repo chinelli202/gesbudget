@@ -210,7 +210,7 @@ export default class ApurementCard extends Vue {
   
   private validateObservationApurement = (rule: any, value: string, callback: Function) => {
     if (!value) {
-      callback(new Error('Veuillez saisir une observation à cette imputation.'))
+      callback(new Error('Veuillez saisir une observation à cet engagement.'))
     } else if(value.length < 4) {
       callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
     } else {

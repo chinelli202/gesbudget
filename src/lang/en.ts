@@ -97,7 +97,7 @@ export default {
 
   action : {
     created : 'Création pré-engagement',
-    CREATED_IMP : 'Création Imputation',
+    CREATED_IMP : 'Création Engagement',
     CREATED_APUR : 'Création Apurement',
     LOGIN : 'Connexion à l\'application',
     LOGOUT : 'Connexion à l\'application',
@@ -116,21 +116,21 @@ export default {
     ADD_COMMENT : 'Ajout commentaire',
 
     PREENGAGER : 'Pré engagement',
-    IMPUTER : 'Imputation',
+    IMPUTER : 'Engagement',
     APURER : 'Apurement',
 
-    IMP_VALIDP : 'Validation Imputation 1er niv',
-    IMP_VALIDS : 'Validation Imputation 2nd niv',
-    IMP_VALIDF : 'Validation Imputation niv final',
-    IMP_CANCEL_VALIDP : 'Annulation validation Imputation 1er niv',
-    IMP_CANCEL_VALIDS : 'Annulation validation Imputation 2nd niv',
-    IMP_CANCEL_VALIDF : 'Annulation validation Imputation niv final',
-    IMP_UPDATE : 'Mise à jour Imputation',
-    IMP_CLOSE : 'Clôture Imputation',
-    IMP_RESTORE : 'Restauration Imputation',
-    IMP_SEND_BACK : 'Renvoi Imputation',
-    IMP_RESEND : 'Re-soumission Imputation',
-    IMP_ADD_COMMENT : 'Ajout commentaire Imputation',
+    IMP_VALIDP : 'Validation Engagement 1er niv',
+    IMP_VALIDS : 'Validation Engagement 2nd niv',
+    IMP_VALIDF : 'Validation Engagement niv final',
+    IMP_CANCEL_VALIDP : 'Annulation validation Engagement 1er niv',
+    IMP_CANCEL_VALIDS : 'Annulation validation Engagement 2nd niv',
+    IMP_CANCEL_VALIDF : 'Annulation validation Engagement niv final',
+    IMP_UPDATE : 'Mise à jour Engagement',
+    IMP_CLOSE : 'Clôture Engagement',
+    IMP_RESTORE : 'Restauration Engagement',
+    IMP_SEND_BACK : 'Renvoi Engagement',
+    IMP_RESEND : 'Re-soumission Engagement',
+    IMP_ADD_COMMENT : 'Ajout commentaire Engagement',
     
     APUR_VALIDP : 'Validation apurement 1er niv',
     APUR_VALIDS : 'Validation apurement 2nd niv',
@@ -299,11 +299,11 @@ export default {
     closeAll: 'Close All'
   },
   settings: {
-    title: 'Page style setting',
-    theme: 'Theme Color',
-    showTagsView: 'Open Tags-View',
-    showSidebarLogo: 'Sidebar Logo',
-    fixedHeader: 'Fixed Header',
+    title: 'Configurations de style',
+    theme: 'Couleur de thème',
+    showTagsView: 'Afficher les tags de navigation',
+    showSidebarLogo: 'Logo barre de menus gauche',
+    fixedHeader: 'Barre de navigation fixe',
     sidebarTextTheme: 'Sidebar Text Theme'
   }
 }

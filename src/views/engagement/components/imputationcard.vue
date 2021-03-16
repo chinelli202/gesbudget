@@ -4,7 +4,7 @@
       <el-container>
         <el-header>
           <h2 align="center">
-            Imputation de l'Engagement {{ engagement.code }}
+            Engagement {{ engagement.code }}
           </h2>
         </el-header>
         <el-main
@@ -12,7 +12,7 @@
         >
           <el-alert
             v-if="imputation.next_statut !== null"
-            title="Cette imputation a été renvoyé pour modification."
+            title="Cet engagement a été renvoyé pour modification."
             type="info"
             :closable="false"
             style="max-width: 400vw; margin-bottom: 10px"
@@ -364,7 +364,7 @@ export default class ImputationCard extends Vue {
   private validateReference = (rule: any, value: string, callback: Function) => {
     console.log('validate reference', value, rule)
     if (!value) {
-      callback(new Error('Veuillez saisir une référence à cette imputation.'))
+      callback(new Error('Veuillez saisir une référence à cet engagement.'))
     } else {
       callback()
     }
@@ -373,7 +373,7 @@ export default class ImputationCard extends Vue {
   private validateObservation = (rule: any, value: string, callback: Function) => {
     console.log('validate observation')
     if (!value) {
-      callback(new Error('Veuillez saisir une observation à cette imputation.'))
+      callback(new Error('Veuillez saisir une observation à cet engagement.'))
     } else if(value.length < 4) {
       callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
     } else {
@@ -422,7 +422,7 @@ export default class ImputationCard extends Vue {
   
   private validateObservationApurement = (rule: any, value: string, callback: Function) => {
     if (!value) {
-      callback(new Error('Veuillez saisir une observation à cette imputation.'))
+      callback(new Error('Veuillez saisir une observation à cet engagement.'))
     } else if(value.length < 4) {
       callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
     } else {

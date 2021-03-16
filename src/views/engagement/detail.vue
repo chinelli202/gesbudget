@@ -13,7 +13,7 @@
         <div class="app-container max-w-600 center">
           <div
             v-for="(apurement) in engagement.apurements_labelled"
-            :key="apurement.id"
+            :key="'apurement'+apurement.id"
             style="margin-bottom: 2em"
           >
             <apurement-card
@@ -28,7 +28,7 @@
           </div>
           <div
             v-for="(imputation) in engagement.imputations_labelled"
-            :key="imputation.id"
+            :key="'imputation'+imputation.id"
             style="margin-bottom: 2em"
           >
             <imputation-card
@@ -331,7 +331,7 @@
             >
               <el-timeline-item
                 v-for="item in timelineItems"
-                :key="item.id"
+                :key="'timeline'+item.id"
                 :timestamp="item.created_at | dateFormatLong"
                 :type="item | tlItemType"
                 :icon="item | tlItemIcon"
@@ -339,7 +339,7 @@
                 placement="top"
                 
                 >
-                <el-card v-if="item.comment">
+                <el-card v-if="item.comment && item.comment != 'NA'">
                   <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
                   <p>{{ item.comment.split("|")[1] }}</p>
                 </el-card>
@@ -757,7 +757,10 @@ export default class extends Vue {
     if(isNull(engagementId)) engagementId = this.engagement.id
     getEngagementTimeline({id : engagementId }).then((response) => {
       this.timelineItems = response.data.filter(function(item:any) {
-        return !['PREENGAGER','IMPUTATION', 'APUREMENT'].includes(item.description)
+        return !['PREENGAGER','IMPUTATION', 'APUREMENT'].includes(item.description) 
+          && (
+            Object.keys(item.properties.attributes).includes("etat")
+            || Object.keys(item.properties.attributes).includes("statut"))
       });
       this.timelineLoading = false
     }).catch(error => {
