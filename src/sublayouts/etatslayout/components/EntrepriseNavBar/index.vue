@@ -66,6 +66,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import NavigateurEtats from '@/components/NavigateurEtats/index.vue'
 import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre-etats'
+import {UserModule} from '@/store/modules/user'
 import {getFonctionnementTree, getMandatTree, getSectionsFonctionnementTree, getEntrepriseTree} from '@/api/maquetteTree'
   
 
@@ -125,8 +126,12 @@ created(){
   this.isGeneraux = path.split("/")[3] == 'generaux';
 
   //set nav title and styling
-  this.navTitle = this.entreprise == 'fonctionnement'? "Fonctionnement":"Mandat"
-  this.navTitle = "CPSP"
+  // collect entreprise information from userloggedin variable
+  this.listQuery.entreprise_code = UserModule.loggedUser.team.entreprise_code;
+  this.navTitle = UserModule.loggedUser.team.display_name
+
+  //this.navTitle = this.entreprise == 'fonctionnement'? "Fonctionnement":"Mandat"
+  //this.navTitle = "CPSP"
   this.paramNavTree()
   //get NavTree and pass it as prop
 }

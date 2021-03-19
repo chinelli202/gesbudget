@@ -313,7 +313,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'rapports',
       icon: 'dashboard',
-      teams: ['CPSP']
+      teams: ['CPSP', 'asch', 'snh_douala']
     },
     children : [
       {
@@ -323,7 +323,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'rapports',
           icon: 'dashboard',
-          teams: ['CPSP']
+          teams: ['CPSP', 'asch','snh_douala']
         }
       },
       {
@@ -334,7 +334,7 @@ export const asyncRoutes: RouteConfig[] = [
           title: 'etatsEntreprise',
           name:'etats-entreprise',
           icon: 'dashboard',
-          teams: ['CPSP'],
+          teams: ['CPSP','asch','snh_douala'],
           hidden:true        
         }
       }
