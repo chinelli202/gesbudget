@@ -250,7 +250,7 @@
             :span="3"
             :offset="2"
           >
-            <strong>Observations</strong>
+            <strong>Banque et Observations</strong>
           </el-col>
           <el-col :span="17">
             <el-form-item

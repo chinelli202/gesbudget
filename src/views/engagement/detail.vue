@@ -341,7 +341,7 @@
                 >
                 <el-card v-if="item.comment && item.comment != 'NA'">
                   <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
-                  <p>{{ item.comment.split("|")[1] }}</p>
+                  <p>{{ item.comment.split("|")[1] ? item.comment.split("|")[1] : item.comment }}</p>
                 </el-card>
                 <span v-else>
                   <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
@@ -404,7 +404,6 @@
             <el-col :span="17">
               <el-form-item
                 prop="reference"
-                :rules="[{ validator: validateReference, trigger: 'blur' }]"
               >
                 <el-input
                   v-model="imputation.reference"
@@ -426,7 +425,6 @@
           <el-col :span="17">
             <el-form-item
               prop="observations"
-              :rules="[{ validator: validateObservation, trigger: 'blur' }]"
             >
               <el-input
                 v-model="imputation.observations"

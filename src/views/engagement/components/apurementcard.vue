@@ -52,7 +52,7 @@
             />
           </el-form-item>
           <el-form-item
-            label="Observations"
+            label="Banque et Observations"
             prop="observations"
             :rules="[{ validator: validateObservationApurement, trigger: 'blur' }]"
           >
