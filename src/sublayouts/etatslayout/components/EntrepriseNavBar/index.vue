@@ -31,12 +31,35 @@
       
 
       <!-- group menus -->
-      <el-menu-item 
+      <!-- <div  v-if="groupType == 'rubriques'">
+        <el-menu-item style="display:block"
+          v-for="group in groupesMap"
+          :key="group.id"
+          @click="handleGroupItemClicked(group)">
+            {{group.label}}
+        </el-menu-item>
+      </div> -->
+
+      <el-submenu
         v-for="group in groupesMap"
         :key="group.id"
-        @click="handleGroupClicked(group)">
+        :index = "group.id">
+        <template slot="title">
           {{group.label}}
-      </el-menu-item>
+        </template>
+          
+          <el-menu-item 
+          v-for="element in group.elements"
+          :key="element.id"
+            @click="handleGroupItemClicked(element)">
+            {{element.label}}
+        </el-menu-item>
+
+      </el-submenu>
+
+
+
+
 
       <el-menu-item v-if="!isGeneraux" @click="handleExporter">
         <i class="el-icon-download"></i>
@@ -92,6 +115,7 @@ private listQuery = {
   size:10,
   entreprise_code:"CPSP"
 }
+private groupType:string = "sections"
 
 private isGeneraux: boolean = true
 
@@ -159,13 +183,34 @@ created(){
       this.maquetteTree = data
     console.log("this is maquettetree option", this.maquetteTree)
 
-    let groupesOption = this.maquetteTree.content.chapitres[0].rubriques  
-    this.groupesMap = groupesOption.map((rubrique : any)=>{
-      let groupe = {label : rubrique.label, id : rubrique.id}
-      return groupe
-    })
-    console.log("this is the groupes map, ", this.groupesMap)
+    // let groupesOption = this.maquetteTree.content.chapitres[0].rubriques  
+    // this.groupesMap = groupesOption.map((rubrique : any)=>{
+    //   let groupe = {label : rubrique.label, id : rubrique.id}
+    //   return groupe
+    // })
+    // console.log("this is the groupes map, ", this.groupesMap)
 
+    this.groupType = this.maquetteTree.content.group
+    if(this.groupType == 'sections'){
+      let groupesOption = this.maquetteTree.content.sections  
+      this.groupesMap = groupesOption.map((section : any, index : number )=>{
+      let groupe = {label : section.section, id : 10000 + index, elements : section.chapitres.map((chapitre : any, index : number) => {
+        let element = {label: chapitre.label, id : chapitre.id, elementType: 'chapitre'}
+        return element
+      })}
+      return groupe
+      })
+      console.log("this is the groupes map, ", this.groupesMap)
+    }
+
+    else if (this.groupType == 'rubriques'){
+      let groupesOption = this.maquetteTree.content.sections[0].chapitres[0].rubriques    
+      this.groupesMap = groupesOption.map((rubrique : any)=>{
+        let groupe = {label : rubrique.label, id : rubrique.id, elementType: 'rubrique'}
+        return groupe
+      })
+      console.log("this is the groupes map, ", this.groupesMap)
+    }
     
     //let depensesOption = this.maquetteTree.depenses.chapitres
     // let recettesOption = this.maquetteTree.recettes.chapitres
@@ -305,9 +350,9 @@ created(){
     this.$router.push({ name: routename})
   }
 
-  private handleGroupClicked(data:any){
+  private handleGroupItemClicked(data:any){
     var routename = "etats-entreprise"
-    this.$router.push({ name: routename, params: { entitytype: "rubrique", entitykey: data.id } })
+    this.$router.push({ name: routename, params: { entitytype: data.elementType, entitykey: data.id } })
   }
 
   private handleAllerButtonClick(){

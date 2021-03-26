@@ -168,6 +168,27 @@ export const constantRoutes: RouteConfig[] = [
     ]
   },
   {
+    path: '/projets',
+    component: Layout,
+    redirect: '/projets/list',
+    name: 'projets',
+    meta: {
+        title: 'projets',
+        icon: 'list'
+    },
+    children : [
+      {
+        path: 'list',
+        component: () => import(/* webpackChunkName: "corbeille" */ '@/views/projet/index.vue'),
+        name: 'projetsList',
+        meta: {
+          title: 'projetsList',
+          icon: 'list'
+        }
+      }
+    ]
+  },
+  {
     path: '/corbeille',
     component: Layout,
     redirect: '/corbeille/list',
@@ -313,7 +334,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'rapports',
       icon: 'dashboard',
-      teams: ['CPSP', 'asch', 'snh_douala']
+      teams: ['cpsp', 'asch', 'snh_douala']
     },
     children : [
       {
@@ -323,7 +344,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'rapports',
           icon: 'dashboard',
-          teams: ['CPSP', 'asch','snh_douala']
+          teams: ['cpsp', 'asch','snh_douala']
         }
       },
       {
@@ -334,7 +355,7 @@ export const asyncRoutes: RouteConfig[] = [
           title: 'etatsEntreprise',
           name:'etats-entreprise',
           icon: 'dashboard',
-          teams: ['CPSP','asch','snh_douala'],
+          teams: ['cpsp','asch','snh_douala'],
           hidden:true        
         }
       }

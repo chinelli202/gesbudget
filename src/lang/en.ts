@@ -20,6 +20,8 @@ export default {
     rolePermission: 'Role Permission',
     directivePermission: 'Directive Permission',
     icons: 'Icons',
+    projets: 'Projets',
+    projetsList: 'Liste Projets',
     etatsMandat: 'Etats Mandat',
     etatsFonctionnement: 'Etats Fonctionnement',
     components: 'Components',
