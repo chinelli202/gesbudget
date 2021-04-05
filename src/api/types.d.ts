@@ -145,3 +145,10 @@ export interface recapHeader{
   soldeLabel: string,
   tauxExecution: string,
 }
+
+export interface IProjetData{
+  label: string,
+  description: string,
+  chapitre_id:number,
+  entreprise_code:string
+}

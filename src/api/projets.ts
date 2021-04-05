@@ -1,6 +1,13 @@
 import request from '@/utils/request'
 import { getToken } from '@/utils/cookies'
+import { IProjetData } from './types'
 
+export const defaultProjetData: IProjetData = {
+  label: '',
+  description: '',
+  chapitre_id:0,
+  entreprise_code:''
+}
 
 export const createProjet = (data: any) =>
   request({
@@ -14,7 +21,7 @@ export const createProjet = (data: any) =>
 
 export const getProjets = (params: any) =>
   request({
-    url: '/getprojets',
+    url: 'projets/getprojets',
     method: 'get',
     headers: {
       Authorization: `Bearer ${getToken()}`
