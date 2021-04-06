@@ -21,7 +21,7 @@ export const createProjet = (data: any) =>
 
 export const getProjets = (params: any) =>
   request({
-    url: 'projets/getprojets',
+    url: 'projets',
     method: 'get',
     headers: {
       Authorization: `Bearer ${getToken()}`

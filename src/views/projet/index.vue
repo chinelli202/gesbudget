@@ -34,12 +34,13 @@
       label="Entreprise / Représentation">
     </el-table-column>
   </el-table>
+
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import {getProjets} from '@/api/projets'
+import {getProjets, defaultProjetData, createProjet} from '@/api/projets'
 import { IProjetData } from '@/api/types'
 import {UserModule} from '@/store/modules/user'
 import { component } from 'node_modules/vue/types/umd'
@@ -51,6 +52,8 @@ import { component } from 'node_modules/vue/types/umd'
 
 export default class extends Vue {
   private projetsData: IProjetData[] = []
+  private newProjet : IProjetData = defaultProjetData
+  private viewedProjet : IProjetData = defaultProjetData
   private listQuery = {
     entreprise_code : ''
   }
@@ -65,6 +68,14 @@ export default class extends Vue {
     const {data} = await getProjets(this.listQuery)
     this.projetsData = data
     console.log("projets data", this.projetsData)
+  }
+
+  private async createProjet(projet:IProjetData){
+    
+  }
+
+  private async deleteProjet(projet:IProjetData){
+
   }
 }
 </script>
