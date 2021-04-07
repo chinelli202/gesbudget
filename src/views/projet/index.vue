@@ -8,7 +8,7 @@
       </el-col>
 
       <el-col :span="10">
-        <el-button type="primary" style="margin:15px 0px">Nouveau Projet</el-button>   
+        <el-button type="primary" style="margin:15px 0px" @click="handleNouveauProjetClick">Nouveau Projet</el-button>   
       </el-col>
     </el-row>
     <el-table
@@ -34,6 +34,9 @@
       label="Entreprise / Représentation">
     </el-table-column>
   </el-table>
+  <el-dialog :visible.sync="dialogTableVisible">
+       <create-projet-view @exit-navigateur-dialog="handleExitDialogEventRecieved"/>
+  </el-dialog>
 
   </div>
 </template>
@@ -43,11 +46,11 @@ import { Component, Vue } from 'vue-property-decorator'
 import {getProjets, defaultProjetData, createProjet} from '@/api/projets'
 import { IProjetData } from '@/api/types'
 import {UserModule} from '@/store/modules/user'
-import { component } from 'node_modules/vue/types/umd'
-
+import CreateProjetView from './create.vue'
 
 @Component({
-  name: 'ProjetsView'
+  name: 'ProjetsView',
+  components : {CreateProjetView}
 })
 
 export default class extends Vue {
@@ -57,6 +60,7 @@ export default class extends Vue {
   private listQuery = {
     entreprise_code : ''
   }
+  private dialogTableVisible: boolean = false 
   
 
   created(){
@@ -76,6 +80,10 @@ export default class extends Vue {
 
   private async deleteProjet(projet:IProjetData){
 
+  }
+
+  private handleNouveauProjetClick(){
+    this.dialogTableVisible = true
   }
 }
 </script>
