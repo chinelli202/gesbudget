@@ -21,7 +21,7 @@ export default {
     directivePermission: 'Directive Permission',
     icons: 'Icons',
     projets: 'Projets',
-    projetsList: 'Liste Projets',
+    projetsList: 'Gestion des Projets',
     etatsMandat: 'Etats Mandat',
     etatsFonctionnement: 'Etats Fonctionnement',
     components: 'Components',

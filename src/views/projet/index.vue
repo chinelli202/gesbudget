@@ -35,7 +35,12 @@
     </el-table-column>
   </el-table>
   <el-dialog :visible.sync="dialogTableVisible">
-       <create-projet-view @exit-navigateur-dialog="handleExitDialogEventRecieved"/>
+       <create-projet-view 
+          @exit-save-projet-dialog="handleExitDialogEventReceived" 
+          @create-save-projet-dialog="handleCreateProjetEventReceived"
+          :titre="saveProjetDialogTitle"
+          :projet="saveProjetDialogData"
+          />
   </el-dialog>
 
   </div>
@@ -57,6 +62,8 @@ export default class extends Vue {
   private projetsData: IProjetData[] = []
   private newProjet : IProjetData = defaultProjetData
   private viewedProjet : IProjetData = defaultProjetData
+  private saveProjetDialogData: IProjetData = defaultProjetData
+  private saveProjetDialogTitle = ""
   private listQuery = {
     entreprise_code : ''
   }
@@ -83,7 +90,34 @@ export default class extends Vue {
   }
 
   private handleNouveauProjetClick(){
+    this.saveProjetDialogData = this.newProjet
+    this.saveProjetDialogTitle = "Nouveau Projet"
     this.dialogTableVisible = true
+  }
+
+  private handleExitDialogEventReceived(){
+    this.dialogTableVisible = false
+  }
+
+  private handleCreateProjetEventReceived(projet : any){
+    console.log("Projet", projet)
+    this.dialogTableVisible = false
+    createProjet(projet).then((response) => {
+      let projetCreated = response.data
+      this.projetsData.push(projetCreated)
+      this.$message({
+          showClose: true,
+          message: 'Nouveau projet créé avec succès',
+          type: 'success'
+        });
+    }).catch((error) => {
+        //console.log('error creating the new project', error)
+        this.$message({
+          showClose: true,
+          message: 'Ouups, une erreur est survenue lors de la création du projet.',
+          type: 'error'
+        });
+      })
   }
 }
 </script>
