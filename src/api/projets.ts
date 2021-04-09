@@ -6,7 +6,9 @@ export const defaultProjetData: IProjetData = {
   label: '',
   description: '',
   chapitre_id:0,
-  entreprise_code:''
+  chapitre_label: '',
+  entreprise_code: '',
+  entreprise_name: ''
 }
 
 export const createProjet = (data: any) =>

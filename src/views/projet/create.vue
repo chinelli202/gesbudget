@@ -29,10 +29,14 @@
                 @input="formAttributeChange"
                 />
             </el-form-item>
-
+            <div class="dialog-row">
+                <el-radio-group v-model="choixSection" @change="handleSectionChanged">
+                <el-radio :label="100" border>Fonctionnement</el-radio>
+                <el-radio :label="200" border>Mandat</el-radio>
+                </el-radio-group>
+            </div>
             <el-form-item
                 label="Chapitre / Unité"
-                prop="chapitre_id"
             >
                 <el-select v-model="projet.chapitre_id" placeholder="please select your zone">
                     <el-option label="Chapitre 2" value="2"></el-option>
@@ -63,9 +67,18 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 export default class extends Vue {
 
     @Prop({required:true}) private titre:string=""
-     @Prop({required:true})private projet:IProjetData = defaultProjetData
-    
+    @Prop({required:true}) private projet:IProjetData = defaultProjetData
+    @Prop({required:true}) private maquetteTree:any = {}
+    private choixSection:number = 100
 
+    private mandatTreeSelectOptions: any[] = []
+    private fonctionnementTreeSelectOptions: any[] = []
+    private entrepriseTreeSelectOptions: any[] = []
+
+
+    created(){
+        //fill up the elements
+    }
 
     private handleAjouterButtonClick(){
         // validate fields

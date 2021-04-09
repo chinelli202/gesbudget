@@ -150,5 +150,7 @@ export interface IProjetData{
   label: string,
   description: string,
   chapitre_id:number,
-  entreprise_code:string
+  chapitre_label:string,
+  entreprise_code:string,
+  entreprise_name:string
 }

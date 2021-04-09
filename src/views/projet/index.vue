@@ -4,7 +4,7 @@
 
     <el-row>
       <el-col :span="13">
-        <h2>Liste des projets</h2>
+        <h1>Liste des projets</h1>
       </el-col>
 
       <el-col :span="10">
@@ -12,28 +12,26 @@
       </el-col>
     </el-row>
     <el-table
-    :data="projetsData"
-    border
-    style="width: 100%">
-    <el-table-column
-      prop="label"
-      label="Libelle"
-      width="180">
-    </el-table-column>
-    <el-table-column
-      prop="description"
-      label="Description"
-      width="180">
-    </el-table-column>
-    <el-table-column
-      prop="chapitre_id"
-      label="Chapitre / Unité">
-    </el-table-column>
-    <el-table-column
-      prop="entreprise_code"
-      label="Entreprise / Représentation">
-    </el-table-column>
-  </el-table>
+      :data="projetsData"
+      border
+      style="width: 100%">
+      <el-table-column
+        prop="label"
+        label="Libelle">
+      </el-table-column>
+      <el-table-column
+        prop="description"
+        label="Description">
+      </el-table-column>
+      <el-table-column
+        prop="chapitre_label"
+        label="Chapitre / Unité">
+      </el-table-column>
+      <el-table-column
+        prop="entreprise_name"
+        label="Entreprise / Représentation">
+      </el-table-column>
+    </el-table>
   <el-dialog :visible.sync="dialogTableVisible">
        <create-projet-view 
           @exit-save-projet-dialog="handleExitDialogEventReceived" 
@@ -52,6 +50,7 @@ import {getProjets, defaultProjetData, createProjet} from '@/api/projets'
 import { IProjetData } from '@/api/types'
 import {UserModule} from '@/store/modules/user'
 import CreateProjetView from './create.vue'
+import {getEntrepriseTree} from '@/api/maquetteTree'
 
 @Component({
   name: 'ProjetsView',
@@ -64,6 +63,7 @@ export default class extends Vue {
   private viewedProjet : IProjetData = defaultProjetData
   private saveProjetDialogData: IProjetData = defaultProjetData
   private saveProjetDialogTitle = ""
+  private maquetteData:any = {}
   private listQuery = {
     entreprise_code : ''
   }
@@ -73,12 +73,22 @@ export default class extends Vue {
   created(){
     this.listQuery.entreprise_code = UserModule.loggedUser.team.entreprise_code;
     this.getProjetData()
+
   }
 
   private async getProjetData(){
     const {data} = await getProjets(this.listQuery)
     this.projetsData = data
     console.log("projets data", this.projetsData)
+    
+    getEntrepriseTree(this.listQuery).then((response) => {
+      this.maquetteData = response
+
+      //domains, more than 1 chapters, less than 1 chapters
+
+    }).catch((error) => {
+      console.log("error loading the maquette")
+    })
   }
 
   private async createProjet(projet:IProjetData){
