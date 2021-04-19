@@ -39,3 +39,13 @@ export const getProjets = (params: any) =>
       Authorization: `Bearer ${getToken()}`
     }
   })
+
+  export const getMaquette = (params:any) =>
+    request({
+      url: '/projet/maquette',
+      method: 'get',
+      headers: {
+        Authorization: `Bearer ${getToken()}`
+      },
+      params
+    })

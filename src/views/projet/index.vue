@@ -38,6 +38,7 @@
           @create-save-projet-dialog="handleCreateProjetEventReceived"
           :titre="saveProjetDialogTitle"
           :projet="saveProjetDialogData"
+          :maquetteTree="maquetteData.content"
           />
   </el-dialog>
 
@@ -46,7 +47,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import {getProjets, defaultProjetData, createProjet} from '@/api/projets'
+import {getProjets, defaultProjetData, createProjet, getMaquette} from '@/api/projets'
 import { IProjetData } from '@/api/types'
 import {UserModule} from '@/store/modules/user'
 import CreateProjetView from './create.vue'
@@ -81,12 +82,10 @@ export default class extends Vue {
     this.projetsData = data
     console.log("projets data", this.projetsData)
     
-    getEntrepriseTree(this.listQuery).then((response) => {
-      this.maquetteData = response
-
-      //domains, more than 1 chapters, less than 1 chapters
-
-    }).catch((error) => {
+    getMaquette(this.listQuery).then((response) => {
+      this.maquetteData = response.data
+      console.log("loaded maquette data", this.maquetteData.content)
+    }).catch((error) => { 
       console.log("error loading the maquette")
     })
   }

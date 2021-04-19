@@ -29,18 +29,25 @@
                 @input="formAttributeChange"
                 />
             </el-form-item>
-            <div class="dialog-row">
-                <el-radio-group v-model="choixSection" @change="handleSectionChanged">
-                <el-radio :label="100" border>Fonctionnement</el-radio>
-                <el-radio :label="200" border>Mandat</el-radio>
+            <div class="dialog-row" >
+                <el-radio-group v-model="selectedgroupindex" @change="handleGroupChanged">
+                    <el-radio v-for="(groupe, index) in maquetteTree.groupes"
+                     :key="index"
+                     :label="index">{{groupe.name}}</el-radio>
                 </el-radio-group>
             </div>
-            <el-form-item
+            <el-form-item   
                 label="Chapitre / Unité"
             >
-                <el-select v-model="projet.chapitre_id" placeholder="please select your zone">
-                    <el-option label="Chapitre 2" value="2"></el-option>
-                    <el-option label="Chapitre 4" value="4"></el-option>
+                <el-select 
+                    v-model="projet.chapitre_id" placeholder="Unité">
+                    <el-option v-for="(chapitre, index) in selectedgroup.chapitres"
+                     :key="index"
+                     :label="chapitre.label" 
+                     :value="chapitre.id"
+                    border 
+                    @change="handleChapitreSelected"
+                   >{{chapitre.label}}</el-option>
                 </el-select>
             </el-form-item>
 
@@ -68,16 +75,26 @@ export default class extends Vue {
 
     @Prop({required:true}) private titre:string=""
     @Prop({required:true}) private projet:IProjetData = defaultProjetData
-    @Prop({required:true}) private maquetteTree:any = {}
+    @Prop({required:true}) private maquetteTree!:any 
+    private maquetteGroups : any = {}
     private choixSection:number = 100
 
     private mandatTreeSelectOptions: any[] = []
     private fonctionnementTreeSelectOptions: any[] = []
     private entrepriseTreeSelectOptions: any[] = []
-
+    private idChapitre: number = 0
+    private selectedgroup: any = {}
+    private selectedgroupindex : number = 0
 
     created(){
         //fill up the elements
+        // tree groups or single tree?
+        // conditional button group. multiple groups, button group. single group, no button group, pre-selected chapter, inactive.
+        let groupnames = this.maquetteTree.groupnames
+        console.log("maquette tree from the created dialog", this.maquetteTree)
+        this.maquetteGroups = this.maquetteTree
+        this.selectedgroup = this.maquetteTree.groupes[0]
+         console.log("selected group", this.selectedgroup)
     }
 
     private handleAjouterButtonClick(){
@@ -111,7 +128,18 @@ export default class extends Vue {
         }
     }
 
+    private handleGroupChanged(index:number){
+        //set value of selected option
+        console.log('index', index )
+        this.selectedgroup = this.maquetteTree.groupes[index]
+        console.log('group changed to this', this.selectedgroup)
+    }
+
+    private handleChapitreSelected(){
+
+    }
 }
+
 </script>
 
 <style>
