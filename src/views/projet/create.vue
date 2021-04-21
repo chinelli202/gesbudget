@@ -39,7 +39,7 @@
             <el-form-item   
                 label="Chapitre / Unité"
             >
-                <el-select 
+                <el-select
                     v-model="projet.chapitre_id" placeholder="Unité">
                     <el-option v-for="(chapitre, index) in selectedgroup.chapitres"
                      :key="index"
