@@ -99,7 +99,8 @@ class App extends VuexModule implements IAppState {
   @Action
   public async fetchEngagementVariables(team: any = null) {
     if (!team) {
-      if (Object.keys(UserModule.loggedUser).length === 0) {
+      if (!UserModule.loggedUser || Object.keys(UserModule.loggedUser).length === 0) {
+        console.log('test ', UserModule)
         try {
           await UserModule.GetUserInfo()
           console.log('after wollecting usermodule')

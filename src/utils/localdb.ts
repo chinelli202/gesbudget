@@ -1,5 +1,5 @@
 const loggedUserKey = 'loggedUser'
-export const getLoggedUser = () => JSON.parse(localStorage.getItem(loggedUserKey) || '[]')
+export const getLoggedUser = () => JSON.parse(localStorage.getItem(loggedUserKey) || '{}')
 export const setLoggedUser = (user: any) => localStorage.setItem(loggedUserKey, JSON.stringify(user))
 export const removeLoggedUser = () => localStorage.removeItem(loggedUserKey)
 

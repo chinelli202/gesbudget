@@ -76,7 +76,7 @@ class User extends VuexModule {
     if (this.token === '') {
       throw Error('GetUserInfo: token is undefined!')
     }
-    const query = team ? { teamId: team.id } : (this.loggedUser.team ? { teamId: this.loggedUser.team.id } : {})
+    const query = team ? { teamId: team.id } : (this.loggedUser && this.loggedUser.team ? { teamId: this.loggedUser.team.id } : {})
     const { data } = await getUserInfo(query)
     if (!data) {
       throw Error('Verification failed, please Login again.')
@@ -121,6 +121,11 @@ class User extends VuexModule {
     TagsViewModule.delAllViews()
     this.SET_TOKEN('')
     this.SET_ROLES([])
+  }
+
+  @Action
+  public resetLoggedUser() {
+    this.SET_USER({})
   }
 }
 
