@@ -296,7 +296,7 @@ export default class CreateEngButton extends Vue {
   /** Cascader variables */
   private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : 'null'
   private domaines = AppModule.budgetStructure.domaines
-  private chapitresOptions: any
+  private chapitresOptions: any [] = []
   private budgetLevels: any = AppModule.budgetStructure.levels
   private cascade: number[] = []
 
@@ -359,7 +359,9 @@ export default class CreateEngButton extends Vue {
   }
 
   private domainChange() {
+    console.log("domain changed ", this.domain.toLowerCase())
     this.chapitresOptions = AppModule.budgetStructure.content[this.domain.toLowerCase()]
+    console.log("domain changed ", this.chapitresOptions)
   }
 
   private maxMontant() {
