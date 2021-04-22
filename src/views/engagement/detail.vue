@@ -6,28 +6,6 @@
         :offset="1"
       >
         <h1>Détail {{ engagement.code }} </h1>
-        <header-buttons
-          :entity="engagement"
-          type="engagement"
-          :submit-disabled="submitUpdateDisabled"
-          :fallback-url="fallbackUrl"
-          :on-cancel="onCancel"
-          :update="updateSubmit"
-          :resend-update="resendUpdate"
-          :validerp-submit="validerpSubmit"
-          :validers-submit="validersSubmit"
-          :validerf-submit="validerfSubmit"
-          :restore="fbRestorePreeng"
-          :options-annuler-valider="optionsAnnulerValider"
-          :commentaire-submit="fbcommentaireSubmit"
-          :close="fbclosePreeng"
-          :send-back-submit="fbsendBackSubmit"
-          :cancel-valider-submit="fbcancelValiderSubmit"
-          :next-etat-action="launchImputer"
-          :next-etat-action-text="nextEtatActionText"
-          :is-next-etat-action="isNextEtatAction"
-          @footerload="loadHandler($event)"
-        />
       </el-col>
       <el-col :span="5">
         <!-- <h1>Historique</h1> -->
@@ -541,7 +519,6 @@ import {
 } from '@/api/engagements'
 import { getSoldeLigne } from '@/api/lignes'
 import { imputerEngagement } from '@/api/imputations'
-import HeaderButtons from '@/views/engagement/components/headerbuttons.vue'
 import FooterButtons from '@/views/engagement/components/footerbuttons.vue'
 import ImputationCard from '@/views/engagement/components/imputationcard.vue'
 import ApurementCard from '@/views/engagement/components/apurementcard.vue'
@@ -554,7 +531,6 @@ import { isNull } from 'lodash'
 @Component({
   name: 'DetailEngagement',
   components: {
-    HeaderButtons,
     FooterButtons
     , ImputationCard
     , ApurementCard
