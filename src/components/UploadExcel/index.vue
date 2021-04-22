@@ -7,16 +7,22 @@
       accept=".xlsx, .xls, .php"
       @change="handleClick"
     >
-          <p :style="fileChosen ? tipActive : tipInactive">- Fichier maquette choisi <i class="el-icon-check"></i></p>
-          <p :style="fileUploaded ? tipActive : tipInactive">- Fichier uploadé sur le serveur <i class="el-icon-check"></i></p>
-          <p :style="fileProcessed ? tipActive : tipInactive">- Maquette générée dans la base de données <i class="el-icon-check"></i></p>
+    <p :style="fileChosen ? tipActive : tipInactive">
+      - Fichier maquette choisi <i class="el-icon-check" />
+    </p>
+    <p :style="fileUploaded ? tipActive : tipInactive">
+      - Fichier uploadé sur le serveur <i class="el-icon-check" />
+    </p>
+    <p :style="fileProcessed ? tipActive : tipInactive">
+      - Maquette générée dans la base de données <i class="el-icon-check" />
+    </p>
     <div
       class="drop"
       @drop="handleDrop"
       @dragover="handleDragover"
       @dragenter="handleDragover"
     >
-      {{filename}}
+      {{ filename }}
       <el-button
         :loading="loading"
         style="margin-left:16px;"
@@ -28,19 +34,27 @@
       </el-button>
     </div>
     <div>
-      <p>{{loadProgressMessage}}</p>
-      <el-progress :percentage="50"></el-progress>
+      <p>{{ loadProgressMessage }}</p>
+      <el-progress :percentage="50" />
     </div>
-    <div v-if="filechosen" style="float:right">
-      <el-button type="primary" plain @click="handleUploadClicked">Charger <i class="el-icon-upload el-icon-right"></i></el-button>
+    <div
+      v-if="filechosen"
+      style="float:right"
+    >
+      <el-button
+        type="primary"
+        plain
+        @click="handleUploadClicked"
+      >
+        Charger <i class="el-icon-upload el-icon-right" />
+      </el-button>
     </div>
-
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import {uploadMaquette, watchProgress, processMaquette} from '@/api/elaboration'
+import { uploadMaquette, watchProgress, processMaquette } from '@/api/elaboration'
 import XLSX from 'xlsx'
 
 @Component({
@@ -55,14 +69,15 @@ export default class extends Vue {
     header: null,
     results: null
   }
-  private loadProgressMessage: string  = "progress message"
-  private filechosen: boolean = false
-  private fileUploaded: boolean = false
-  private fileProcessed: boolean = false
-  private previewDisplayed: boolean = false
+
+  private loadProgressMessage = 'progress message'
+  private filechosen = false
+  private fileUploaded = false
+  private fileProcessed = false
+  private previewDisplayed = false
   private loadwatcher:any = {}
 
-  private filename:string  = "Drop excel file here or"
+  private filename = 'Drop excel file here or'
 
   private generateData(header: any, results: any) {
     this.excelData.header = header
@@ -71,8 +86,8 @@ export default class extends Vue {
   }
 
   private queryParams = {
-    file:{},
-    size:2
+    file: {},
+    size: 2
   }
 
   private handleDrop(e: DragEvent) {
@@ -93,10 +108,9 @@ export default class extends Vue {
     this.filename = rawFile.name
     this.filechosen = true
 
-
     this.queryParams.file = rawFile
 
-    //this.upload(rawFile)
+    // this.upload(rawFile)
     e.stopPropagation()
     e.preventDefault()
   }
@@ -131,35 +145,33 @@ export default class extends Vue {
     // if (before) {
     //   this.readerData(rawFile)
     // }
-    
+
     this.queryParams.file = rawFile
-    const formData = new FormData();
+    const formData = new FormData()
     formData.append('maquette', rawFile, rawFile.name)
-    const {data} = await uploadMaquette(formData)
-    if(data)
-    {
-      console.log("file uploaded")
+    const { data } = await uploadMaquette(formData)
+    if (data) {
+      console.log('file uploaded')
       this.fileUploaded = true
 
-      //launch process maquette
-      //start interval
+      // launch process maquette
+      // start interval
       //
     }
   }
 
-  //define interval variable
+  // define interval variable
 
-  //interval function
+  // interval function
   private watchprogress(filename:string) : any {
-    //check for progress, 
-    //update load message and progress bar
+    // check for progress,
+    // update load message and progress bar
   }
 
-  private loadmaquette(filename:string){
-    var form_data = new FormData();
-    this.loadwatcher = setInterval( this.watchprogress("maquette_name"), 2000 );
+  private loadmaquette(filename:string) {
+    var form_data = new FormData()
+    this.loadwatcher = setInterval(this.watchprogress('maquette_name'), 2000)
   }
-
 
   private readerData(rawFile: File) {
     // this.loading = true
@@ -198,10 +210,10 @@ export default class extends Vue {
   private isExcel(file: File) {
     return /\.(xlsx|xls|csv)$/.test(file.name)
   }
-  
-  private async handleUploadClicked(){
+
+  private async handleUploadClicked() {
     (this.$refs['excel-upload-input'] as HTMLInputElement).click()
-    //this.queryParams.file = this.queryParams.file
+    // this.queryParams.file = this.queryParams.file
     // const formData = new FormData();
     // formData.append('maquette', rawFile, rawFile.name)
     // const {data} = await uploadMaquette(this.queryParams)
@@ -212,7 +224,6 @@ export default class extends Vue {
     // }
   }
 }
-
 
 </script>
 

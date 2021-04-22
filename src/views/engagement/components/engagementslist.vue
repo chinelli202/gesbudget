@@ -6,29 +6,28 @@
       style="margin: 0.5em 0px"
     >
       <el-col :span="13">
-        <h2 
+        <h2
           v-if="showTitle"
-          style="margin-top: 0px">
-          {{ title ? title : libelleEtat[etat].title }} 
+          style="margin-top: 0px"
+        >
+          {{ title ? title : libelleEtat[etat].title }}
         </h2>
         <span v-else>
           .
         </span>
       </el-col>
-      <el-col :span="10">
-        
-      </el-col>
+      <el-col :span="10" />
       <el-col
         :span="9"
         :offset="6"
       >
         <el-button-group>
           <el-button
-            type="success"
             v-if="displayExportButton"
+            type="success"
             @click="handleExport"
           >
-            Exporter la liste <i class="el-icon-download el-icon-right"></i>
+            Exporter la liste <i class="el-icon-download el-icon-right" />
           </el-button>
         </el-button-group>
       </el-col>
@@ -39,7 +38,6 @@
       :height="tableHeight ? tableHeight: '78vh'"
       style="width: 100%"
     >
-      
       <el-table-column
         fixed
         prop="code"
@@ -86,7 +84,7 @@
         width="345"
       >
         <template slot-scope="scope">
-            {{ scope.row.chapitre_libelle }} // {{ scope.row.rubrique_libelle }} // {{ scope.row.ligne_libelle }}
+          {{ scope.row.chapitre_libelle }} // {{ scope.row.rubrique_libelle }} // {{ scope.row.ligne_libelle }}
         </template>
       </el-table-column>
       <el-table-column
@@ -100,7 +98,7 @@
         label="Devise"
         width="75"
       />
-      
+
       <el-table-column
         prop="saisisseur_name"
         label="Saisi par"
@@ -139,7 +137,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch} from 'vue-property-decorator'
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import { formatJson } from '@/utils'
 import { exportJson2Excel } from '@/utils/excel'
 import { getEngagements } from '@/api/engagements'
@@ -160,7 +158,7 @@ import Pagination from '@/components/Pagination/index.vue'
 
 export default class EngagementsList extends Vue {
   @Prop() private title!: string
-  @Prop({ default : true }) private showTitle!: boolean
+  @Prop({ default: true }) private showTitle!: boolean
   @Prop() private displayEtatRadio!: boolean
   @Prop({ default: true }) private displayExportButton!: boolean
   @Prop({ default: false }) private displayFilter!: boolean
@@ -187,19 +185,18 @@ export default class EngagementsList extends Vue {
   private listLoading = true
   private canCreateEngagement = true
   private paginationTotal = 0
-  private listQuery: Record<string,any> = {
+  private listQuery: Record<string, any> = {
     page: 1,
     limit: 30
   }
 
   private libelleEtat: Record<string, any> = {
-    'INIT' : {libelle: 'Initiés', title: 'Pré engagements initiés'},
-    'PEG' : {libelle: 'Pré Engagés', title: 'Liste des Pré engagements'},
-    'IMP' : {libelle: 'Imputés', title: 'Engagements imputés'},
-    'APUR' : {libelle: 'Apurés', title: 'Engagements apurés'},
-    'CLOT' : {libelle: 'Clôturés', title: 'Pré engagements clôturés'},
+    INIT: { libelle: 'Initiés', title: 'Pré engagements initiés' },
+    PEG: { libelle: 'Pré Engagés', title: 'Liste des Pré engagements' },
+    IMP: { libelle: 'Imputés', title: 'Engagements imputés' },
+    APUR: { libelle: 'Apurés', title: 'Engagements apurés' },
+    CLOT: { libelle: 'Clôturés', title: 'Pré engagements clôturés' }
   }
-
 
   private tageffect = AppModule.tageffect
 
@@ -231,15 +228,16 @@ export default class EngagementsList extends Vue {
   private hasPermission(permission: string) {
     return UserModule.loggedUser.permissions.filter((item: any) => item.code === permission).length > 0
   }
+
   /** test dd */
   private async handleExport() {
     this.listLoading = true
-    const tHeader = ['Code', 'Date', 'Dernière mise à Jour le', 'Etat', 'Statut', 'Libellé', 'Domaine', 'Ligne budgétaire', 'Rubrique du Budget', 'Chapitre du Budget'
-                    , 'Devise', 'Montant TTC', 'Cumul des imputations', 'Cumul des apurements', 'Type engagement', 'Saisi par'
-                    , 'Saisi le', 'Validé au 1er niveau par', 'Validé au 2nd niveau par', 'Validé au niveau final par']
-    const filterVal = ['code', 'eng_date', 'latest_edited_at', 'etat_libelle', 'latest_statut', 'libelle', 'domaine', 'ligne_libelle', 'rubrique_libelle', 'chapitre_libelle'
-                    , 'devise', 'montant_ttc', 'cumul_imputations', 'cumul_apurements' ,'type_libelle', 'saisisseur_name'
-                    , 'created_at', 'valideurp_name', 'valideurs_name', 'valideurf_name']
+    const tHeader = ['Code', 'Date', 'Dernière mise à Jour le', 'Etat', 'Statut', 'Libellé', 'Domaine', 'Ligne budgétaire', 'Rubrique du Budget', 'Chapitre du Budget',
+      'Devise', 'Montant TTC', 'Cumul des imputations', 'Cumul des apurements', 'Type engagement', 'Saisi par',
+      'Saisi le', 'Validé au 1er niveau par', 'Validé au 2nd niveau par', 'Validé au niveau final par']
+    const filterVal = ['code', 'eng_date', 'latest_edited_at', 'etat_libelle', 'latest_statut', 'libelle', 'domaine', 'ligne_libelle', 'rubrique_libelle', 'chapitre_libelle',
+      'devise', 'montant_ttc', 'cumul_imputations', 'cumul_apurements', 'type_libelle', 'saisisseur_name',
+      'created_at', 'valideurp_name', 'valideurs_name', 'valideurf_name']
     const { page, limit, ...fullQuery } = this.listQuery
     let list: any
     const response = await getEngagements(fullQuery)
@@ -248,12 +246,12 @@ export default class EngagementsList extends Vue {
       return all + '--' + newKey + '_' + fullQuery[newKey]
     }, '')
     const data = formatJson(filterVal, list)
-    exportJson2Excel(tHeader, data, 'Liste des engagements '+ fileNameSuffix, undefined, undefined, true, 'xlsx')
+    exportJson2Excel(tHeader, data, 'Liste des engagements ' + fileNameSuffix, undefined, undefined, true, 'xlsx')
     this.listLoading = false
   }
 
   detail(value: any, engagement: any) {
-    this.$router.push({ name: 'engagementDetailView', params: { id: engagement.id , fallbackPayload : this.fallbackPayload} })
+    this.$router.push({ name: 'engagementDetailView', params: { id: engagement.id, fallbackPayload: this.fallbackPayload } })
   }
 
   deleteRow(index: any, rows: any) {
@@ -265,37 +263,37 @@ export default class EngagementsList extends Vue {
   }
 
   dateFormatterShort(value: any, row: any, column: any) {
-    if (column !== undefined && column !== "") {
-      var myDate = new Date(column);
+    if (column !== undefined && column !== '') {
+      var myDate = new Date(column)
       var month = [
-        "Jan",
-        "Fev",
-        "Mar",
-        "Avr",
-        "Mai",
-        "Jun",
-        "Jul",
-        "Aou",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ][myDate.getMonth()];
-      let d = myDate.getDate()
-      let dd = d<10 ? '0'+d: d
-      var str =  dd + " " + month + " " + myDate.getFullYear();
-      return str;
+        'Jan',
+        'Fev',
+        'Mar',
+        'Avr',
+        'Mai',
+        'Jun',
+        'Jul',
+        'Aou',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ][myDate.getMonth()]
+      const d = myDate.getDate()
+      const dd = d < 10 ? '0' + d : d
+      var str = dd + ' ' + month + ' ' + myDate.getFullYear()
+      return str
     }
-    return "";
+    return ''
   }
 
   dateFormatter(value: any, row: any, column: any) {
     const str = this.dateFormatterShort(value, row, column)
     const myDate = new Date(column)
-    let h = myDate.getHours()
-    let hh = h<10 ? '0'+h: h
-    let m = myDate.getMinutes()
-    let mm = m<10 ? '0'+m: m
+    const h = myDate.getHours()
+    const hh = h < 10 ? '0' + h : h
+    const m = myDate.getMinutes()
+    const mm = m < 10 ? '0' + m : m
 
     const formattedDate = str +
       '|' + hh + ':' + mm
@@ -304,7 +302,7 @@ export default class EngagementsList extends Vue {
 
   private async getEngagements() {
     this.listLoading = true
-    
+
     if (this.code) {
       this.listQuery.code = this.code
     } else {

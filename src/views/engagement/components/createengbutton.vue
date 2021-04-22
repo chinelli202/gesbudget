@@ -52,55 +52,55 @@
             </el-radio-group>
           </el-col>
         </el-row>
-          <el-row :gutter="10">
-            <el-col
-              :span="3"
-              :offset="2"
+        <el-row :gutter="10">
+          <el-col
+            :span="3"
+            :offset="2"
+          >
+            <strong>Ligne budget</strong>
+          </el-col>
+          <el-col :span="17">
+            <el-form-item
+              prop="ligne_budgetaire"
+              :rules="[{validator: validateLigne, trigger: 'blur'}]"
             >
-              <strong>Ligne budget</strong>
-            </el-col>
-            <el-col :span="17">
-              <el-form-item
-                prop="ligne_budgetaire"
-                :rules="[{ validator: validateLigne, trigger: 'blur' }]"
-              >
-                <el-cascader
-                  v-model="cascade"
-                  :options="chapitresOptions"
-                  :props="{expandTrigger: 'hover'}"
-                  placeholder="Choisir la ligne budgétaire"
-                  class="cascade-extra-lg"
-                  filterable
-                  :filter-method="cascadeFilter"
-                  @change="cascadeChange"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="10">
-            <el-col
-              :span="3"
-              :offset="2"
+              <el-cascader
+                v-model="cascade"
+                :options="chapitresOptions"
+                :props="{expandTrigger: 'hover'}"
+                placeholder="Choisir la ligne budgétaire"
+                class="cascade-extra-lg"
+                filterable
+                :filter-method="cascadeFilter"
+                @change="cascadeChange"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10">
+          <el-col
+            :span="3"
+            :offset="2"
+          >
+            <strong>Date</strong>
+          </el-col>
+          <el-col :span="17">
+            <el-form-item
+              prop="eng_date"
+              :rules="[{validator: validateDate, trigger: 'blur'}]"
             >
-              <strong>Date</strong>
-            </el-col>
-            <el-col :span="17">
-              <el-form-item
-                prop="eng_date"
-                :rules="[{ validator: validateDate, trigger: 'blur' }]"
-              >
-                <el-date-picker
-                  style="width: 100%"
-                  v-model="engagement.eng_date"
-                  format="dd MMMM yyyy"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  type="date"
-                  placeholder="Choississez un jour"
-                  :picker-options="pickerOptions">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
+              <el-date-picker
+                v-model="engagement.eng_date"
+                style="width: 100%"
+                format="dd MMMM yyyy"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                type="date"
+                placeholder="Choississez un jour"
+                :picker-options="pickerOptions"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item>
           <el-row :gutter="10">
             <el-col
@@ -122,7 +122,7 @@
             <el-form-item
               prop="libelle"
               label="Libellé"
-              :rules="[{ validator: validateLibelle, trigger: 'blur' }]"
+              :rules="[{validator: validateLibelle, trigger: 'blur'}]"
             >
               <el-input
                 v-model="engagement.libelle"
@@ -162,11 +162,11 @@
             <el-col :span="12">
               <el-form-item
                 prop="montant_ttc"
-                :rules="[{ validator: validateMontant, trigger: 'blur' }]"
+                :rules="[{validator: validateMontant, trigger: 'blur'}]"
               >
                 <el-input-number
-                  style="width: 100%"
                   v-model="engagement.montant_ttc"
+                  style="width: 100%"
                   :min="0"
                   :controls="false"
                   @input="formAttributeChange"
@@ -187,7 +187,7 @@
           >
             <el-form-item
               prop="type"
-              :rules="[{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change' }]"
+              :rules="[{required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change'}]"
             >
               <el-select
                 v-model="engagement.type"
@@ -233,11 +233,10 @@
       </span>
     </el-dialog>
   </div>
-  
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch} from 'vue-property-decorator'
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import { createEngagement } from '@/api/engagements'
 import { Form as ElForm, Input } from 'element-ui'
 import { getSoldeLigne } from '@/api/lignes'
@@ -247,7 +246,7 @@ import { UserModule } from '@/store/modules/user'
 @Component({
   name: 'CreateEngButton',
   components: {
-    
+
   }
 })
 
@@ -264,11 +263,11 @@ export default class CreateEngButton extends Vue {
       callback()
     }
   }
-  
+
   private validateLibelle = (rule: any, value: string, callback: Function) => {
     if (!value) {
       callback(new Error('Veuillez saisir un libellé à cet engagement'))
-    } else if(value.length < 4) {
+    } else if (value.length < 4) {
       callback(new Error('Le libellé saisi doit avoir au moins 4 caractères'))
     } else {
       callback()
@@ -278,14 +277,14 @@ export default class CreateEngButton extends Vue {
   private validateMontant = (rule: any, value: number, callback: Function) => {
     if (this.maxMontant() > 1 && value < 1) {
       callback(new Error('Veuillez saisir un montant non nul'))
-    } else if (this.maxMontant() < value ) {
+    } else if (this.maxMontant() < value) {
       callback(new Error(`Le solde restant pour cette ligne budgétaire est de ${this.maxMontant().toLocaleString()} XAF.
       Vous ne pouvez pas créer un engagement d'un montant supérieur à cette somme.`))
     } else {
       callback()
     }
   }
-  
+
   private validateDate = (rule: any, value: number, callback: Function) => {
     if (!value) {
       callback(new Error('Veuillez saisir une date pour cet engagement'))
@@ -307,7 +306,7 @@ export default class CreateEngButton extends Vue {
   private formLabelWidth = '120px'
   private dialogFormVisible = false
   private dialogFormLoading = false
-  private deviseLoading: boolean = false
+  private deviseLoading = false
   private deviseOptions: string[] = []
   private listeDevises: string[] = []
   private typeOptions = {}
@@ -331,26 +330,26 @@ export default class CreateEngButton extends Vue {
 
   private pickerOptions = {
     disabledDate(time: any) {
-      return time.getTime() > Date.now();
+      return time.getTime() > Date.now()
     },
     shortcuts: [{
       text: 'Aujourd\'hui',
       onClick(picker: any) {
-        picker.$emit('pick', new Date());
+        picker.$emit('pick', new Date())
       }
     }, {
       text: 'Hier',
       onClick(picker: any) {
-        const date = new Date();
-        date.setTime(date.getTime() - 3600 * 1000 * 24);
-        picker.$emit('pick', date);
+        const date = new Date()
+        date.setTime(date.getTime() - 3600 * 1000 * 24)
+        picker.$emit('pick', date)
       }
     }, {
       text: 'Il y a une semaine',
       onClick(picker: any) {
-        const date = new Date();
-        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-        picker.$emit('pick', date);
+        const date = new Date()
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
+        picker.$emit('pick', date)
       }
     }]
   }
@@ -364,7 +363,7 @@ export default class CreateEngButton extends Vue {
   }
 
   private maxMontant() {
-    return 0 < +this.soldeLigne ? +this.soldeLigne : 0
+    return +this.soldeLigne > 0 ? +this.soldeLigne : 0
   }
 
   private selectedLigne() {
@@ -373,28 +372,28 @@ export default class CreateEngButton extends Vue {
 
   private selectDevise(query: string) {
     if (query !== '') {
-      this.deviseLoading = true;
-      this.deviseLoading = false;
+      this.deviseLoading = true
+      this.deviseLoading = false
       this.deviseOptions = this.listeDevises.filter((item: any) => {
         return item.libelle.toLowerCase()
-          .indexOf(query.toLowerCase()) > -1;
-      });
+          .indexOf(query.toLowerCase()) > -1
+      })
     }
   }
-  
+
   private cascadeChange() {
     console.log('cascade ', this.cascade)
     this.formAttributeChange()
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
     this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
     this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
-    getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
+    getSoldeLigne({ id: this.engagement.ligne_id }).then((response) => {
       this.soldeLigne = response.data.solde_restant == 0 ? 'Solde nul' : response.data.solde_restant
     })
   }
 
   private cascadeFilter(node: any, keyword: string) {
-    return node.text.toLowerCase().includes(keyword.toLowerCase());
+    return node.text.toLowerCase().includes(keyword.toLowerCase())
   }
 
   private resetForm() {
@@ -425,9 +424,9 @@ export default class CreateEngButton extends Vue {
 
   private preAction() {
     (this.$refs.engagementForm as ElForm).validate(async(valid: boolean) => {
-      if(valid) {
+      if (valid) {
         this.dialogFormLoading = true
-        let { eng_date, ...eng } = this.engagement
+        const { eng_date, ...eng } = this.engagement
         console.log('eng_date ', eng_date, eng)
         this.createEngAction({
           eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '),
@@ -459,7 +458,7 @@ export default class CreateEngButton extends Vue {
   }
 
   private capitalizeFirstLetter(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 }
 </script>

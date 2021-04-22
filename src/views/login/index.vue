@@ -1,7 +1,6 @@
 <template>
   <div class="login-container">
-    <div class="backgound-container">
-    </div>
+    <div class="backgound-container" />
     <el-form
       ref="loginForm"
       :model="loginForm"
@@ -14,14 +13,21 @@
         <h3 class="title">
           {{ $t('login.title') }}
         </h3>
-        <el-row type="flex" class="row-bg" justify="center">
+        <el-row
+          type="flex"
+          class="row-bg"
+          justify="center"
+        >
           <el-col :span="5">
             <el-image
               style="width: 100px; height: 100px; margin-bottom: 1em; border-radius: 4px"
               :src="'/img/logo-snh.jpg'"
-              :fit="'cover'">
-              <div slot="error" class="image-slot">
-              </div>
+              :fit="'cover'"
+            >
+              <div
+                slot="error"
+                class="image-slot"
+              />
             </el-image>
           </el-col>
         </el-row>
@@ -193,6 +199,7 @@ export default class extends Vue {
     (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
       if (valid) {
         this.loading = true
+        console.log('login')
         UserModule.Login(this.loginForm)
           .then(() => {
             AppModule.fetchEngagementVariables()

@@ -11,8 +11,8 @@
     >
       <el-col :span="9">
         <el-button
-          @click="onCancel"
           style="margin-right:1em"
+          @click="onCancel"
         >
           Retour
         </el-button>
@@ -62,10 +62,11 @@
         </el-button>
         <el-dropdown
           v-if="isbtnValiderCombined"
-          split-button type="primary"
+          split-button
+          type="primary"
           @command="handleCommandValider"
         >
-            Valider l'engagement
+          Valider l'engagement
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item
               v-if="isbtnValiderp"
@@ -161,18 +162,18 @@
           label="Raison de la clôture"
         >
           <el-select
-              v-model="plusDactionsForm.reason"
-              style="width: 20vw"
-              clearable
-              placeholder="Choisir une raison"
-            >
-              <el-option
-                v-for="item in raisonsCloseList"
-                :key="item.key"
-                :label="item.label"
-                :value="item.key">
-              </el-option>
-            </el-select>
+            v-model="plusDactionsForm.reason"
+            style="width: 20vw"
+            clearable
+            placeholder="Choisir une raison"
+          >
+            <el-option
+              v-for="item in raisonsCloseList"
+              :key="item.key"
+              :label="item.label"
+              :value="item.key"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="Ajouter un commentaire">
           <el-input
@@ -306,9 +307,10 @@ export default class FooterButtons extends Vue {
   }
 
   private raisonsCloseList = [
-    {key: 'ENG_NON_VALID', label: 'Engagement non validé par la hiérarchie'},
-    {key: 'ENG_ERR_CREA', label: 'Erreur dans la création de l\'engagement'}
+    { key: 'ENG_NON_VALID', label: 'Engagement non validé par la hiérarchie' },
+    { key: 'ENG_ERR_CREA', label: 'Erreur dans la création de l\'engagement' }
   ]
+
   private rulesPlusDactionsForm = {
     commentaire: [
       { required: true, message: 'Veuillez saisir un commentaire.', trigger: 'blur' }
@@ -341,11 +343,11 @@ export default class FooterButtons extends Vue {
   }
 
   private entityLabel() {
-    if (this.type === "engagement") {
+    if (this.type === 'engagement') {
       return 'le pré-engagement'
-    } else if (this.type === "imputation") {
+    } else if (this.type === 'imputation') {
       return 'l\'imputation'
-    } else if (this.type === "apurement") {
+    } else if (this.type === 'apurement') {
       return 'l\'apurement'
     } else {
       return 'Unknown entity'
@@ -514,18 +516,18 @@ export default class FooterButtons extends Vue {
 
   private preValiderF() {
     this.$confirm('L\'opération que vous voulez effectuez ne pourra pas être annulée plus tard. Êtes vous sûr(e) de vouloir valider au niveau final ?'
-        , 'Validation finale'
-        , {
-          confirmButtonText: 'Oui, Valider au niveau final',
-          cancelButtonText: 'Annuler',
-          type: 'warning'
-        }
-      ).then(_ => {
-        this.validerfSubmit.call()
+      , 'Validation finale'
+      , {
+        confirmButtonText: 'Oui, Valider au niveau final',
+        cancelButtonText: 'Annuler',
+        type: 'warning'
+      }
+    ).then(_ => {
+      this.validerfSubmit.call()
+    })
+      .catch(error => {
+        console.log('Erreur lors de la confirmation de la validation finale', error)
       })
-        .catch(error => {
-          console.log('Erreur lors de la confirmation de la validation finale', error)
-        })
   }
 
   private handleCommandValider(command: any) {
@@ -602,18 +604,18 @@ export default class FooterButtons extends Vue {
 
   private activateBtnForNextAction() {
     const nextStatut:string[] = this.nextStatut(this.entity.statut)
-    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDP.code) !== -1
-        && this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDP)) {
+    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDP.code) !== -1 &&
+        this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDP)) {
       this.isbtnValiderp = true
       return null
     }
-    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDS.code) !== -1
-        && this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDS)) {
+    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDS.code) !== -1 &&
+        this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDS)) {
       this.isbtnValiders = true
     }
 
-    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDF.code) !== -1
-        && this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDF)) {
+    if (nextStatut.indexOf(AppModule.statutsEngagement.VALIDF.code) !== -1 &&
+        this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat].VALIDF)) {
       this.isbtnValiderf = true
       return null
     }
@@ -670,13 +672,13 @@ export default class FooterButtons extends Vue {
     if (nextStatut.length === 0) {
       return false
     }
-    
+
     let canNextStatut = false
 
-    if(this.entity.etat === AppModule.etatsEngagement.CLOT.code) {
+    if (this.entity.etat === AppModule.etatsEngagement.CLOT.code) {
       return false
     }
-    
+
     nextStatut.forEach(statut => {
       canNextStatut = canNextStatut || this.hasPermission(PermissionModule.permissionCodes.engagement[this.entity.etat][statut])
     })
@@ -741,7 +743,7 @@ export default class FooterButtons extends Vue {
     }
     // Since the activateBtnForNextAction() function can activate multiple buttons, for user who have multiple validation permissions,
     // we'll display either the combined validation button or the single button
-    if ((this.isbtnValiderp? 1:0) + (this.isbtnValiders?1:0) + (this.isbtnValiderf?1:0) >= 2) {
+    if ((this.isbtnValiderp ? 1 : 0) + (this.isbtnValiders ? 1 : 0) + (this.isbtnValiderf ? 1 : 0) >= 2) {
       this.isbtnValiderCombined = true
     }
 
@@ -794,9 +796,9 @@ export default class FooterButtons extends Vue {
     }
 
     // 11.Si l'un des boutons principaux est activé, désactiver le bouton Ok
-    if (this.isbtnNextEtatAction || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp
-        || this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider
-        || this.isbtnValiderCombined) {
+    if (this.isbtnNextEtatAction || this.isbtnUpdate || this.isResendUpdate || this.isbtnValiderp ||
+        this.isbtnValiders || this.isbtnValiderf || this.isbtnAnnulerValider ||
+        this.isbtnValiderCombined) {
       this.isbtnOk = false
     }
   }

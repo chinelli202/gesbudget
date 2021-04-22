@@ -76,12 +76,12 @@ class User extends VuexModule {
     if (this.token === '') {
       throw Error('GetUserInfo: token is undefined!')
     }
-    let query = team ? { teamId : team.id } : ( this.loggedUser.team ? { teamId : this.loggedUser.team.id } : {})
+    const query = team ? { teamId: team.id } : (this.loggedUser.team ? { teamId: this.loggedUser.team.id } : {})
     const { data } = await getUserInfo(query)
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
-    
+
     // roles must be a non-empty array
     if (!data.roles || data.roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
@@ -89,7 +89,6 @@ class User extends VuexModule {
     this.SET_USER(data)
     this.SET_ROLES(data.roles)
   }
-
 
   @Action
   public async ChangeRoles(role: string) {
@@ -99,7 +98,7 @@ class User extends VuexModule {
     await this.GetUserInfo()
     resetRouter()
     // Generate dynamic accessible routes based on roles
-    console.log("printed from change roles, user.ts")
+    console.log('printed from change roles, user.ts')
     const team = UserModule.loggedUser.team
     PermissionModule.GenerateRoutes(this.roles, team.name)
     // Add generated routes

@@ -15,7 +15,7 @@ export const removeDevises = () => localStorage.removeItem(devisesKey)
 
 const typesPaiementKey = 'typesPaiement'
 export const getTypesPaiement = () => JSON.parse(localStorage.getItem(typesPaiementKey) || '[]')
-export const setTypesPaiement= (typesPaiement: string[]) => localStorage.setItem(typesPaiementKey, JSON.stringify(typesPaiement))
+export const setTypesPaiement = (typesPaiement: string[]) => localStorage.setItem(typesPaiementKey, JSON.stringify(typesPaiement))
 export const removeTypesPaiement = () => localStorage.removeItem(typesPaiementKey)
 
 const typesEngagementKey = 'typesEngagement'

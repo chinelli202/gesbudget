@@ -14,9 +14,7 @@
               Tableau de bord - {{ team.display_name }}
             </h1>
           </el-col>
-          <el-col :span="10">
-            
-          </el-col>
+          <el-col :span="10" />
           <el-col
             v-if="canCreateEngagement"
             :span="9"
@@ -24,9 +22,8 @@
           >
             <create-eng-button
               :inactive="!canCreateEngagement"
-              :createEngAction="createEngagement"
-            >
-            </create-eng-button>
+              :create-eng-action="createEngagement"
+            />
           </el-col>
           <el-col
             v-else
@@ -49,6 +46,7 @@
               <el-card shadow="always">
                 <el-main>
                   <EngagementsList
+                    :key="permission.code.split('_')[0] + permission.to_perform_on.split('_')[1] + keyForRefresh"
                     :etat="permission.to_perform_on.split('_')[0]"
                     :statut="permission.to_perform_on.split('_')[1]"
                     :title="permission.display_name"
@@ -56,7 +54,6 @@
                     :table-height="'50vh'"
                     :display-create-button="false"
                     :display-export-button="false"
-                    :key="permission.code.split('_')[0] + permission.to_perform_on.split('_')[1] + keyForRefresh"
                   />
                 </el-main>
               </el-card>
@@ -73,6 +70,7 @@
             <el-card shadow="always">
               <el-main>
                 <EngagementsList
+                  :key="permission.code.split('_')[1] + 'NEW,SAISI' + keyForRefresh"
                   :etat="permission.code.split('_')[1]"
                   :statut="'NEW,SAISI'"
                   :title="permission.display_name"
@@ -80,13 +78,11 @@
                   :table-height="'50vh'"
                   :display-create-button="permission.code.split('_')[1] === 'INIT'"
                   :display-export-button="false"
-                  :key="permission.code.split('_')[1] + 'NEW,SAISI' + keyForRefresh"
                 />
               </el-main>
             </el-card>
             <br>
           </div>
-          
         </div>
       </div>
     </div>
@@ -122,7 +118,7 @@ export default class Home extends Vue {
   created() {
     this.canCreateEngagement = UserModule.loggedUser.permissions.filter((item: any) => item.code === PermissionModule.permissionCodes.engagement.INIT.SAISI).length > 0
 
-    let engagementPermissions = UserModule.loggedUser.permissions.filter((value: any) => {
+    const engagementPermissions = UserModule.loggedUser.permissions.filter((value: any) => {
       return value.code.split('_')[0].trim() === 'ENG'
     })
 

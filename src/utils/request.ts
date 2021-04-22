@@ -14,12 +14,13 @@ service.interceptors.request.use(
     // Add X-Access-Token header to every request, you can add other custom headers here
     if (UserModule.token) {
       config.headers['X-Access-Token'] = UserModule.token
+      config.headers['Content-Type'] = 'multipart/form-data'
     }
     if (UserModule.loggedUser && UserModule.loggedUser.team) {
-      if(config.data) {
-        config.data['entreprise_code'] = UserModule.loggedUser.team.entreprise_code
-      } else if(config.params){
-        config.params['entreprise_code'] = UserModule.loggedUser.team.entreprise_code
+      if (config.data) {
+        config.data.entreprise_code = UserModule.loggedUser.team.entreprise_code
+      } else if (config.params) {
+        config.params.entreprise_code = UserModule.loggedUser.team.entreprise_code
       }
     }
     return config

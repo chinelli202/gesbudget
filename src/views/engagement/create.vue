@@ -303,8 +303,6 @@ export default class extends Vue {
     this.cardLoading = false
   }
 
- 
-
   private onCancel() {
     this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
   }
@@ -317,7 +315,6 @@ export default class extends Vue {
   private formAttributeChange() {
     this.submitDisabled = false
   }
-
 }
 
 </script>

@@ -16,11 +16,11 @@
               size="small"
               @change="etatChange"
             >
-              <el-radio-button label="Initiés"/>
-              <el-radio-button label="Pré Engagés"/>
-              <el-radio-button label="Imputés"/>
-              <el-radio-button label="Apurés"/>
-              <el-radio-button label="Clôturés"/>
+              <el-radio-button label="Initiés" />
+              <el-radio-button label="Pré Engagés" />
+              <el-radio-button label="Imputés" />
+              <el-radio-button label="Apurés" />
+              <el-radio-button label="Clôturés" />
             </el-radio-group>
           </el-col>
         </el-row>
@@ -50,11 +50,11 @@ export default class extends Vue {
   private etatLibelle = 'Initiés'
   private title = 'Pré engagements initiés'
   private etatsLibelle: Record<string, any> = {
-    'Initiés': {code: 'INIT', title: 'Pré engagements initiés', icon: ''},
-    'Pré Engagés': {code: 'PEG', title: 'Liste des engagements', icon: ''},
-    'Imputés': {code: 'IMP', title: 'Engagements imputés', icon: ''},
-    'Apurés': {code: 'APUR', title: 'Engagements apurés', icon: ''},
-    'Clôturés': {code: 'CLOT', title: 'Pré engagements clôturés', icon: ''}
+    Initiés: { code: 'INIT', title: 'Pré engagements initiés', icon: '' },
+    'Pré Engagés': { code: 'PEG', title: 'Liste des engagements', icon: '' },
+    Imputés: { code: 'IMP', title: 'Engagements imputés', icon: '' },
+    Apurés: { code: 'APUR', title: 'Engagements apurés', icon: '' },
+    Clôturés: { code: 'CLOT', title: 'Pré engagements clôturés', icon: '' }
   }
 
   created() {

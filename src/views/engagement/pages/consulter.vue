@@ -2,21 +2,27 @@
   <div class="dashboard-editor-container">
     <div class="clearfix">
       <div class="app-container">
-        <el-row :gutter="10" style="margin-bottom: 1em">
-          <el-col :span="4" :offset="6">
+        <el-row
+          :gutter="10"
+          style="margin-bottom: 1em"
+        >
+          <el-col
+            :span="4"
+            :offset="6"
+          >
             <el-select
               v-model="operationType"
               style="width: 14vw"
               placeholder="Engagements ayant été..."
-              @change="operationTypeChanged"
               clearable
+              @change="operationTypeChanged"
             >
               <el-option
                 v-for="item in operationSelect"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value">
-              </el-option>
+                :value="item.value"
+              />
             </el-select>
           </el-col>
           <el-col :span="4">
@@ -31,17 +37,23 @@
                 v-for="item in usersList"
                 :key="item.matricule"
                 :label="item.name"
-                :value="item.matricule">
-              </el-option>
+                :value="item.matricule"
+              />
             </el-select>
           </el-col>
           <el-col :span="4">
-            <el-select v-model="etat" style="width: 14vw" multiple placeholder="Etat de l'engagement">
+            <el-select
+              v-model="etat"
+              style="width: 14vw"
+              multiple
+              placeholder="Etat de l'engagement"
+            >
               <el-option
                 v-for="item in etatSelect"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value">
+                :value="item.value"
+              >
                 <span style="float: left">{{ item.label }}</span>
                 <span style="float: right; margin-right: 3em; color: rgb(132, 146, 166); font-size: 13px;">{{ item.value }}</span>
               </el-option>
@@ -51,18 +63,19 @@
           <el-col :span="5">
             <el-input
               v-if="false"
-              width="18vw"
               v-model="libelle"
-              placeholder="Rechercher par libelle">  
-            </el-input>
+              width="18vw"
+              placeholder="Rechercher par libelle"
+            />
           </el-col>
         </el-row>
         <el-row :gutter="10">
           <el-col
-            :span="3" 
+            :span="3"
             :offset="3"
           >
-            <el-select v-model="domain"
+            <el-select
+              v-model="domain"
               placeholder="Domaine"
               @change="domainChanged"
             >
@@ -84,23 +97,28 @@
               style="width: 28.4vw"
               placeholder="Ligne budgétaire"
               :options="chapitresOptions"
-              :props="{ multiple: true, expandTrigger: 'hover'}"
+              :props="{multiple: true, expandTrigger: 'hover'}"
               collapse-tags
               clearable
               filterable
               @change="ligneChanged"
-              >
-            </el-cascader>
+            />
           </el-col>
           <el-col :span="4">
-            <el-select v-model="statut" style="width: 14vw" multiple placeholder="Statut de l'engagement">
+            <el-select
+              v-model="statut"
+              style="width: 14vw"
+              multiple
+              placeholder="Statut de l'engagement"
+            >
               <el-option
                 v-for="item in statutSelect"
                 :key="item.value"
                 :label="item.label"
-                :value="item.value">
-                  <span style="float: left">{{ item.label }}</span>
-                  <span style="float: right; margin-right: 3em; color: rgb(132, 146, 166); font-size: 13px;">{{ item.value }}</span>
+                :value="item.value"
+              >
+                <span style="float: left">{{ item.label }}</span>
+                <span style="float: right; margin-right: 3em; color: rgb(132, 146, 166); font-size: 13px;">{{ item.value }}</span>
               </el-option>
             </el-select>
           </el-col>
@@ -114,21 +132,21 @@
               range-separator="à"
               start-placeholder="Mois de début"
               end-placeholder="Mois de fin"
-              :picker-options="pickerOptions">
-            </el-date-picker>
+              :picker-options="pickerOptions"
+            />
           </el-col>
         </el-row>
-        
+
         <EngagementsList
           :etat="etatString"
           :statut="statutString"
-          :showTitle = "false"
-          :lignes = lignes
-          :saisisseurs = "operateurs.SAISI"
-          :valideursP = "operateurs.VALIDP"
-          :valideursS = "operateurs.VALIDS"
-          :valideursF = "operateurs.VALIDF"
-          :tableHeight="'72vh'"
+          :show-title="false"
+          :lignes="lignes"
+          :saisisseurs="operateurs.SAISI"
+          :valideurs-p="operateurs.VALIDP"
+          :valideurs-s="operateurs.VALIDS"
+          :valideurs-f="operateurs.VALIDF"
+          :table-height="'72vh'"
         />
       </div>
     </div>
@@ -152,7 +170,7 @@ import EngagementsList from '@/views/engagement/components/engagementslist.vue'
 export default class extends Vue {
   private etat: string[] = []
   private statut: string[] = []
-  private operationType: string = ''
+  private operationType = ''
   private operateurSelect: string[] = []
   private usersList: string[] = []
   private operateurs: Record<string, any> = {
@@ -161,6 +179,7 @@ export default class extends Vue {
     VALIDS: '',
     VALIDF: ''
   }
+
   private saisisseurs: string[] = []
   private valideursP: string[] = []
   private valideursS: string[] = []
@@ -192,7 +211,7 @@ export default class extends Vue {
 
   private domainChanged() {
     this.chapitresOptions = AppModule.budgetStructure[this.domain.toLowerCase()]
-    console.log("New domain ", this.domain)
+    console.log('New domain ', this.domain)
   }
 
   private operationTypeChanged() {
@@ -221,43 +240,43 @@ export default class extends Vue {
   }
 
   private etatSelect = [{
-        value: 'INIT',
-        label: 'Initiés'
-      },
-      {
-        value: 'PEG',
-        label: 'Engagés'
-      },
-      {
-        value: 'IMP',
-        label: 'Imputés'
-      },
-      {
-        value: 'APUR',
-        label: 'Apurés'
-      },
-      {
-        value: 'CLOT',
-        label: 'Clôturés'
-      }]
+    value: 'INIT',
+    label: 'Initiés'
+  },
+  {
+    value: 'PEG',
+    label: 'Engagés'
+  },
+  {
+    value: 'IMP',
+    label: 'Imputés'
+  },
+  {
+    value: 'APUR',
+    label: 'Apurés'
+  },
+  {
+    value: 'CLOT',
+    label: 'Clôturés'
+  }]
 
   private statutSelect = [{
-        value: 'SAISI',
-        label: 'Saisi'
-      },
-      {
-        value: 'VALIDP',
-        label: 'Validés au 1er niveau'
-      },
-      {
-        value: 'VALIDS',
-        label: 'Validés au 2nd niveau'
-      },
-      {
-        value: 'VALIDF',
-        label: 'Validés au niveau final'
-      }]
-  
+    value: 'SAISI',
+    label: 'Saisi'
+  },
+  {
+    value: 'VALIDP',
+    label: 'Validés au 1er niveau'
+  },
+  {
+    value: 'VALIDS',
+    label: 'Validés au 2nd niveau'
+  },
+  {
+    value: 'VALIDF',
+    label: 'Validés au niveau final'
+  }]
+
   private operationSelect = [
     {
       value: 'SAISI',
@@ -276,29 +295,29 @@ export default class extends Vue {
       label: 'Validés au niveau final par ...'
     }
   ]
-  
+
   pickerOptions = {
     disabledDate(time: any) {
-      return time.getTime() > Date.now();
+      return time.getTime() > Date.now()
     },
     shortcuts: [{
       text: 'Aujourd\'hui',
       onClick(picker: any) {
-        picker.$emit('pick', new Date());
+        picker.$emit('pick', new Date())
       }
     }, {
       text: 'Hier',
       onClick(picker: any) {
-        const date = new Date();
-        date.setTime(date.getTime() - 3600 * 1000 * 24);
-        picker.$emit('pick', date);
+        const date = new Date()
+        date.setTime(date.getTime() - 3600 * 1000 * 24)
+        picker.$emit('pick', date)
       }
     }, {
       text: 'Il y a une semaine',
       onClick(picker: any) {
-        const date = new Date();
-        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-        picker.$emit('pick', date);
+        const date = new Date()
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
+        picker.$emit('pick', date)
       }
     }]
   }

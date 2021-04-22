@@ -98,11 +98,11 @@ class App extends VuexModule implements IAppState {
 
   @Action
   public async fetchEngagementVariables(team: any = null) {
-    if(!team) {
-      if(Object.keys(UserModule.loggedUser).length === 0) {
+    if (!team) {
+      if (Object.keys(UserModule.loggedUser).length === 0) {
         try {
           await UserModule.GetUserInfo()
-          console.log("after wollecting usermodule")
+          console.log('after wollecting usermodule')
           const roles = UserModule.roles
           const team = UserModule.loggedUser.team
           // Generate accessible routes map based on role
@@ -121,26 +121,26 @@ class App extends VuexModule implements IAppState {
     let response
     let levels = 0
     let budget: Record<string, any> = {}
-    let respBudget: Record<string, any> = {
+    const respBudget: Record<string, any> = {
       content: {}
     }
-    
+
     try {
       response = await getBudgetStructure({})
     } catch (error) {
       console.error(error)
-      return  
+      return
     }
-    
+
     budget = response.data.content
     levels = response.data.levels
 
     try {
       if (levels == 4) {
-        respBudget['domaines'] = Object.keys(budget)
+        respBudget.domaines = Object.keys(budget)
         for (const domain in budget) {
-          let chapts = budget[domain].chapitres
-          respBudget['content'][domain] = chapts.map(
+          const chapts = budget[domain].chapitres
+          respBudget.content[domain] = chapts.map(
             (chapitre: any) => {
               return {
                 label: chapitre.label,
@@ -165,9 +165,8 @@ class App extends VuexModule implements IAppState {
             }
           )
         }
-      }
-      else {
-        respBudget['content'] = budget.chapitres.map(
+      } else {
+        respBudget.content = budget.chapitres.map(
           (chapitre: any) => {
             return {
               label: chapitre.label,
@@ -198,12 +197,12 @@ class App extends VuexModule implements IAppState {
         type: 'error',
         duration: 7 * 1000
       })
-      respBudget['error'] = "ERREUR_RECUPERATION"
+      respBudget.error = 'ERREUR_RECUPERATION'
       console.log(error)
       return
     }
-    
-    respBudget['levels'] = levels
+
+    respBudget.levels = levels
     this.SET_BUDGET_STRUCTURE(respBudget)
 
     response = await getVariables({ cle: 'DEVISE' })
@@ -211,7 +210,7 @@ class App extends VuexModule implements IAppState {
       all[obj.code] = { code: obj.code, libelle: obj.libelle }
       return all
     }, {}))
-    
+
     response = await getVariables({ cle: 'TYPE_PAIEMENT' })
     this.SET_TYPES_PAIEMENT(response.data.reduce(function(all: any, obj: any) {
       all[obj.code] = { code: obj.code, libelle: obj.libelle }
@@ -298,7 +297,7 @@ class App extends VuexModule implements IAppState {
     this.devises = devises
     setDevises(this.devises)
   }
-  
+
   @Mutation
   private SET_TYPES_PAIEMENT(typesPaiement: string[]) {
     this.typesPaiement = typesPaiement
