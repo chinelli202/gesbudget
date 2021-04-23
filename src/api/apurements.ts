@@ -1,10 +1,9 @@
 import request from '@/utils/request'
 import { getToken } from '@/utils/cookies'
 
-
 export const apurerEngagement = (data: any) =>
   request({
-    url: `/apurement/create`,
+    url: '/apurement/create',
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -91,4 +90,3 @@ export const cancelValidationApurement = (data: any) =>
     },
     data
   })
-

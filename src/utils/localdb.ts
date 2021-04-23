@@ -1,5 +1,5 @@
 const loggedUserKey = 'loggedUser'
-export const getLoggedUser = () => JSON.parse(localStorage.getItem(loggedUserKey) || '[]')
+export const getLoggedUser = () => JSON.parse(localStorage.getItem(loggedUserKey) || '{}')
 export const setLoggedUser = (user: any) => localStorage.setItem(loggedUserKey, JSON.stringify(user))
 export const removeLoggedUser = () => localStorage.removeItem(loggedUserKey)
 
@@ -15,7 +15,7 @@ export const removeDevises = () => localStorage.removeItem(devisesKey)
 
 const typesPaiementKey = 'typesPaiement'
 export const getTypesPaiement = () => JSON.parse(localStorage.getItem(typesPaiementKey) || '[]')
-export const setTypesPaiement= (typesPaiement: string[]) => localStorage.setItem(typesPaiementKey, JSON.stringify(typesPaiement))
+export const setTypesPaiement = (typesPaiement: string[]) => localStorage.setItem(typesPaiementKey, JSON.stringify(typesPaiement))
 export const removeTypesPaiement = () => localStorage.removeItem(typesPaiementKey)
 
 const typesEngagementKey = 'typesEngagement'

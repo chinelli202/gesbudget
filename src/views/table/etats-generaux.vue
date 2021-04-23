@@ -1,19 +1,18 @@
 <template>
   <div class="app-container">
-    
     <div v-if="domaine == 'fonctionnement'">
-      <custom-table :recapData="fonctionnementData"/>
-    </div> 
-    
-    <div v-if="domaine == 'fonctionnement'">
-      <custom-table :recapData="investissementData"/>
+      <custom-table :recap-data="fonctionnementData" />
     </div>
-    
+
+    <div v-if="domaine == 'fonctionnement'">
+      <custom-table :recap-data="investissementData" />
+    </div>
+
     <div v-if="domaine == 'mandat'">
-      <custom-table :recapData="depenseData"/>
+      <custom-table :recap-data="depenseData" />
     </div>
-    
-    <custom-table :recapData="recetteData"/>
+
+    <custom-table :recap-data="recetteData" />
   </div>
 </template>
 
@@ -21,16 +20,16 @@
 
 import { Component, Vue } from 'vue-property-decorator'
 import { getRecapSousSectionFonctionnement } from '@/api/sousSectionFonctionnement'
-import { ISousSectionFonctionnement } from '@/api/types'
+import { ISousSectionFonctionnement, IRecapData, IMonthRecapData, IMonthRecapCollection } from '@/api/types'
 import CustomTable from './groupe-rubrique/components/SummaryTable.vue'
-import { IRecapData, IMonthRecapData, IMonthRecapCollection } from '@/api/types'
-import {getSectionRecapData, defaultRecapData} from '@/api/recapData'
-import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre-etats'
+
+import { getSectionRecapData, defaultRecapData } from '@/api/recapData'
+import { FiltreEtatsModule as etatsmodule, periodes } from '@/store/modules/filtre-etats'
 
 @Component({
   name: 'EtatsGeneraux',
-  components:{
-    CustomTable,
+  components: {
+    CustomTable
   }
 })
 
@@ -41,7 +40,7 @@ private listQuery = {
   limit: 10
 }
 
-private domaine:string ="fonctionnement"
+private domaine ='fonctionnement'
 
 private listLoading = true
 private fonctionnementData: IRecapData = defaultRecapData
@@ -51,21 +50,20 @@ private recetteData: IRecapData = defaultRecapData
 
 created() {
   const path = this.$router.currentRoute.path
-  this.domaine = path.split("/")[2]
+  this.domaine = path.split('/')[2]
   this.getRecetteData()
-  if(this.domaine == 'fonctionnement'){
-     this.getFonctionnementData()
-     this.getInvestissementData()   
-  }
-  else{
+  if (this.domaine == 'fonctionnement') {
+    this.getFonctionnementData()
+    this.getInvestissementData()
+  } else {
     this.getDepenseData()
   }
 }
 
 private async getFonctionnementData() {
-   this.listLoading = true
-  let queryParams = this.getQueryParams()
-  //const groupename = this.$route.params && this.$route.params.groupename
+  this.listLoading = true
+  const queryParams = this.getQueryParams()
+  // const groupename = this.$route.params && this.$route.params.groupename
   const { data } = await getSectionRecapData('fonctionnement', this.domaine, queryParams)
   this.fonctionnementData = data
   setTimeout(() => {
@@ -75,8 +73,8 @@ private async getFonctionnementData() {
 
 private async getInvestissementData() {
   this.listLoading = true
-  let queryParams = this.getQueryParams()
-  //const groupename = this.$route.params && this.$route.params.groupename
+  const queryParams = this.getQueryParams()
+  // const groupename = this.$route.params && this.$route.params.groupename
   const { data } = await getSectionRecapData('investissement', this.domaine, queryParams)
   this.investissementData = data
   setTimeout(() => {
@@ -86,8 +84,8 @@ private async getInvestissementData() {
 
 private async getRecetteData() {
   this.listLoading = true
-  let queryParams = this.getQueryParams()
-  //const groupename = this.$route.params && this.$route.params.groupename
+  const queryParams = this.getQueryParams()
+  // const groupename = this.$route.params && this.$route.params.groupename
   const { data } = await getSectionRecapData('recettes', this.domaine, queryParams)
   this.recetteData = data
   setTimeout(() => {
@@ -97,8 +95,8 @@ private async getRecetteData() {
 
 private async getDepenseData() {
   this.listLoading = true
-  let queryParams = this.getQueryParams()
-  //const groupename = this.$route.params && this.$route.params.groupename
+  const queryParams = this.getQueryParams()
+  // const groupename = this.$route.params && this.$route.params.groupename
   const { data } = await getSectionRecapData('depenses', this.domaine, queryParams)
   this.depenseData = data
   setTimeout(() => {
@@ -106,18 +104,18 @@ private async getDepenseData() {
   }, 0.5 * 3000)
 }
 
-private getQueryParams(){
-      var period = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? periodes.JOUR : 
-      (etatsmodule.periode == periodes.MOIS || etatsmodule.periode == periodes.CEMOIS)?periodes.MOIS:
-      (etatsmodule.periode == periodes.INTERVALLE)?periodes.INTERVALLE:'rapport_mensuel';
-    
-    var param = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? etatsmodule.jourPeriodeJour : 
-      etatsmodule.moisPeriodeMois
+private getQueryParams() {
+  var period = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? periodes.JOUR
+    : (etatsmodule.periode == periodes.MOIS || etatsmodule.periode == periodes.CEMOIS) ? periodes.MOIS
+      : (etatsmodule.periode == periodes.INTERVALLE) ? periodes.INTERVALLE : 'rapport_mensuel'
 
-      var startmonth = etatsmodule.debutPeriodeIntervalle
-      var endmonth = etatsmodule.finPeriodeIntervalle
-      return {'critere':period, param:param, startmonth:startmonth, endmonth:endmonth}
-    }
+  var param = (etatsmodule.periode == periodes.JOUR || etatsmodule.periode == periodes.TODAY) ? etatsmodule.jourPeriodeJour
+    : etatsmodule.moisPeriodeMois
+
+  var startmonth = etatsmodule.debutPeriodeIntervalle
+  var endmonth = etatsmodule.finPeriodeIntervalle
+  return { critere: period, param: param, startmonth: startmonth, endmonth: endmonth }
+}
 }
 
 </script>

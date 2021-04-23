@@ -86,7 +86,7 @@ export default class extends Vue {
   }
 
   created() {
-    this.user['roles'] = UserModule.roles
+    this.user.roles = UserModule.roles
   }
 }
 </script>

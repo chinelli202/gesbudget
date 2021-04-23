@@ -16,29 +16,28 @@ export interface IArticleData {
   pageviews: number
 }
 
-
 export interface IEngagementData {
-  id: number,
-  created_at: string,
-  updated_at: string,
-  eng_date: Date,
-  code: string,
-  libelle: string,
-  montant_ht: number,
-  montant_ttc: number,
-  devise: string,
-  nature: string,
-  type: string,
-  etat: string,
-  statut: string,
-  nb_imputations: number, 
-  cumul_imputations: number,
-  nb_apurements: number,
-  cumul_apurements: number,
-  saisisseur: string,
-  valideur_first: string, 
-  valideur_second: string,
-  valideur_final: string,
+  id: number
+  created_at: string
+  updated_at: string
+  eng_date: Date
+  code: string
+  libelle: string
+  montant_ht: number
+  montant_ttc: number
+  devise: string
+  nature: string
+  type: string
+  etat: string
+  statut: string
+  nb_imputations: number
+  cumul_imputations: number
+  nb_apurements: number
+  cumul_apurements: number
+  saisisseur: string
+  valideur_first: string
+  valideur_second: string
+  valideur_final: string
   source: string
 }
 
@@ -101,7 +100,7 @@ export interface ISousSectionFonctionnement {
 
 export interface IRecapData {
   sumrow: object
-  //collection : IRecapData[]
+  // collection : IRecapData[]
   header:any
   libelle: string
   id: number
@@ -135,13 +134,13 @@ export interface IMonthRecapData {
 }
 
 export interface recapHeader{
-  labelLabel: string,
-  previsionLabel: string,
-  realisationsLabel: string,
-  realisationsMoisLabel: string,
-  realisationsMoisPrecedents: string,
-  engagementsLabel: string,
-  executionLabel: string,
-  soldeLabel: string,
-  tauxExecution: string,
+  labelLabel: string
+  previsionLabel: string
+  realisationsLabel: string
+  realisationsMoisLabel: string
+  realisationsMoisPrecedents: string
+  engagementsLabel: string
+  executionLabel: string
+  soldeLabel: string
+  tauxExecution: string
 }

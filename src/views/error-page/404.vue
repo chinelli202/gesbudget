@@ -28,7 +28,7 @@
           OOPS!
         </div>
         <div class="text-404__info">
-         Si vous avez un soucis, veuillez contacter la Division Informatique.
+          Si vous avez un soucis, veuillez contacter la Division Informatique.
         </div>
         <div class="text-404__headline">
           {{ message }}

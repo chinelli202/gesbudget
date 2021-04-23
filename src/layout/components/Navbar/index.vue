@@ -16,27 +16,33 @@
           <el-radio-group
             v-model="team"
             size="small"
-            @change="teamChanged"
             :fill="theme"
+            @change="teamChanged"
           >
             <el-radio-button
               v-for="(obj) in teams"
               :key="obj.id"
               :label="obj.id"
-            >{{ obj.display_name }}</el-radio-button>
+            >
+              {{ obj.display_name }}
+            </el-radio-button>
           </el-radio-group>
         </div>
         <div style="display: inline-block;padding: 0 8px;vertical-align: text-bottom;">
           <el-tooltip placement="bottom">
-            <div slot="content">Rafraîchir la session {{ currentTeam.display_name }}</div>
-            <el-button 
+            <div slot="content">
+              Rafraîchir la session {{ currentTeam.display_name }}
+            </div>
+            <el-button
               icon="el-icon-refresh"
-              @click="updateSession"
               circle
-            ></el-button>
+              @click="updateSession"
+            />
           </el-tooltip>
         </div>
-        <div style="display: inline-block;padding: 0 8px;vertical-align: text-bottom;"><strong>{{ userName }}</strong></div>
+        <div style="display: inline-block;padding: 0 8px;vertical-align: text-bottom;">
+          <strong>{{ userName }}</strong>
+        </div>
         <error-log class="errLog-container right-menu-item hover-effect" />
         <screenfull class="right-menu-item hover-effect" />
         <el-tooltip
@@ -64,7 +70,7 @@
               {{ $t('navbar.profile') }}
             </el-dropdown-item>
           </router-link>
-          <!-- 
+          <!--
           <router-link to="/">
             <el-dropdown-item>
               {{ $t('navbar.dashboard') }}
@@ -127,14 +133,14 @@ export default class extends Vue {
   private team = 0
   private loading : any
 
-  created(){
+  created() {
     this.team = this.currentTeam.id
   }
 
   get theme() {
     return SettingsModule.theme
   }
-  
+
   get userName() {
     return UserModule.loggedUser.name
   }
@@ -166,22 +172,23 @@ export default class extends Vue {
   private async logout() {
     await UserModule.LogOut()
     this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    UserModule.resetLoggedUser()
   }
 
   private async updateSession() {
     this.loading = this.$loading({
-          lock: true,
-          text: 'Loading',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        });
+      lock: true,
+      text: 'Loading',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)'
+    })
     await AppModule.UpdateSession(UserModule.loggedUser.teams[this.team])
-    this.$router.push({path : '/'})
+    this.$router.push({ path: '/' })
     this.$router.go(0)
   }
 
   private async teamChanged() {
-    this.updateSession();
+    this.updateSession()
   }
 }
 </script>
