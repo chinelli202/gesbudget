@@ -68,7 +68,7 @@ export const defaultRecapData: IRecapData = {
 
     export const getEntrepriseRecapData = (entreprise_code: string, params: any) =>
     request({
-      url: `/etats/entreprise/'${entreprise_code}`,
+      url: `/etats/entreprise/${entreprise_code}`,
       method: 'get',
       params
     })

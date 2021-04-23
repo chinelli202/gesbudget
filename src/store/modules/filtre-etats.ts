@@ -37,7 +37,7 @@ class FiltreEtats extends VuexModule implements IFiltreEtats {
   //public jourPeriodeJour = defaultFiltreEtat.jourPeriodeJour
   public moisPeriodeMois = defaultFiltreEtat.moisPeriodeMois
   public debutPeriodeIntervalle = defaultFiltreEtat.debutPeriodeIntervalle
-  public finPeriodeIntervalle = defaultFiltreEtat.finPeriodeIntervalle
+  public finPeriodeIntervalle = new Date().getMonth() + 1 //.finPeriodeIntervalle
 
   @Mutation
   private SET_PERIODE_JOUR(payload: { jourParam: string, value: string }) {

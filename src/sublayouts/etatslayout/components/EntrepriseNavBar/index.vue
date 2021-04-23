@@ -3,7 +3,7 @@
     class="etatnavbar"  
   >
       
-    <el-menu
+    <el-menu v-if="menuType === 1"
       default-active="1"
       class="el-menu-demo"
       mode="horizontal"
@@ -11,27 +11,18 @@
       :text-color="navbarstyles.textColor"
       :active-text-color="navbarstyles.activeTextColor"
    >
-      <!-- <router-link to="/tab/custom/generaux">
-        <el-menu-item index="1">Général</el-menu-item>
-      </router-link> -->
+      
       <el-menu-item class="fonctionnement">
         <i class="el-icon-document fonctionnement" ></i> 
         <span class="fonctionnement">Etats {{navTitle}}</span>
-        <!-- <span></span> Fonctionnement -->
+  
       </el-menu-item> 
       <el-menu-item index="1"
       @click="handleGenerauxClicked()">
         Général
       </el-menu-item> 
-       
-      <!-- <el-menu-item @click="handleNavigate">
-        Aller à...
-      </el-menu-item> -->
 
-      
-
-      <!-- group menus -->
-      <el-menu-item 
+      <el-menu-item
         v-for="group in groupesMap"
         :key="group.id"
         @click="handleGroupClicked(group)">
@@ -42,18 +33,49 @@
         <i class="el-icon-download"></i>
         <span>Exporter</span> 
       </el-menu-item>
-      <!-- <el-submenu v-if="isGeneraux">
+      
+    </el-menu>
+
+    <el-menu v-else
+      default-active="1"
+      class="el-menu-demo"
+      mode="horizontal"
+      :background-color="navbarstyles.backgroundColor"
+      :text-color="navbarstyles.textColor"
+      :active-text-color="navbarstyles.activeTextColor"
+   >
+      
+      <el-menu-item class="fonctionnement">
+        <i class="el-icon-document fonctionnement" ></i> 
+        <span class="fonctionnement">Etats {{navTitle}}</span>
+  
+      </el-menu-item> 
+      <el-menu-item index="1"
+      @click="handleGenerauxClicked()">
+        Général
+      </el-menu-item> 
+
+      <el-submenu v-for="group in groupesMap"
+        :key="group.id"
+        :index="group.id">
           <template slot="title">
-            Exporter
+            {{group.label}}
           </template>
           <el-menu-item 
-            v-for="map in exportMap"
-            :key="map.value"
-            @click="handleExporterGeneraux(map)"
-            >
-              {{map.label}}
+          v-for="rubrique in group.children"
+          :key="rubrique.id"
+          :index="rubrique.index"
+          @click="handleSubMenuClicked(rubrique)"
+          >
+            {{rubrique.label}}
           </el-menu-item>
-      </el-submenu>  -->
+      </el-submenu>
+
+      <el-menu-item v-if="!isGeneraux" @click="handleExporter">
+        <i class="el-icon-download"></i>
+        <span>Exporter</span> 
+      </el-menu-item>
+      
     </el-menu>
 
     <el-dialog :visible.sync="dialogTableVisible">
@@ -67,6 +89,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import NavigateurEtats from '@/components/NavigateurEtats/index.vue'
 import {FiltreEtatsModule as etatsmodule, periodes} from '@/store/modules/filtre-etats'
 import {getFonctionnementTree, getMandatTree, getSectionsFonctionnementTree, getEntrepriseTree} from '@/api/maquetteTree'
+import { UserModule } from '@/store/modules/user'
   
 
   @Component({
@@ -106,16 +129,9 @@ private recettesMap: any [] = []
 private ssectionFonctionnementMap : any [] = []
 
 private maquetteTree : any = {}
-private exportTree : any = {
-mandat: [{label:'Recettes', value: 'recettes', type: 'full'}
-        ,{label:'Dépenses', value: 'depenses', type: 'full'}
-        ,{label:'Rapport Mandat', value: 'rapport_mandat', type: 'domaine'}],
-fonctionnement: [{label:'Recettes', value: 'recettes', type: 'full'}
-        ,{label:'Investissement', value: 'investissement', type: 'full'}
-        ,{label:'Fonctionnement', value: 'fonctionnement', type: 'full'}
-        ,{label:'Rapport Fonctionnement', value: 'rapport_fonctionnement', type: 'domaine'}],
-}
+
 private exportMap: any [] = []  
+private menuType:number = 1
 
 created(){
 
@@ -125,78 +141,34 @@ created(){
   this.isGeneraux = path.split("/")[3] == 'generaux';
 
   //set nav title and styling
-  this.navTitle = this.entreprise == 'fonctionnement'? "Fonctionnement":"Mandat"
-  this.navTitle = "CPSP"
+  this.navTitle = UserModule.loggedUser.team.description
   this.paramNavTree()
-  //get NavTree and pass it as prop
 }
 
   private async paramNavTree(){
     console.log('running param nav tree')
-    // if(this.entreprise=='fonctionnement'){
-    //   this.navTitle = "Fonctionnement"
-    //   const {data} = await getSectionsFonctionnementTree(this.listQuery)
-    //   this.maquetteTree = data
-    //   this.exportMap = this.exportTree.fonctionnement
-
-    //   this.navbarstyles.backgroundColor = "#545c64"
-    //   this.navbarstyles.textColor = "#fff"
-    //   this.navbarstyles.activeTextColor = "#ffd04b"
-    // }
-    // else{
-    //   this.navTitle = "Mandat"
-    //   const {data} = await getMandatTree(this.listQuery)
-    //   this.maquetteTree = data
-    //   this.exportMap = this.exportTree.mandat
-    // }
 
       const {data} = await getEntrepriseTree(this.listQuery)
       this.maquetteTree = data
-    console.log("this is maquettetree option", this.maquetteTree)
-
-    let groupesOption = this.maquetteTree.content.chapitres[0].rubriques  
-    this.groupesMap = groupesOption.map((rubrique : any)=>{
-      let groupe = {label : rubrique.label, id : rubrique.id}
-      return groupe
-    })
-    console.log("this is the groupes map, ", this.groupesMap)
-
-    
-    //let depensesOption = this.maquetteTree.depenses.chapitres
-    // let recettesOption = this.maquetteTree.recettes.chapitres
-
-    // if(this.entreprise == 'fonctionnement'){
-    //   let depensesOption = this.maquetteTree.depenses
-    //   this.depensesMap= depensesOption.sections.map((section : any)=>{
-    //     let mappedSection = {label: section.section, value: section.section, groupes:section.groupes.map((groupe:any)=>{
-    //       //make custom names
-    //       let urlname = groupe.label.split(" ").join("+")
-    //       let sectiongroup = {label: groupe.label, value:urlname, type:'groupe'}
-    //       return sectiongroup
-    //     }), chapitres:section.chapitres.map((chapitre:any)=>{
-    //       let mappedChapitre = {label: chapitre.label, value: chapitre.id, type:'chapitre'}
-    //       return mappedChapitre
-    //     })}
-    //     return mappedSection
-    //   })
-      
-    //   console.log("this is the depense map, ", this.depensesMap)
-    // }
-    // else{
-    //   let depensesOption = this.maquetteTree.depenses.chapitres
-    //   this.depensesMap= depensesOption.map((chapitre : any)=>{
-    //     let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:'chapitre'}
-    //     return mappedChapitre
-    //   })
-    //   console.log("this is the depense map, ", this.depensesMap)
-    // }
-
-    
-
-    // this.recettesMap= recettesOption.map((chapitre : any)=>{
-    //   let mappedChapitre = {label: chapitre.label, value: chapitre.id, index: chapitre.id, type:'chapitre'}
-    //   return mappedChapitre
-    // })
+      if(this.maquetteTree.content.chapitres.length > 1){
+        this.menuType = 2
+        let groupesOption = this.maquetteTree.content.chapitres
+        this.groupesMap = groupesOption.map((chapitre : any)=>{
+          let groupe = {label : chapitre.label, id : chapitre.id, children: chapitre.rubriques.map((rubrique : any) => {
+            let child = {label : rubrique.label, id : rubrique.id, type : 'rubrique'}
+            return child
+          })}
+          return groupe
+        })
+      }
+      else{
+        this.menuType = 1
+        let groupesOption = this.maquetteTree.content.chapitres[0].rubriques  
+        this.groupesMap = groupesOption.map((rubrique : any)=>{
+          let groupe = {label : rubrique.label, id : rubrique.id}
+          return groupe
+        })
+      }
   }
 
   private handleClick(element: any){
@@ -303,6 +275,11 @@ created(){
   private handleGroupClicked(data:any){
     var routename = "etats-entreprise"
     this.$router.push({ name: routename, params: { entitytype: "rubrique", entitykey: data.id } })
+  }
+
+  private handleSubMenuClicked(data:any){
+    var routename = "etats-entreprise"
+    this.$router.push({ name: routename, params: { entitytype: data.type, entitykey: data.id } })
   }
 
   private handleAllerButtonClick(){

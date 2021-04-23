@@ -9,7 +9,9 @@
 
       <div>
           <entreprise-nav-bar/>
-          <custom-table :recapData="entrepriseData"/>
+          <custom-table v-for="(chapterData, index) in entrepriseData"
+            :key="index"
+            :recapData="chapterData"/>
       </div> 
     </div> 
     
@@ -50,7 +52,13 @@ export default class extends Vue {
     const code = UserModule.loggedUser.team.entreprise_code
     //const entitytype = this.$route.params && this.$route.params.entitytype
     getEntrepriseRecapData(code,  queryParams).then((response) => {
-      this.entrepriseData = response.data
+      if(response.data.collection.length > 1){
+        this.entrepriseData = response.data.collection
+      }
+      else {
+        this.entrepriseData = response.data.collection[0].collection
+      }
+      console.log("entreprise data", this.entrepriseData)
     })
   }
 

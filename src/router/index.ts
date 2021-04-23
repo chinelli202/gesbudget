@@ -233,7 +233,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'etatsBudget',
       icon: 'dashboard',
-      teams: ['snh','SNHSIEGE']
+      teams: ['snh','snh_yde']
     },
     children: [
       {
@@ -271,7 +271,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsFonctionnement',
           icon: 'tab',
-          teams: ['snh','SNHSIEGE']
+          teams: ['snh','snh_yde']
         }
       },
       {
@@ -300,7 +300,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsMandat',
           icon: 'tab',
-          teams: ['snh','SNHSIEGE']
+          teams: ['snh','snh_yde']
         }
       }
     ]
@@ -313,7 +313,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'rapports',
       icon: 'dashboard',
-      teams: ['CPSP']
+      teams: ['cpsp', 'snh_dla']
     },
     children : [
       {
@@ -323,7 +323,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'rapports',
           icon: 'dashboard',
-          teams: ['CPSP']
+          teams: ['cpsp', 'snh_dla']
         }
       },
       {
@@ -334,7 +334,7 @@ export const asyncRoutes: RouteConfig[] = [
           title: 'etatsEntreprise',
           name:'etats-entreprise',
           icon: 'dashboard',
-          teams: ['CPSP'],
+          teams: ['cpsp', 'snh_dla'],
           hidden:true        
         }
       }
