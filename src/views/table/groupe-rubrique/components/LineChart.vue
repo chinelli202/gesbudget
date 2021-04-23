@@ -54,7 +54,7 @@ export default class extends mixins(ResizeMixin) {
     if (this.chart) {
       this.chart.setOption({
         xAxis: {
-          data: chartData.months,//['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: chartData.months, // ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           boundaryGap: false,
           axisTick: {
             show: false
@@ -88,7 +88,7 @@ export default class extends mixins(ResizeMixin) {
           itemStyle: {
             color: '#3888fa',
             lineStyle: {
-              color: '#3888fa', //FF005A
+              color: '#3888fa', // FF005A
               width: 2
             }
           },
@@ -105,7 +105,7 @@ export default class extends mixins(ResizeMixin) {
           itemStyle: {
             color: '#FF005A',
             lineStyle: {
-              color: '#FF005A', //3888fa
+              color: '#FF005A', // 3888fa
               width: 2
             },
             areaStyle: {

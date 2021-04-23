@@ -1,110 +1,114 @@
 <template>
-<div class="">
-  <el-row style="margin-top: 2em">
-    <el-col :span="8" :offset="1">
-      <el-form
-        ref="passwordForm"
-        :model="passwordForm"
-        :rules="passwordRules"
-        class="login-form"
-        autocomplete="off"
-        label-position="left"
+  <div class="">
+    <el-row style="margin-top: 2em">
+      <el-col
+        :span="8"
+        :offset="1"
       >
-        <el-tooltip
-          v-model="capsTooltip"
-          :content="$t('passwordchange.label.caps_is_on')"
-          placement="right"
-          manual
+        <el-form
+          ref="passwordForm"
+          :model="passwordForm"
+          :rules="passwordRules"
+          class="login-form"
+          autocomplete="off"
+          label-position="left"
         >
-          <el-form-item
-            prop="old_password"
-            :label="$t('passwordchange.label.old_password')">
-            <el-input
-              :key="oldPasswordType"
-              ref="old_password"
-              v-model="passwordForm.old_password"
-              :type="oldPasswordType"
-              :placeholder="$t('passwordchange.label.old_password')"
-              prefix-icon="el-icon-key"
-              name="old_password"
-              tabindex="2"
-              autocomplete="off"
-              @keyup.native="checkCapslock"
-              @blur="capsTooltip = false"
-              @keyup.enter.native="submit"
-            />
-          </el-form-item>
-        </el-tooltip>
-
-        <el-tooltip
-          v-model="capsTooltip"
-          :content="$t('passwordchange.label.caps_is_on')"
-          placement="right"
-          manual
-        >
-          <el-form-item
-            prop="new_password"
-            :label="$t('passwordchange.label.new_password')"
-            >
-            <el-input
-              :key="newPasswordType"
-              ref="new_password"
-              v-model="passwordForm.new_password"
-              :type="newPasswordType"
-              :placeholder="$t('passwordchange.label.new_password')"
-              prefix-icon="el-icon-key"
-              name="new_password"
-              tabindex="2"
-              autocomplete="off"
-              @keyup.native="checkCapslock"
-              @blur="capsTooltip = false"
-              @keyup.enter.native="submit"
-            />
-          </el-form-item>
-        </el-tooltip>
-
-        <el-tooltip
-          v-model="capsTooltip"
-          :content="$t('passwordchange.label.caps_is_on')"
-          placement="right"
-          manual
-        >
-          <el-form-item
-            prop="confirm_new_password"
-            :label="$t('passwordchange.label.confirm_new_password')">
-            <el-input
-              :key="cNewPasswordType"
-              ref="confirm_new_password"
-              v-model="passwordForm.confirm_new_password"
-              :type="cNewPasswordType"
-              :placeholder="$t('passwordchange.label.confirm_new_password')"
-              prefix-icon="el-icon-key"
-              name="confirm_new_password"
-              tabindex="2"
-              autocomplete="off"
-              @keyup.native="checkCapslock"
-              @blur="capsTooltip = false"
-              @keyup.enter.native="submit"
-            />
-          </el-form-item>
-        </el-tooltip>
-
-        <el-form-item>
-          <el-button
-            :loading="loading"
-            type="primary"
-            style="width:100%; margin-bottom:30px;"
-            :disabled="!canSubmit"
-            @click.native.prevent="submit"
+          <el-tooltip
+            v-model="capsTooltip"
+            :content="$t('passwordchange.label.caps_is_on')"
+            placement="right"
+            manual
           >
-            {{ $t('passwordchange.label.submit') }}
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </el-row>
-  
-</div>
+            <el-form-item
+              prop="old_password"
+              :label="$t('passwordchange.label.old_password')"
+            >
+              <el-input
+                :key="oldPasswordType"
+                ref="old_password"
+                v-model="passwordForm.old_password"
+                :type="oldPasswordType"
+                :placeholder="$t('passwordchange.label.old_password')"
+                prefix-icon="el-icon-key"
+                name="old_password"
+                tabindex="2"
+                autocomplete="off"
+                @keyup.native="checkCapslock"
+                @blur="capsTooltip = false"
+                @keyup.enter.native="submit"
+              />
+            </el-form-item>
+          </el-tooltip>
+
+          <el-tooltip
+            v-model="capsTooltip"
+            :content="$t('passwordchange.label.caps_is_on')"
+            placement="right"
+            manual
+          >
+            <el-form-item
+              prop="new_password"
+              :label="$t('passwordchange.label.new_password')"
+            >
+              <el-input
+                :key="newPasswordType"
+                ref="new_password"
+                v-model="passwordForm.new_password"
+                :type="newPasswordType"
+                :placeholder="$t('passwordchange.label.new_password')"
+                prefix-icon="el-icon-key"
+                name="new_password"
+                tabindex="2"
+                autocomplete="off"
+                @keyup.native="checkCapslock"
+                @blur="capsTooltip = false"
+                @keyup.enter.native="submit"
+              />
+            </el-form-item>
+          </el-tooltip>
+
+          <el-tooltip
+            v-model="capsTooltip"
+            :content="$t('passwordchange.label.caps_is_on')"
+            placement="right"
+            manual
+          >
+            <el-form-item
+              prop="confirm_new_password"
+              :label="$t('passwordchange.label.confirm_new_password')"
+            >
+              <el-input
+                :key="cNewPasswordType"
+                ref="confirm_new_password"
+                v-model="passwordForm.confirm_new_password"
+                :type="cNewPasswordType"
+                :placeholder="$t('passwordchange.label.confirm_new_password')"
+                prefix-icon="el-icon-key"
+                name="confirm_new_password"
+                tabindex="2"
+                autocomplete="off"
+                @keyup.native="checkCapslock"
+                @blur="capsTooltip = false"
+                @keyup.enter.native="submit"
+              />
+            </el-form-item>
+          </el-tooltip>
+
+          <el-form-item>
+            <el-button
+              :loading="loading"
+              type="primary"
+              style="width:100%; margin-bottom:30px;"
+              :disabled="!canSubmit"
+              @click.native.prevent="submit"
+            >
+              {{ $t('passwordchange.label.submit') }}
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script lang="ts">
@@ -118,10 +122,11 @@ import { changePassword } from '@/api/users'
 })
 export default class extends Vue {
   private passwordForm = {
-    old_password : '',
-    new_password : '',
-    confirm_new_password : ''
+    old_password: '',
+    new_password: '',
+    confirm_new_password: ''
   }
+
   private loading = false
   private capsTooltip = false
   private oldPasswordType = 'password'
@@ -200,7 +205,7 @@ export default class extends Vue {
     new_password: [
       { validator: this.validatePassword, trigger: 'blur' },
       { validator: this.validateNewPassword, trigger: 'blur' }
-      ],
+    ],
     confirm_new_password: [
       { validator: this.validatePassword, trigger: 'blur' },
       { validator: this.validateConfirmPassword, trigger: 'blur' }
@@ -213,15 +218,14 @@ export default class extends Vue {
   }
 
   private submit() {
-    
     (this.$refs.passwordForm as ElForm).validate(async(valid: boolean) => {
       if (valid) {
         this.loading = true
-        console.log("submit")
+        console.log('submit')
         changePassword(this.passwordForm)
           .then(() => {
-              this.loading = false;
-              (this.$refs.passwordForm as ElForm).resetFields();
+            this.loading = false;
+            (this.$refs.passwordForm as ElForm).resetFields()
           }).catch(error => {
             console.info(error.message)
             this.loading = false
@@ -231,7 +235,6 @@ export default class extends Vue {
       }
     })
   }
-  
 }
 </script>
 

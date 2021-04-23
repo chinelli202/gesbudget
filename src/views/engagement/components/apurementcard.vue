@@ -32,7 +32,7 @@
           <el-form-item
             label="Reference"
             prop="reference_paiement"
-            :rules="[{ validator: validateReferenceApurement, trigger: 'blur' }]"
+            :rules="[{validator: validateReferenceApurement, trigger: 'blur'}]"
           >
             <el-input
               v-model="apurement.reference_paiement"
@@ -43,7 +43,7 @@
           <el-form-item
             label="Libelle"
             prop="libelle"
-            :rules="[{ validator: validateLibelleApurement, trigger: 'blur' }]"
+            :rules="[{validator: validateLibelleApurement, trigger: 'blur'}]"
           >
             <el-input
               v-model="apurement.libelle"
@@ -52,9 +52,9 @@
             />
           </el-form-item>
           <el-form-item
-            label="Observations"
+            label="Banque et Observations"
             prop="observations"
-            :rules="[{ validator: validateObservationApurement, trigger: 'blur' }]"
+            :rules="[{validator: validateObservationApurement, trigger: 'blur'}]"
           >
             <el-input
               v-model="apurement.observations"
@@ -87,8 +87,8 @@
               </el-col>
               <el-col :span="5">
                 <el-select
-                  style="width: 100%"
                   v-model="apurement.type_paiement"
+                  style="width: 100%"
                   placeholder="Type de paiement"
                   :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
                   @change="formAttributeChange"
@@ -104,11 +104,11 @@
               <el-col :span="15">
                 <el-form-item
                   prop="montant_ttc"
-                  :rules="[{ validator: validateMontantApurement, trigger: 'blur' }]"
+                  :rules="[{validator: validateMontantApurement, trigger: 'blur'}]"
                 >
                   <el-input-number
-                    style="width: 100%"
                     v-model="apurement.montant_ttc"
+                    style="width: 100%"
                     :min="0"
                     :controls="false"
                     :disabled="!cardActive || (!isbtnUpdate && !isResendUpdate)"
@@ -134,7 +134,6 @@
               :disabled="true"
             />
           </el-form-item>
-
         </el-form>
         <footer-buttons
           :entity="apurement"
@@ -201,17 +200,17 @@ export default class ApurementCard extends Vue {
   private validateLibelleApurement = (rule: any, value: string, callback: Function) => {
     if (!value) {
       callback(new Error('Veuillez saisir un libellé à cet engagement.'))
-    } else if(value.length < 4) {
+    } else if (value.length < 4) {
       callback(new Error('Le libellé saisi doit avoir au moins 4 caractères.'))
     } else {
       callback()
     }
   }
-  
+
   private validateObservationApurement = (rule: any, value: string, callback: Function) => {
     if (!value) {
-      callback(new Error('Veuillez saisir une observation à cette imputation.'))
-    } else if(value.length < 4) {
+      callback(new Error('Veuillez saisir une observation à cet engagement.'))
+    } else if (value.length < 4) {
       callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
     } else {
       callback()
@@ -221,7 +220,7 @@ export default class ApurementCard extends Vue {
   private validateMontantApurement = (rule: any, value: number, callback: Function) => {
     if (value < 1) {
       callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
-    } else if (this.maxMontant() < value ) {
+    } else if (this.maxMontant() < value) {
       callback(new Error(
         `Le montant ${this.engagement.cumul_apurements === 0 ? 'imputé' : 'qu\'il reste à réaliser/apurer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.engagement.devise}.
         Vous ne pouvez pas effectuer une réalisation au delà de cette somme.`
@@ -243,7 +242,7 @@ export default class ApurementCard extends Vue {
   private nextEtatActionText = "Apurer l'engagement"
   private isNextEtatAction = false
 
-  private deviseLoading: boolean = false
+  private deviseLoading = false
   private deviseOptions: string[] = []
 
   created() {
@@ -274,12 +273,12 @@ export default class ApurementCard extends Vue {
 
   private selectDevise(query: string) {
     if (query !== '') {
-      this.deviseLoading = true;
-      this.deviseLoading = false;
+      this.deviseLoading = true
+      this.deviseLoading = false
       this.deviseOptions = this.listeDevises.filter((item: any) => {
         return item.libelle.toLowerCase()
-          .indexOf(query.toLowerCase()) > -1;
-      });
+          .indexOf(query.toLowerCase()) > -1
+      })
     }
   }
 
@@ -296,7 +295,7 @@ export default class ApurementCard extends Vue {
 
   private async updateSubmit() {
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
-      if(valid) {
+      if (valid) {
         this.cardLoading = true
         updateApurement(this.apurement).then((response) => {
           this.$emit('engagementChanged', response.data)
@@ -308,14 +307,14 @@ export default class ApurementCard extends Vue {
         })
         // window.location.href = this.fallbackUrl.path ? this.fallbackUrl.path : '/'
       } else {
-          return false
+        return false
       }
     })
   }
 
   private async resendUpdate() {
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
-      if(valid) {
+      if (valid) {
         this.cardLoading = true
         resendUpdateApurement(this.apurement).then((response) => {
           this.$emit('engagementChanged', response.data)
@@ -326,7 +325,7 @@ export default class ApurementCard extends Vue {
           console.log('Error resendUpdate', error)
         })
       } else {
-          return false
+        return false
       }
     })
   }
@@ -415,7 +414,6 @@ export default class ApurementCard extends Vue {
   }
 
   private updateViewVariables() {
-
     this.nextEtatActionText = this.engagement.cumul_apurements_initie_ttc > 0 ? 'Nouvel apurement' : "Apurer l'engagement"
     if (this.engagement.cumul_apurements < this.engagement.montant_ttc) {
       this.isNextEtatAction = true

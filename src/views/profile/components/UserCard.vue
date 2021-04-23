@@ -22,26 +22,26 @@
       <div class="box-center">
         <div class="user-name text-center">
           {{ user.name }}
-          <br/>({{user.matricule}})
+          <br>({{ user.matricule }})
         </div>
       </div>
     </div>
 
     <div class="user-bio">
-       <div class="user-education user-bio-section">
+      <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <i class="el-icon-s-cooperation"></i><span>{{$t('usercard.position')}}</span>
+          <i class="el-icon-s-cooperation" /><span>{{ $t('usercard.position') }}</span>
         </div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            {{ $t('user.division.'+user.division) || 'Division non spécifiée' }} : {{ $t('user.fonction.'+user.fonction) || 'Fonction non spécifiée'}}
+            {{ $t('user.division.'+user.division) || 'Division non spécifiée' }} : {{ $t('user.fonction.'+user.fonction) || 'Fonction non spécifiée' }}
           </div>
         </div>
       </div>
 
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <i class="el-icon-message"></i><span>{{$t('usercard.email')}}</span>
+          <i class="el-icon-message" /><span>{{ $t('usercard.email') }}</span>
         </div>
         <div class="user-bio-section-body">
           <div class="text-muted">
@@ -49,10 +49,10 @@
           </div>
         </div>
       </div>
-      
+
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <i class="el-icon-user"></i><span>{{$t('usercard.date_embauche')}}</span>
+          <i class="el-icon-user" /><span>{{ $t('usercard.date_embauche') }}</span>
         </div>
         <div class="user-bio-section-body">
           <div class="text-muted">
@@ -63,7 +63,7 @@
 
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <i class="el-icon-location-information"></i><span>{{$t('usercard.adresse')}}</span>
+          <i class="el-icon-location-information" /><span>{{ $t('usercard.adresse') }}</span>
         </div>
         <div class="user-bio-section-body">
           <div class="text-muted">
@@ -71,8 +71,6 @@
           </div>
         </div>
       </div>
-
-     
     </div>
   </el-card>
 </template>

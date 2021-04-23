@@ -29,7 +29,7 @@ export const defaultArticleData: IEngagementData = {
 
 export const createEngagement = (data: any) =>
   request({
-    url: `/engagement/create`,
+    url: '/engagement/create',
     method: 'post',
     headers: {
       Authorization: `Bearer ${getToken()}`
@@ -136,7 +136,7 @@ export const cancelValidationPreeng = (data: any) =>
     data
   })
 
-  export const getEngagementTimeline = (params: any): Promise<any> =>
+export const getEngagementTimeline = (params: any): Promise<any> =>
   request({
     url: `/engagement/timeline/${params.id}`,
     method: 'get',
@@ -145,4 +145,3 @@ export const cancelValidationPreeng = (data: any) =>
     },
     params
   })
-

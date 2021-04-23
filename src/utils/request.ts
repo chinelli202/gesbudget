@@ -16,10 +16,10 @@ service.interceptors.request.use(
       config.headers['X-Access-Token'] = UserModule.token
     }
     if (UserModule.loggedUser && UserModule.loggedUser.team) {
-      if(config.data) {
-        config.data['entreprise_code'] = UserModule.loggedUser.team.entreprise_code
-      } else if(config.params){
-        config.params['entreprise_code'] = UserModule.loggedUser.team.entreprise_code
+      if (config.data) {
+        config.data.entreprise_code = UserModule.loggedUser.team.entreprise_code
+      } else if (config.params) {
+        config.params.entreprise_code = UserModule.loggedUser.team.entreprise_code
       }
     }
     return config

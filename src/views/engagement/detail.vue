@@ -1,7 +1,10 @@
 <template>
   <div class="clearfix detailview">
     <el-row :gutter="30">
-      <el-col :span="17" :offset="1">
+      <el-col
+        :span="17"
+        :offset="1"
+      >
         <h1>Détail {{ engagement.code }} </h1>
       </el-col>
       <el-col :span="5">
@@ -9,11 +12,14 @@
       </el-col>
     </el-row>
     <el-row :gutter="30">
-      <el-col :span="17" :offset="1">    
+      <el-col
+        :span="17"
+        :offset="1"
+      >
         <div class="app-container max-w-600 center">
           <div
             v-for="(apurement) in engagement.apurements_labelled"
-            :key="apurement.id"
+            :key="'apurement'+apurement.id"
             style="margin-bottom: 2em"
           >
             <apurement-card
@@ -28,7 +34,7 @@
           </div>
           <div
             v-for="(imputation) in engagement.imputations_labelled"
-            :key="imputation.id"
+            :key="'imputation'+imputation.id"
             style="margin-bottom: 2em"
           >
             <imputation-card
@@ -124,7 +130,7 @@
                   <el-form-item
                     label="Ligne"
                     prop="ligne_budgetaire"
-                    :rules="[{ validator: validateLigne, trigger: 'blur' }]"
+                    :rules="[{validator: validateLigne, trigger: 'blur'}]"
                   >
                     <el-cascader
                       v-model="cascade"
@@ -140,17 +146,17 @@
                   <el-form-item
                     label="Date"
                     prop="eng_date"
-                    :rules="[{ validator: validateDate, trigger: 'blur' }]"
+                    :rules="[{validator: validateDate, trigger: 'blur'}]"
                   >
                     <el-date-picker
-                      style="width: 50%"
                       v-model="engagement.eng_date"
+                      style="width: 50%"
                       format="dd MMMM yyyy"
                       value-format="yyyy-MM-dd HH:mm:ss"
                       type="date"
                       placeholder="Choississez un jour"
-                      :picker-options="pickerOptions">
-                    </el-date-picker>
+                      :picker-options="pickerOptions"
+                    />
                   </el-form-item>
                   <el-form-item
                     label="Solde Ligne"
@@ -160,7 +166,7 @@
                   <el-form-item
                     prop="libelle"
                     label="Libellé"
-                    :rules="[{ validator: validateLibelle, trigger: 'blur' }]"
+                    :rules="[{validator: validateLibelle, trigger: 'blur'}]"
                   >
                     <el-input
                       v-model="engagement.libelle"
@@ -173,31 +179,31 @@
                   <el-form-item label="Montant TTC">
                     <el-row :gutter="10">
                       <el-col :span="3">
-                          <el-select
-                            v-model="engagement.devise"
-                            placeholder="Devise"
-                            filterable
-                            remote
-                            :remote-method="selectDevise"
-                            :loading="deviseLoading"
-                            :disabled="!toEdit"
-                          >
-                            <el-option
-                              v-for="(obj) in listeDevises"
-                              :key="obj.code"
-                              :label="obj.code"
-                              :value="obj.code"
-                            />
-                          </el-select>
+                        <el-select
+                          v-model="engagement.devise"
+                          placeholder="Devise"
+                          filterable
+                          remote
+                          :remote-method="selectDevise"
+                          :loading="deviseLoading"
+                          :disabled="!toEdit"
+                        >
+                          <el-option
+                            v-for="(obj) in listeDevises"
+                            :key="obj.code"
+                            :label="obj.code"
+                            :value="obj.code"
+                          />
+                        </el-select>
                       </el-col>
                       <el-col :span="20">
                         <el-form-item
                           prop="montant_ttc"
-                          :rules="[{ validator: validateMontantEngagement, trigger: 'blur' }]"
+                          :rules="[{validator: validateMontantEngagement, trigger: 'blur'}]"
                         >
                           <el-input-number
-                            style="width: 100%"
                             v-model="engagement.montant_ttc"
+                            style="width: 100%"
                             :min="0"
                             :controls="false"
                             :disabled="!toEdit"
@@ -225,7 +231,7 @@
                       >
                         <el-form-item
                           prop="type"
-                          :rules="[{ required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change' }]"
+                          :rules="[{required: true, message: 'Veuillez choisir un type pour cet engagement', trigger: 'change'}]"
                         >
                           <el-select
                             v-if="toEdit"
@@ -320,34 +326,35 @@
           </el-card>
         </div>
       </el-col>
-      <el-col :span="5" >
-        <h2 style="margin: 0 0 0.67em 0;">Historique</h2>
+      <el-col :span="5">
+        <h2 style="margin: 0 0 0.67em 0;">
+          Historique
+        </h2>
         <el-container style="height: 82vh; border: 1px solid #eee">
           <el-container>
             <el-main>
-            <el-timeline
-              v-loading="timelineLoading"
-              :reverse="true"
-            >
-              <el-timeline-item
-                v-for="item in timelineItems"
-                :key="item.id"
-                :timestamp="item.created_at | dateFormatLong"
-                :type="item | tlItemType"
-                :icon="item | tlItemIcon"
-                size="large"
-                placement="top"
-                
+              <el-timeline
+                v-loading="timelineLoading"
+                :reverse="true"
+              >
+                <el-timeline-item
+                  v-for="item in timelineItems"
+                  :key="'timeline'+item.id"
+                  :timestamp="item.created_at | dateFormatLong"
+                  :type="item | tlItemType"
+                  :icon="item | tlItemIcon"
+                  size="large"
+                  placement="top"
                 >
-                <el-card v-if="item.comment">
-                  <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
-                  <p>{{ item.comment.split("|")[1] }}</p>
-                </el-card>
-                <span v-else>
-                  <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
-                </span>
-              </el-timeline-item>
-            </el-timeline>
+                  <el-card v-if="item.comment && item.comment != 'NA'">
+                    <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
+                    <p>{{ item.comment.split("|")[1] ? item.comment.split("|")[1] : item.comment }}</p>
+                  </el-card>
+                  <span v-else>
+                    <strong> {{ $t('action.'+item.description) }}</strong> <small>par {{ item.civilite }}. {{ item.causer_name }}</small>
+                  </span>
+                </el-timeline-item>
+              </el-timeline>
             </el-main>
           </el-container>
         </el-container>
@@ -394,25 +401,24 @@
             </el-col>
           </el-row>
         </el-form-item>
-          <el-row :gutter="10">
-            <el-col
-              :span="3"
-              :offset="2"
+        <el-row :gutter="10">
+          <el-col
+            :span="3"
+            :offset="2"
+          >
+            <strong>Reference</strong>
+          </el-col>
+          <el-col :span="17">
+            <el-form-item
+              prop="reference"
             >
-              <strong>Reference</strong>
-            </el-col>
-            <el-col :span="17">
-              <el-form-item
-                prop="reference"
-                :rules="[{ validator: validateReference, trigger: 'blur' }]"
-              >
-                <el-input
-                  v-model="imputation.reference"
-                  @input="imputerFormAttributeChange"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
+              <el-input
+                v-model="imputation.reference"
+                @input="imputerFormAttributeChange"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row
           :gutter="10"
           style="margin-bottom: 2em"
@@ -426,7 +432,6 @@
           <el-col :span="17">
             <el-form-item
               prop="observations"
-              :rules="[{ validator: validateObservation, trigger: 'blur' }]"
             >
               <el-input
                 v-model="imputation.observations"
@@ -464,12 +469,12 @@
           </el-col>
           <el-col :span="13">
             <el-form-item
-                prop="montant_ttc"
-                :rules="[{ validator: validateMontant, trigger: 'blur' }]"
-              >
+              prop="montant_ttc"
+              :rules="[{validator: validateMontant, trigger: 'blur'}]"
+            >
               <el-input-number
-                style="width: 100%"
                 v-model="imputation.montant_ttc"
+                style="width: 100%"
                 :min="0"
                 :controls="false"
                 @input="imputerFormAttributeChange"
@@ -532,7 +537,7 @@ import { isNull } from 'lodash'
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      (vm as any).fromRoute = from;
+      (vm as any).fromRoute = from
     })
   }
 })
@@ -545,11 +550,11 @@ export default class extends Vue {
       callback()
     }
   }
-  
+
   private validateObservation = (rule: any, value: string, callback: Function) => {
     if (!value) {
       callback(new Error('Veuillez saisir une observation à cette imputation.'))
-    } else if(value.length < 4) {
+    } else if (value.length < 4) {
       callback(new Error('L\'observation saisie doit avoir au moins 4 caractères.'))
     } else {
       callback()
@@ -559,7 +564,7 @@ export default class extends Vue {
   private validateMontant = (rule: any, value: number, callback: Function) => {
     if (value < 1) {
       callback(new Error('Vous ne pouvez pas imputer l\'engagement avec un solde nul.'))
-    } else if (this.maxMontant() < value ) {
+    } else if (this.maxMontant() < value) {
       callback(new Error(
         `Le montant ${this.engagement.cumul_imputations === 0 ? 'engagé' : 'qu\'il reste à imputer pour cet engagement'} est de ${this.maxMontant().toLocaleString()} ${this.imputation.devise}.
         Vous ne pouvez pas imputer au delà de cette somme.`))
@@ -571,7 +576,7 @@ export default class extends Vue {
   private validateMontantEngagement = (rule: any, value: number, callback: Function) => {
     if (this.maxMontantEngagement() > 1 && value < 1) {
       callback(new Error(`Veuillez saisir un montant différent de 0 et inférieur au solde de la ligne qui est de ${this.maxMontantEngagement().toLocaleString()} XAF.`))
-    } else if (this.maxMontantEngagement() < value ) {
+    } else if (this.maxMontantEngagement() < value) {
       callback(new Error(`Le solde restant pour cette ligne budgétaire est de ${this.maxMontantEngagement().toLocaleString()} XAF.
       Vous ne pouvez pas créer un engagement d'un montant supérieur à cette somme.`))
     } else {
@@ -582,7 +587,7 @@ export default class extends Vue {
   private validateLibelle = (rule: any, value: string, callback: Function) => {
     if (!value) {
       callback(new Error('Veuillez saisir un libellé à cet engagement'))
-    } else if(value.length < 4) {
+    } else if (value.length < 4) {
       callback(new Error('Le libellé saisi doit avoir au moins 4 caractères'))
     } else {
       callback()
@@ -600,12 +605,12 @@ export default class extends Vue {
   }
 
     private validateDate = (rule: any, value: number, callback: Function) => {
-    if (!value) {
-      callback(new Error('Veuillez saisir une date pour cet engagement'))
-    } else {
-      callback()
+      if (!value) {
+        callback(new Error('Veuillez saisir une date pour cet engagement'))
+      } else {
+        callback()
+      }
     }
-  }
 
   /** Ligne budgetaire cascader */
   private domain = AppModule.budgetStructure.domaines ? this.capitalizeFirstLetter(AppModule.budgetStructure.domaines[0]) : 'null'
@@ -641,7 +646,7 @@ export default class extends Vue {
   private nextEtatActionText = "Imputer l'engagement";
   private isNextEtatAction = true
 
-  private deviseLoading: boolean = false
+  private deviseLoading = false
   private deviseOptions: string[] = []
 
   /** Variables for buttons rendering */
@@ -674,26 +679,26 @@ export default class extends Vue {
 
   private pickerOptions = {
     disabledDate(time: any) {
-      return time.getTime() > Date.now();
+      return time.getTime() > Date.now()
     },
     shortcuts: [{
       text: 'Aujourd\'hui',
       onClick(picker: any) {
-        picker.$emit('pick', new Date());
+        picker.$emit('pick', new Date())
       }
     }, {
       text: 'Hier',
       onClick(picker: any) {
-        const date = new Date();
-        date.setTime(date.getTime() - 3600 * 1000 * 24);
-        picker.$emit('pick', date);
+        const date = new Date()
+        date.setTime(date.getTime() - 3600 * 1000 * 24)
+        picker.$emit('pick', date)
       }
     }, {
       text: 'Il y a une semaine',
       onClick(picker: any) {
-        const date = new Date();
-        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-        picker.$emit('pick', date);
+        const date = new Date()
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
+        picker.$emit('pick', date)
       }
     }]
   }
@@ -722,21 +727,21 @@ export default class extends Vue {
   }
 
   get fallbackRoute() {
-    let finalRoute = this.fromRoute
-    if(this.$route.params && 'fallbackPayload' in this.$route.params){
-      finalRoute.params.payload =  this.$route.params.fallbackPayload
+    const finalRoute = this.fromRoute
+    if (this.$route.params && 'fallbackPayload' in this.$route.params) {
+      finalRoute.params.payload = this.$route.params.fallbackPayload
     }
     return finalRoute
   }
 
   private selectDevise(query: string) {
     if (query !== '') {
-      this.deviseLoading = true;
-      this.deviseLoading = false;
+      this.deviseLoading = true
+      this.deviseLoading = false
       this.deviseOptions = this.listeDevises.filter((item: any) => {
         return item.libelle.toLowerCase()
-          .indexOf(query.toLowerCase()) > -1;
-      });
+          .indexOf(query.toLowerCase()) > -1
+      })
     }
   }
 
@@ -749,30 +754,33 @@ export default class extends Vue {
   }
 
   private maxMontantEngagement() {
-    return 0 < +this.soldeLigne ? +this.soldeLigne : 0
+    return +this.soldeLigne > 0 ? +this.soldeLigne : 0
   }
 
   private updateTimeLine(engagementId: any = null) {
     this.timelineLoading = true
-    if(isNull(engagementId)) engagementId = this.engagement.id
-    getEngagementTimeline({id : engagementId }).then((response) => {
+    if (isNull(engagementId)) engagementId = this.engagement.id
+    getEngagementTimeline({ id: engagementId }).then((response) => {
       this.timelineItems = response.data.filter(function(item:any) {
-        return !['PREENGAGER','IMPUTATION', 'APUREMENT'].includes(item.description)
-      });
+        return !['PREENGAGER', 'IMPUTATION', 'APUREMENT'].includes(item.description) &&
+          (
+            Object.keys(item.properties.attributes).includes('etat') ||
+            Object.keys(item.properties.attributes).includes('statut'))
+      })
       this.timelineLoading = false
     }).catch(error => {
-        console.error('Error while obtaining engagement details ', error)
-      })
+      console.error('Error while obtaining engagement details ', error)
+    })
   }
 
   private async fetchData(engagementId: number) {
     this.cardLoading = true
-    //this.updateTimeLine(engagementId)
+    // this.updateTimeLine(engagementId)
     detailEngagement({ id: engagementId }).then((response) => {
-      let { eng_date, ...eng } = response.data
-      this.engagement = {eng_date: new Date(eng_date), ...eng}
-      let devises = AppModule.devises
-      this.listeDevises = Object.keys(AppModule.devises).map(key => {return AppModule.devises[key];})
+      const { eng_date, ...eng } = response.data
+      this.engagement = { eng_date: new Date(eng_date), ...eng }
+      const devises = AppModule.devises
+      this.listeDevises = Object.keys(AppModule.devises).map(key => { return AppModule.devises[key] })
       this.typesPaiementOptions = AppModule.typesPaiement
       this.typeOptions = AppModule.typesEngagement
       this.natureOptions = AppModule.naturesEngagement
@@ -787,7 +795,7 @@ export default class extends Vue {
       this.domain = this.engagement.domaine
       this.chapitresOptions = AppModule.budgetStructure.domaines ? AppModule.budgetStructure.content[AppModule.budgetStructure.domaines[0]] : AppModule.budgetStructure.content
 
-      getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
+      getSoldeLigne({ id: this.engagement.ligne_id }).then((response) => {
         this.soldeLigne = response.data.solde_restant == 0 ? 'Solde nul' : response.data.solde_restant
       })
 
@@ -796,7 +804,6 @@ export default class extends Vue {
       .catch(error => {
         console.error('Error while obtaining engagement details ', error)
       })
-
   }
 
   /** Ligne budgetaire selector */
@@ -809,7 +816,7 @@ export default class extends Vue {
     this.engagement.ligne_id = this.cascade === null ? 0 : this.cascade[2]
     this.engagement.rubrique_id = this.cascade === null ? 0 : this.cascade[1]
     this.engagement.chapitre_id = this.cascade === null ? 0 : this.cascade[0]
-    getSoldeLigne({id: this.engagement.ligne_id}).then((response) => {
+    getSoldeLigne({ id: this.engagement.ligne_id }).then((response) => {
       this.soldeLigne = response.data.solde_restant == 0 ? 'Solde nul' : response.data.solde_restant
     })
     this.updateViewVariables()
@@ -852,12 +859,12 @@ export default class extends Vue {
 
   private async updateSubmit() {
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
-      if(valid) {
+      if (valid) {
         this.cardLoading = true
-        let { eng_date, ...eng } = this.engagement
-        updateEngagement({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng}).then((response) => {
-          let { eng_date, ...eng } = response.data
-          this.engagement = {eng_date: new Date(eng_date), ...eng}
+        const { eng_date, ...eng } = this.engagement
+        updateEngagement({ eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng }).then((response) => {
+          const { eng_date, ...eng } = response.data
+          this.engagement = { eng_date: new Date(eng_date), ...eng }
           this.updateViewVariables()
           this.cardLoading = false
         }).catch(error => {
@@ -873,12 +880,12 @@ export default class extends Vue {
 
   private async resendUpdate() {
     (this.$refs.form as ElForm).validate(async(valid: boolean) => {
-      if(valid) {
+      if (valid) {
         this.cardLoading = true
-        let { eng_date, ...eng } = this.engagement
-        resendUpdateEngagement({eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng}).then((response) => {
-          let { eng_date, ...eng } = response.data
-          this.engagement = {eng_date: new Date(eng_date), ...eng}
+        const { eng_date, ...eng } = this.engagement
+        resendUpdateEngagement({ eng_date: new Date(eng_date).toISOString().slice(0, 19).replace('T', ' '), ...eng }).then((response) => {
+          const { eng_date, ...eng } = response.data
+          this.engagement = { eng_date: new Date(eng_date), ...eng }
           this.updateViewVariables()
           this.cardLoading = false
         }).catch(error => {
@@ -886,7 +893,7 @@ export default class extends Vue {
           console.log('Error resendUpdate', error)
         })
       } else {
-          return false
+        return false
       }
     })
   }
@@ -953,7 +960,7 @@ export default class extends Vue {
 
   private imputerEngagement() {
     (this.$refs.imputationForm as ElForm).validate(async(valid: boolean) => {
-      if(valid) {
+      if (valid) {
         console.log('Imputation de lengagement avec fichiers ' + this.imputation.files)
         this.imputerFormLoading = true
         this.imputation.engagement_id = this.engagement.code
@@ -982,7 +989,7 @@ export default class extends Vue {
 
   private onCancel() {
     // this.$router.push(this.fallbackUrl ? this.fallbackUrl : '/')
-    // this.$router.push({ 
+    // this.$router.push({
     //     name : this.fallbackRouteName ? this.fallbackRouteName : 'engagementHome'
     //   , params : this.fallbackRouteParams
     //   , query : this.fallbackRouteQuery
@@ -1045,7 +1052,7 @@ export default class extends Vue {
   }
 
   private capitalizeFirstLetter(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 }
 
@@ -1064,7 +1071,7 @@ export default class extends Vue {
     margin-block-start: 0em;
     margin-block-end: 0em;
     padding-inline-start: 0px;
-    
+
     .el-timeline-item__node {
         left: 0px;
         width: 21px;
@@ -1090,11 +1097,9 @@ export default class extends Vue {
     }
 }
 
-
 .cascade-extra-lg{
   width: 48.5vw;
 }
-
 
 .no-margin-bottom{
   margin-bottom: 0px;

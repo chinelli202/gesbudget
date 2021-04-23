@@ -18,16 +18,24 @@
             name="peoples"
             class="card-panel-icon"
           /> -->
-          <svg style="width:48px;height:48px" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M6,2V8H6V8L10,12L6,16V16H6V22H18V16H18V16L14,12L18,8V8H18V2H6M16,16.5V20H8V16.5L12,12.5L16,16.5M12,11.5L8,7.5V4H16V7.5L12,11.5Z" />
+          <svg
+            style="width:48px;height:48px"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M6,2V8H6V8L10,12L6,16V16H6V22H18V16H18V16L14,12L18,8V8H18V2H6M16,16.5V20H8V16.5L12,12.5L16,16.5M12,11.5L8,7.5V4H16V7.5L12,11.5Z"
+            />
           </svg>
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
             Prévisions
           </div>
-          
-          <div class="card-panel-num">{{formatter(recapData.prevision)}}</div>
+
+          <div class="card-panel-num">
+            {{ formatter(recapData.prevision) }}
+          </div>
         </div>
       </div>
     </el-col>
@@ -46,16 +54,24 @@
             name="settings"
             class="card-panel-icon"
           /> -->
-          <svg style="width:48px;height:48px" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M16,11.78L20.24,4.45L21.97,5.45L16.74,14.5L10.23,10.75L5.46,19H22V21H2V3H4V17.54L9.5,8L16,11.78Z" />
+          <svg
+            style="width:48px;height:48px"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M16,11.78L20.24,4.45L21.97,5.45L16.74,14.5L10.23,10.75L5.46,19H22V21H2V3H4V17.54L9.5,8L16,11.78Z"
+            />
           </svg>
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
             Exécution
           </div>
- 
-          <div class="card-panel-num">{{formatter(recapData.execution)}}</div>
+
+          <div class="card-panel-num">
+            {{ formatter(recapData.execution) }}
+          </div>
         </div>
       </div>
     </el-col>
@@ -77,9 +93,15 @@
           <!-- <svg style="width:48px;height:48px" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22,21H2V3H4V19H6V10H10V19H12V6H16V19H18V14H22V21Z" />
           </svg> -->
-          <svg style="width:48px;height:48px" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M5,6H23V18H5V6M14,9A3,3 0 0,1 17,12A3,3 0 0,1 14,15A3,3 0 0,1 11,12A3,3 0 0,1 14,9M9,8A2,2 0 0,1 7,10V14A2,2 0 0,1 9,16H19A2,2 0 0,1 21,14V10A2,2 0 0,1 19,8H9M1,10H3V20H19V22H1V10Z" />
-        </svg>
+          <svg
+            style="width:48px;height:48px"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M5,6H23V18H5V6M14,9A3,3 0 0,1 17,12A3,3 0 0,1 14,15A3,3 0 0,1 11,12A3,3 0 0,1 14,9M9,8A2,2 0 0,1 7,10V14A2,2 0 0,1 9,16H19A2,2 0 0,1 21,14V10A2,2 0 0,1 19,8H9M1,10H3V20H19V22H1V10Z"
+            />
+          </svg>
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
@@ -91,7 +113,9 @@
             :duration="500"
             class="card-panel-num"
           /> -->
-          <div class="card-panel-num">{{formatter(recapData.solde)}}</div>
+          <div class="card-panel-num">
+            {{ formatter(recapData.solde) }}
+          </div>
         </div>
       </div>
     </el-col>
@@ -110,9 +134,15 @@
             name="shopping"
             class="card-panel-icon"
           /> -->
-          <svg style="width:48px;height:48px" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M18.5 3.5L20.5 5.5L5.5 20.5L3.5 18.5L18.5 3.5M7 4C8.66 4 10 5.34 10 7C10 8.66 8.66 10 7 10C5.34 10 4 8.66 4 7C4 5.34 5.34 4 7 4M17 14C18.66 14 20 15.34 20 17C20 18.66 18.66 20 17 20C15.34 20 14 18.66 14 17C14 15.34 15.34 14 17 14M7 6C6.45 6 6 6.45 6 7C6 7.55 6.45 8 7 8C7.55 8 8 7.55 8 7C8 6.45 7.55 6 7 6M17 16C16.45 16 16 16.45 16 17C16 17.55 16.45 18 17 18C17.55 18 18 17.55 18 17C18 16.45 17.55 16 17 16Z" />
-        </svg>
+          <svg
+            style="width:48px;height:48px"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M18.5 3.5L20.5 5.5L5.5 20.5L3.5 18.5L18.5 3.5M7 4C8.66 4 10 5.34 10 7C10 8.66 8.66 10 7 10C5.34 10 4 8.66 4 7C4 5.34 5.34 4 7 4M17 14C18.66 14 20 15.34 20 17C20 18.66 18.66 20 17 20C15.34 20 14 18.66 14 17C14 15.34 15.34 14 17 14M7 6C6.45 6 6 6.45 6 7C6 7.55 6.45 8 7 8C7.55 8 8 7.55 8 7C8 6.45 7.55 6 7 6M17 16C16.45 16 16 16.45 16 17C16 17.55 16.45 18 17 18C17.55 18 18 17.55 18 17C18 16.45 17.55 16 17 16Z"
+            />
+          </svg>
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
@@ -128,7 +158,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
 import CountTo from 'vue-count-to'
-import {IRecapData} from '@/api/types'
+import { IRecapData } from '@/api/types'
 
 @Component({
   name: 'PanelGroup',
@@ -142,10 +172,9 @@ export default class extends Vue {
     this.$emit('handleSetLineChartData', type)
   }
 
-  private formatter (value: Number) : string{
-    return value.toLocaleString("fr-Fr")
+  private formatter(value: Number) : string {
+    return value.toLocaleString('fr-Fr')
   }
-
 }
 </script>
 

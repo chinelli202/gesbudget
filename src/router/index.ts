@@ -103,18 +103,18 @@ export const constantRoutes: RouteConfig[] = [
     meta: {
       title: 'engagementHome',
       icon: 'component',
-      teams: ['snh','snh_siege','cpsp']
+      teams: ['snh', 'snh_siege', 'cpsp']
     },
-    children : [
+    children: [
       {
         path: 'dashboard',
         component: () => import(/* webpackChunkName: "home" */ '@/views/engagement/home.vue'),
-        //redirect: '/consulter/list/',
+        // redirect: '/consulter/list/',
         name: 'engagementHomeDashboard',
         meta: {
           title: 'engagementHomeDashboard',
           icon: 'component',
-          teams: ['snh','snh_siege','cpsp']
+          teams: ['snh', 'snh_siege', 'cpsp']
         }
       }
     ]
@@ -127,9 +127,9 @@ export const constantRoutes: RouteConfig[] = [
     meta: {
       title: 'engagement',
       icon: 'list',
-      teams: ['snh','snh_siege','cpsp']
+      teams: ['snh', 'snh_siege', 'cpsp']
     },
-    children : [
+    children: [
       {
         path: 'list',
         component: () => import(/* webpackChunkName: "engagementlist" */ '@/views/engagement/index.vue'),
@@ -138,7 +138,7 @@ export const constantRoutes: RouteConfig[] = [
           title: 'engagementList',
           activeMenu: '/engagement/list',
           icon: 'search',
-          teams: ['snh','snh_siege','cpsp']
+          teams: ['snh', 'snh_siege', 'cpsp']
         }
       }
     ]
@@ -151,17 +151,17 @@ export const constantRoutes: RouteConfig[] = [
     meta: {
       title: 'engagementDetail',
       icon: 'form',
-      teams: ['snh','snh_siege','cpsp'],
+      teams: ['snh', 'snh_siege', 'cpsp'],
       hidden: true
     },
-    children : [
+    children: [
       {
         path: 'engagement/:id(\\d+)',
         component: () => import(/* webpackChunkName: "engagement-detail" */ '@/views/engagement/detail.vue'),
         name: 'engagementDetailView',
         meta: {
           title: 'engagementDetailView',
-          teams: ['snh','snh_siege','cpsp'],
+          teams: ['snh', 'snh_siege', 'cpsp'],
           noCache: true
         }
       }
@@ -197,7 +197,7 @@ export const constantRoutes: RouteConfig[] = [
       title: 'corbeille',
       icon: 'list'
     },
-    children : [
+    children: [
       {
         path: 'list',
         component: () => import(/* webpackChunkName: "corbeille" */ '@/views/engagement/pages/corbeille.vue'),
@@ -208,9 +208,8 @@ export const constantRoutes: RouteConfig[] = [
         }
       }
     ]
-  },
-  
-  
+  }
+
   // {
   //   path: '/elaboration',
   //   component: Layout,
@@ -218,7 +217,7 @@ export const constantRoutes: RouteConfig[] = [
   //   meta: {
   //     title: 'elaboration',
   //     icon: 'edit',
-  //   }, 
+  //   },
   //   children : [
   //     {
   //       path : 'draft',
@@ -254,7 +253,7 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'etatsBudget',
       icon: 'dashboard',
-      teams: ['snh','SNHSIEGE']
+      teams: ['snh','snh_yde']
     },
     children: [
       {
@@ -267,7 +266,7 @@ export const asyncRoutes: RouteConfig[] = [
             component: () => import('@/views/table/etats-generaux.vue'),
             name: 'fonctionnement-generaux',
             meta: {
-              title: 'fonctionnement',
+              title: 'fonctionnement'
             }
           },
           {
@@ -292,7 +291,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsFonctionnement',
           icon: 'tab',
-          teams: ['snh','SNHSIEGE']
+          teams: ['snh','snh_yde']
         }
       },
       {
@@ -305,7 +304,7 @@ export const asyncRoutes: RouteConfig[] = [
             component: () => import('@/views/table/etats-generaux.vue'),
             name: 'mandat-generaux',
             meta: {
-              title: 'mandat',
+              title: 'mandat'
             }
           },
           {
@@ -321,7 +320,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'etatsMandat',
           icon: 'tab',
-          teams: ['snh','SNHSIEGE']
+          teams: ['snh','snh_yde']
         }
       }
     ]
@@ -334,9 +333,9 @@ export const asyncRoutes: RouteConfig[] = [
     meta: {
       title: 'rapports',
       icon: 'dashboard',
-      teams: ['cpsp', 'asch', 'snh_douala']
+      teams: ['cpsp', 'snh_dla']
     },
-    children : [
+    children: [
       {
         path: 'entreprise',
         component: () => import('@/views/table/etats-entreprise.vue'),
@@ -344,7 +343,7 @@ export const asyncRoutes: RouteConfig[] = [
         meta: {
           title: 'rapports',
           icon: 'dashboard',
-          teams: ['cpsp', 'asch','snh_douala']
+          teams: ['cpsp', 'snh_dla']
         }
       },
       {
@@ -353,14 +352,41 @@ export const asyncRoutes: RouteConfig[] = [
         name: 'etats-entreprise',
         meta: {
           title: 'etatsEntreprise',
-          name:'etats-entreprise',
+          name: 'etats-entreprise',
           icon: 'dashboard',
-          teams: ['cpsp','asch','snh_douala'],
+          teams: ['cpsp', 'snh_dla'],
           hidden:true        
         }
       }
     ]
-  }, 
+  }
+]
+
+export const configRoutes: RouteConfig[] = [
+  {
+    path: '/configurations',
+    component: Layout,
+    redirect: '/configurations/engagement',
+    name: 'configurations',
+    meta: {
+      title: 'configurations',
+      icon: 'dashboard'
+      // roles: ['configurateur']
+    },
+    children: [
+      {
+        path: 'engagement',
+        // component: () => import('@/views/configuration/engagements.vue'),
+        component: () => import('@/views/icons/index.vue'),
+        name: 'manageEngagement',
+        meta: {
+          title: 'manageEngagement',
+          icon: 'example',
+          roles: ['configurateur']
+        }
+      }
+    ]
+  }
 ]
 
 const createRouter = () => new Router({
